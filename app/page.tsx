@@ -1,0 +1,227 @@
+import React from 'react';
+import { Phone, MessageCircle, MapPin, Clock, ChevronRight, Star, CheckCircle } from 'lucide-react';
+
+export default function LandingPage() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div>
+            <div className="text-2xl font-bold text-red-700">정관장 조원점</div>
+            <div className="text-xs text-gray-600">수원 장안구 공식 대리점</div>
+          </div>
+          <a 
+            href="tel:031-268-0304" 
+            className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition-colors"
+          >
+            <Phone size={16} />
+            <span>전화상담</span>
+          </a>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-red-50 to-white py-12 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            선물 고민,<br className="md:hidden" /> 2분이면 해결됩니다
+          </h1>
+          
+          <div className="flex flex-wrap justify-center gap-4 mt-6 mb-8">
+            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
+              <CheckCircle className="text-green-600" size={18} />
+              <span className="text-sm font-medium text-gray-700">정관장 공식 대리점 20년</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
+              <CheckCircle className="text-green-600" size={18} />
+              <span className="text-sm font-medium text-gray-700">이달의 상담 완료 237건</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
+              <CheckCircle className="text-green-600" size={18} />
+              <span className="text-sm font-medium text-gray-700">전국 당일/익일 배송</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main CTA Buttons */}
+      <section className="py-8 px-4 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">
+            어떤 선물을 찾으세요?
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+            {/* 개인 선물 버튼 */}
+            <a
+              href="/personal"
+              className="group relative bg-gradient-to-br from-red-50 to-white border-2 border-red-200 hover:border-red-400 rounded-2xl p-6 text-left transition-all hover:shadow-lg"
+            >
+              <div className="text-4xl mb-3">👤</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">개인 선물 상담</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                부모님 · 직장 상사<br />
+                병문안 · 출산 선물
+              </p>
+              <div className="flex items-center text-red-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
+                <span>선물 추천받기</span>
+                <ChevronRight size={20} />
+              </div>
+            </a>
+
+            {/* 기업 주문 버튼 */}
+            <a
+              href="/business"
+              className="group relative bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 hover:border-blue-400 rounded-2xl p-6 text-left transition-all hover:shadow-lg"
+            >
+              <div className="text-4xl mb-3">🏢</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">기업 주문 상담</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                직원 선물 · 거래처 선물<br />
+                단체 주문 · 일괄 배송
+              </p>
+              <div className="flex items-center text-blue-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
+                <span>견적 문의하기</span>
+                <ChevronRight size={20} />
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Contact */}
+      <section className="py-8 px-4 bg-gray-50">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 border border-yellow-300 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <MessageCircle className="text-yellow-700" size={24} />
+              <h3 className="text-lg font-bold text-gray-900">실시간 상담 가능</h3>
+            </div>
+            
+            <div className="flex items-center gap-2 text-sm text-gray-700 mb-4">
+              <Clock size={16} />
+              <span>평일 10:00-20:00 / 토요일 10:00-20:00</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <a 
+                href="tel:031-268-0304"
+                className="flex items-center justify-center gap-2 bg-white border-2 border-gray-300 hover:border-gray-400 rounded-lg py-3 font-semibold text-gray-900 transition-colors"
+              >
+                <Phone size={18} />
+                <span>전화 상담</span>
+              </a>
+              <a 
+                href="http://pf.kakao.com/_your_channel"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-lg py-3 font-semibold text-gray-900 transition-colors"
+              >
+                <MessageCircle size={18} />
+                <span>카톡 상담</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof */}
+      <section className="py-8 px-4 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <h3 className="text-xl font-bold text-center text-gray-900 mb-6">
+            📝 최근 상담 사례
+          </h3>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+              <div className="flex gap-1 mb-2">
+                {[1,2,3,4,5].map(i => (
+                  <Star key={i} size={16} className="fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+              <p className="text-gray-800 mb-3 font-medium">
+                "설 선물 50세트, 2일 만에 완료"
+              </p>
+              <p className="text-sm text-gray-600">
+                수원 ○○기업 김과장님
+              </p>
+            </div>
+
+            <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
+              <div className="flex gap-1 mb-2">
+                {[1,2,3,4,5].map(i => (
+                  <Star key={i} size={16} className="fill-yellow-400 text-yellow-400" />
+                ))}
+              </div>
+              <p className="text-gray-800 mb-3 font-medium">
+                "산모 선물 당일 배송 감사해요"
+              </p>
+              <p className="text-sm text-gray-600">
+                장안구 박○○님
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Store Info */}
+      <section className="py-8 px-4 bg-gray-50 border-t border-gray-200">
+        <div className="max-w-4xl mx-auto">
+          <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <MapPin size={20} className="text-red-600" />
+            매장 정보
+          </h3>
+          
+          <div className="bg-white rounded-xl p-5 border border-gray-200">
+            <p className="text-gray-800 font-medium mb-2">정관장 조원점</p>
+            <p className="text-sm text-gray-600 mb-3">
+              경기도 수원시 장안구 송원로 81 메가플러스 A동 111호<br />
+              주차 가능 · 방문 상담 환영
+            </p>
+            <a 
+              href="https://map.naver.com/v5/search/정관장%20조원점"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-red-600 font-semibold hover:text-red-700"
+            >
+              <span>지도에서 보기</span>
+              <ChevronRight size={16} />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-400 py-8 px-4">
+        <div className="max-w-4xl mx-auto text-center text-sm">
+          <p className="mb-2">정관장 조원점 (수원 장안구 조원동 메가플러스빌딩 111호)</p>
+          <p className="mb-4">사업자등록번호: 441-17-02401 | 대표: 박시영</p>
+          <p className="text-xs text-gray-500">
+            © 2026 정관장 조원점. All rights reserved.
+          </p>
+        </div>
+      </footer>
+
+      {/* Floating Quick Action */}
+      <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-40">
+        <a
+          href="http://pf.kakao.com/_your_channel"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-14 h-14 bg-yellow-400 hover:bg-yellow-500 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
+          aria-label="카카오톡 상담"
+        >
+          <MessageCircle size={28} className="text-gray-900" />
+        </a>
+        <a
+          href="tel:031-268-0304"
+          className="w-14 h-14 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
+          aria-label="전화 상담"
+        >
+          <Phone size={28} className="text-white" />
+        </a>
+      </div>
+    </div>
+  );
+}
