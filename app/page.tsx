@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, MessageCircle, MapPin, Clock, ChevronRight, CheckCircle, Award, CreditCard, Package } from 'lucide-react';
+import { Phone, MessageCircle, MapPin, Clock, ChevronRight, CheckCircle, Award, CreditCard, Package, Navigation, ExternalLink } from 'lucide-react';
 
 export default function LandingPage() {
   return (
@@ -196,22 +196,53 @@ export default function LandingPage() {
             <MapPin size={20} className="text-red-600" />
             매장 정보
           </h3>
-          
+
           <div className="bg-white rounded-xl p-5 border border-gray-200">
             <p className="text-gray-800 font-medium mb-2">정관장 조원점</p>
             <p className="text-sm text-gray-600 mb-3">
               경기도 수원시 장안구 송원로 81 메가플러스 A동 111호<br />
               주차 가능 · 방문 상담 환영
             </p>
-            <a 
-              href="https://map.naver.com/v5/search/정관장%20조원점"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-red-600 font-semibold hover:text-red-700"
-            >
-              <span>지도에서 보기</span>
-              <ChevronRight size={16} />
-            </a>
+
+            {/* ✅ 지도 미리보기 (absolute 제거: 무조건 보임) */}
+           {/* ✅ 지도 바로 표시 (Google Maps Embed) */}
+<div className="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white">
+  <iframe
+    title="정관장 조원점 지도"
+    src="https://www.google.com/maps?q=37.302031,127.009303&z=16&output=embed"
+    width="100%"
+    height="280"
+    loading="lazy"
+    referrerPolicy="no-referrer-when-downgrade"
+    className="block w-full"
+  />
+</div>
+
+
+            {/* ✅ 액션 버튼 */}
+            <div className="mt-3 flex flex-wrap gap-2">
+              <a
+                href="https://map.naver.com/v5/search/%EC%A0%95%EA%B4%80%EC%9E%A5%20%EC%A1%B0%EC%9B%90%EC%A0%90?c=15,0,0,0,dh"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
+              >
+                <Navigation size={16} />
+                길찾기
+              </a>
+
+              <a
+                href="https://map.naver.com/v5/search/%EC%A0%95%EA%B4%80%EC%9E%A5%20%EC%A1%B0%EC%9B%90%EC%A0%90"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-800 text-sm font-semibold hover:bg-gray-200 transition-colors"
+              >
+                지도 크게 보기
+                <ExternalLink size={16} className="text-gray-500" />
+              </a>
+            </div>
+
+            <p className="mt-2 text-xs text-gray-500">네이버지도로 연결됩니다.</p>
           </div>
         </div>
       </section>
