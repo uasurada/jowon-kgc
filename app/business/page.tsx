@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft, MessageCircle, Phone, ChevronRight, Building, Gift, Users, Award } from 'lucide-react';
+import PrivacyConsent from '@/components/PrivacyConsent';
 
 export default function BusinessOrderConsultation() {
   const [step, setStep] = useState('select');
@@ -17,6 +18,7 @@ export default function BusinessOrderConsultation() {
     desiredDate: '',
     message: ''
   });
+  const [privacyConsent, setPrivacyConsent] = useState(false);
 
     // ✅ 이거 추가
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,12 +69,16 @@ export default function BusinessOrderConsultation() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+
   const handleSubmit = async () => {
   if (!formData.companyName || !formData.contactName || !formData.phone || !formData.quantity || !formData.budgetPerUnit) {
     alert('필수 항목을 입력해주세요');
     return;
   }
-
+  if (!privacyConsent) {
+  alert('개인정보 수집 및 이용에 동의해 주세요.');
+  return;
+  }
   setIsSubmitting(true);
 
   try {
@@ -463,10 +469,12 @@ export default function BusinessOrderConsultation() {
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none resize-none"
               />
             </div>
-
+            
+            <PrivacyConsent checked={privacyConsent} onChange={setPrivacyConsent} className="mt-4" />
+            
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !privacyConsent}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
@@ -481,6 +489,7 @@ export default function BusinessOrderConsultation() {
                 </>
               )}
             </button>
+
 
             <p className="text-xs text-center text-gray-500">
               제출하시면 전담 매니저가 1시간 내로 구성안을 제안드립니다

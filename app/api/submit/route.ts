@@ -36,6 +36,8 @@ export async function POST(request: NextRequest) {
         budget: formData.budget,
         quantity: formData.quantity,
         message: formData.message || null,
+        privacy_consent: true,
+        privacy_consent_at: new Date().toISOString(),        
       };
     } else {
       inquiryData = {
@@ -50,6 +52,8 @@ export async function POST(request: NextRequest) {
         delivery_type: formData.deliveryType, // bulk/individual
         desired_date: formData.desiredDate || null,
         message: formData.message || null,
+        privacy_consent: true,
+        privacy_consent_at: new Date().toISOString(),        
       };
     }
 

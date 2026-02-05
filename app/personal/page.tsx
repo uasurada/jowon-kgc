@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft, MessageCircle, Phone, ChevronRight, Gift, Heart, Users, Baby, Briefcase, Sparkles } from 'lucide-react';
+import PrivacyConsent from '@/components/PrivacyConsent';
 
 export default function PersonalGiftConsultation() {
   const [step, setStep] = useState('select');
@@ -14,6 +15,7 @@ export default function PersonalGiftConsultation() {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [privacyConsent, setPrivacyConsent] = useState(false);
 
   const giftTypes = [
     {
@@ -77,6 +79,10 @@ export default function PersonalGiftConsultation() {
   };
 
   const handleSubmit = async () => {
+    if (!privacyConsent) {
+      alert('개인정보 수집 및 이용에 동의해 주세요.');
+      return;
+    }
     if (!formData.name || !formData.phone || !formData.budget) {
       alert('필수 항목을 입력해주세요');
       return;
@@ -377,10 +383,11 @@ export default function PersonalGiftConsultation() {
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-600 focus:outline-none resize-none"
               />
             </div>
+            <PrivacyConsent checked={privacyConsent} onChange={setPrivacyConsent} className="mt-4" />
 
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !privacyConsent}
               className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
@@ -395,6 +402,7 @@ export default function PersonalGiftConsultation() {
                 </>
               )}
             </button>
+
 
             <p className="text-xs text-center text-gray-500">
               신청하시면 담당자가 30분 내로 연락드립니다

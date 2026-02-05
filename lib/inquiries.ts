@@ -12,6 +12,8 @@ export interface PersonalInquiry {
   budget: string;
   quantity: string;
   message?: string;
+  privacy_consent?: boolean;
+  privacy_consent_at?: string;  
 }
 
 export interface BusinessInquiry {
@@ -26,6 +28,8 @@ export interface BusinessInquiry {
   delivery_type: string;
   desired_date?: string | null;
   message?: string;
+  privacy_consent?: boolean;
+  privacy_consent_at?: string;  
 }
 
 export type Inquiry = PersonalInquiry | BusinessInquiry;
