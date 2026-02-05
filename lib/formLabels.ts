@@ -6,6 +6,7 @@ export const PERSONAL_GIFT_TYPE_MAP: Record<string, string> = {
   hospital: '병문안 / 회복 기원',
   baby: '출산 / 산모 선물',
   event: '기타 행사',
+  self: '나를 위한 선물',
 };
 
 export const BUSINESS_PURPOSE_MAP: Record<string, string> = {

@@ -1,13 +1,12 @@
-// lib/analytics.ts
+// lib/analytics.ts - Google Analytics 4 이벤트 추적
 
-// GA4 타입 선언
 declare global {
   interface Window {
     gtag: (...args: any[]) => void;
   }
 }
 
-// 이벤트 추적 함수
+// 기본 이벤트 추적
 export const trackEvent = (
   eventName: string,
   eventParams?: Record<string, any>
@@ -28,7 +27,7 @@ export const trackPageView = (url: string) => {
 
 // 주요 이벤트 추적 함수들
 export const analytics = {
-  // 개인/기업 버튼 클릭
+  // 개인/기업 경로 선택
   trackPathSelect: (path: 'personal' | 'business') => {
     trackEvent('path_select', {
       path_type: path,
@@ -88,34 +87,9 @@ export const analytics = {
     });
   },
 
-  // 이메일 클릭
-  trackEmailClick: (source: string) => {
-    trackEvent('email_click', {
-      click_source: source,
-      event_category: 'engagement',
-    });
-  },
-
   // 네이버 지도 클릭
   trackMapClick: () => {
     trackEvent('map_click', {
-      event_category: 'engagement',
-    });
-  },
-
-  // 폼 필드 인터랙션 (이탈 구간 파악용)
-  trackFieldInteraction: (fieldName: string, formType: string) => {
-    trackEvent('field_interaction', {
-      field_name: fieldName,
-      form_type: formType,
-      event_category: 'engagement',
-    });
-  },
-
-  // 스크롤 깊이
-  trackScrollDepth: (depth: number) => {
-    trackEvent('scroll_depth', {
-      scroll_percentage: depth,
       event_category: 'engagement',
     });
   },
@@ -146,22 +120,4 @@ export const getUTMParams = () => {
     utm_content: params.get('utm_content') || '',
     referrer: document.referrer || '',
   };
-};
-
-// 세션 시작 시간 추적
-export const trackSessionStart = () => {
-  if (typeof window !== 'undefined') {
-    const sessionStart = Date.now();
-    sessionStorage.setItem('session_start', sessionStart.toString());
-  }
-};
-
-// 세션 지속 시간 계산
-export const getSessionDuration = (): number => {
-  if (typeof window === 'undefined') return 0;
-
-  const sessionStart = sessionStorage.getItem('session_start');
-  if (!sessionStart) return 0;
-
-  return Math.floor((Date.now() - parseInt(sessionStart)) / 1000); // 초 단위
 };

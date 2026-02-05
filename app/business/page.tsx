@@ -50,11 +50,11 @@ export default function BusinessOrderConsultation() {
   ];
 
   const budgetOptions = [
-    '3만원대',
-    '5만원대',
-    '10만원대',
-    '20만원대',
-    '30만원 이상'
+    '3~5만원대 구성',
+    '5~10만원대 구성',
+    '10~20만원대 구성',
+    '20~50만원대 구성',
+    '50만원 이상'
   ];
 
   const handlePurposeSelect = (purpose: string) => {
@@ -156,7 +156,7 @@ export default function BusinessOrderConsultation() {
             </p>
             <div className="grid grid-cols-2 gap-2">
               <a
-                href="tel:031-1234-5678"
+                href="tel:031-268-0304"
                 className="flex items-center justify-center gap-1 bg-white border border-gray-300 hover:border-gray-400 rounded-lg py-2 text-sm font-semibold text-gray-900 transition-colors"
               >
                 <Phone size={16} />
@@ -196,7 +196,7 @@ export default function BusinessOrderConsultation() {
           </button>
           <div className="text-lg font-bold text-gray-900">기업 주문 상담</div>
           <a 
-            href="tel:031-1234-5678" 
+            href="tel:031-268-0304" 
             className="flex items-center gap-1 text-blue-600 hover:text-blue-700"
           >
             <Phone size={18} />
@@ -251,7 +251,7 @@ export default function BusinessOrderConsultation() {
             <ul className="space-y-2 text-sm text-gray-700">
               <li className="flex items-start gap-2">
                 <span className="text-blue-600">✓</span>
-                <span>수량별 맞춤 할인 제공</span>
+                <span>수량별 맞춤 가이드 제공</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-blue-600">✓</span>
@@ -263,7 +263,7 @@ export default function BusinessOrderConsultation() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-blue-600">✓</span>
-                <span>반복 주문 시 추가 할인</span>
+                <span>기업고객 맞춤 플랜 제공</span>
               </li>
             </ul>
           </div>
@@ -275,7 +275,7 @@ export default function BusinessOrderConsultation() {
             </p>
             <div className="grid grid-cols-2 gap-3">
               <a 
-                href="tel:031-1234-5678"
+                href="tel:031-268-0304"
                 className="flex items-center justify-center gap-2 bg-white border-2 border-gray-300 hover:border-gray-400 rounded-lg py-3 font-semibold text-gray-900 transition-colors"
               >
                 <Phone size={18} />
@@ -351,7 +351,7 @@ export default function BusinessOrderConsultation() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  placeholder="010-1234-5678"
+                  placeholder="01012345678"
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none"
                 />
               </div>

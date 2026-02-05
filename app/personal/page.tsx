@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, MessageCircle, Phone, ChevronRight, Gift, Heart, Users, Baby, Briefcase } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Phone, ChevronRight, Gift, Heart, Users, Baby, Briefcase, Sparkles } from 'lucide-react';
 
 export default function PersonalGiftConsultation() {
   const [step, setStep] = useState('select');
@@ -21,13 +21,15 @@ export default function PersonalGiftConsultation() {
       icon: <Heart className="text-red-500" size={32} />,
       title: '부모님 선물',
       desc: '건강을 생각하는 효도 선물',
-      popular: true
+      popular: true,
+      highlight: true // 특별 강조용
     },
     {
       id: 'business',
       icon: <Briefcase className="text-blue-500" size={32} />,
       title: '직장 상사 / 감사 선물',
-      desc: '품격있는 비즈니스 선물'
+      desc: '품격있는 비즈니스 선물',
+      popular: true
     },
     {
       id: 'hospital',
@@ -36,11 +38,18 @@ export default function PersonalGiftConsultation() {
       desc: '빠른 쾌유를 바라는 마음'
     },
     {
+      id: 'self',
+      icon: <Sparkles className="text-pink-500" size={32} />,
+      title: '나를 위한 선물',
+      desc: '오늘도 수고한 나를 위한 건강한 보상',
+      popular: true,
+      highlight: true // 특별 강조용
+    },
+    {
       id: 'baby',
       icon: <Baby className="text-purple-500" size={32} />,
       title: '출산 / 산모 선물',
       desc: '산후조리에 좋은 선물',
-      popular: true
     },
     {
       id: 'event',
@@ -123,10 +132,23 @@ export default function PersonalGiftConsultation() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          
+
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             상담 신청이 완료되었습니다!
           </h2>
+
+          {/* ✅ 여기 로고 추가 */}
+          <div className="mt-4 mb-4">
+            <img
+              src="/logos/kgc-logo.png"
+              alt="정관장 조원점"
+              className="mx-auto w-[150px]"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              정관장 조원점 · 공식 인증 판매점
+            </p>
+          </div>
+
           <p className="text-gray-600 mb-6">
             담당자가 확인 후 빠르게 연락드리겠습니다.<br />
             (평균 응답 시간: 30분 이내)
@@ -157,7 +179,8 @@ export default function PersonalGiftConsultation() {
         </div>
       </div>
     );
-  }
+    }
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -172,7 +195,7 @@ export default function PersonalGiftConsultation() {
           </button>
           <div className="text-lg font-bold text-gray-900">개인 선물 상담</div>
           <a 
-            href="tel:031-1234-5678" 
+            href="tel:031-268-0304" 
             className="flex items-center gap-1 text-red-600 hover:text-red-700"
           >
             <Phone size={18} />
@@ -204,17 +227,25 @@ export default function PersonalGiftConsultation() {
               <button
                 key={type.id}
                 onClick={() => handleTypeSelect(type.id)}
-                className="relative bg-white border-2 border-gray-200 hover:border-red-400 rounded-xl p-6 text-left transition-all hover:shadow-md group"
+                className={`relative bg-white border-2 rounded-xl p-6 text-left transition-all hover:shadow-md group ${
+                  type.highlight 
+                    ? 'border-pink-300 bg-gradient-to-br from-pink-50 to-white hover:border-pink-400' 
+                    : 'border-gray-200 hover:border-red-400'
+                }`}
               >
                 {type.popular && (
-                  <span className="absolute top-3 right-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
-                    인기
+                  <span className={`absolute top-3 right-3 text-white text-xs font-bold px-2 py-1 rounded ${
+                    type.highlight ? 'bg-pink-500' : 'bg-red-600'
+                  }`}>
+                    {type.highlight ? '추천' : '인기'}
                   </span>
                 )}
                 <div className="mb-3">{type.icon}</div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">{type.title}</h3>
                 <p className="text-sm text-gray-600 mb-3">{type.desc}</p>
-                <div className="flex items-center text-red-600 text-sm font-semibold group-hover:translate-x-1 transition-transform">
+                <div className={`flex items-center text-sm font-semibold group-hover:translate-x-1 transition-transform ${
+                  type.highlight ? 'text-pink-600' : 'text-red-600'
+                }`}>
                   <span>선택하기</span>
                   <ChevronRight size={16} />
                 </div>
@@ -229,7 +260,7 @@ export default function PersonalGiftConsultation() {
             </p>
             <div className="grid grid-cols-2 gap-3">
               <a 
-                href="tel:031-1234-5678"
+                href="tel:031-268-0304"
                 className="flex items-center justify-center gap-2 bg-white border-2 border-gray-300 hover:border-gray-400 rounded-lg py-3 font-semibold text-gray-900 transition-colors"
               >
                 <Phone size={18} />
@@ -328,7 +359,7 @@ export default function PersonalGiftConsultation() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                placeholder="010-1234-5678"
+                placeholder="01012345678"
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-600 focus:outline-none"
               />
             </div>

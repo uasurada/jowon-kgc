@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, MessageCircle, MapPin, Clock, ChevronRight, Star, CheckCircle } from 'lucide-react';
+import { Phone, MessageCircle, MapPin, Clock, ChevronRight, CheckCircle, Award, CreditCard, Package } from 'lucide-react';
 
 export default function LandingPage() {
   return (
@@ -9,7 +9,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <div className="text-2xl font-bold text-red-700">정관장 조원점</div>
-            <div className="text-xs text-gray-600">수원 장안구 공식 대리점</div>
+            <div className="text-xs text-gray-600">수원 장안구 공식 가맹점</div>
           </div>
           <a 
             href="tel:031-268-0304" 
@@ -31,11 +31,11 @@ export default function LandingPage() {
           <div className="flex flex-wrap justify-center gap-4 mt-6 mb-8">
             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
               <CheckCircle className="text-green-600" size={18} />
-              <span className="text-sm font-medium text-gray-700">정관장 공식 대리점 20년</span>
+              <span className="text-sm font-medium text-gray-700">정관장 공식 가맹점</span>
             </div>
             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
               <CheckCircle className="text-green-600" size={18} />
-              <span className="text-sm font-medium text-gray-700">이달의 상담 완료 237건</span>
+              <span className="text-sm font-medium text-gray-700">개인/기업, 명절 선물 전문상담</span>
             </div>
             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
               <CheckCircle className="text-green-600" size={18} />
@@ -126,40 +126,64 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Social Proof */}
+      {/* Trust & Features Section (텍스트 버전) */}
       <section className="py-8 px-4 bg-white">
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-xl font-bold text-center text-gray-900 mb-6">
-            📝 최근 상담 사례
+          <h3 className="text-xl font-bold text-center text-gray-900 mb-8">
+            왜 정관장 조원점인가요?
           </h3>
 
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-              <div className="flex gap-1 mb-2">
-                {[1,2,3,4,5].map(i => (
-                  <Star key={i} size={16} className="fill-yellow-400 text-yellow-400" />
-                ))}
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* 정관장 공식 가맹점 */}
+            <div className="bg-gradient-to-br from-red-50 to-white rounded-xl p-6 border border-red-100 text-center">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Award className="text-red-600" size={24} />
               </div>
-              <p className="text-gray-800 mb-3 font-medium">
-                "설 선물 50세트, 2일 만에 완료"
-              </p>
+              <h4 className="font-bold text-gray-900 mb-2">KGC 공식 가맹점</h4>
               <p className="text-sm text-gray-600">
-                수원 ○○기업 김과장님
+                정관장 정품 보장<br />
+                믿을 수 있는 품질
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
-              <div className="flex gap-1 mb-2">
-                {[1,2,3,4,5].map(i => (
-                  <Star key={i} size={16} className="fill-yellow-400 text-yellow-400" />
-                ))}
+            {/* 간편 결제 */}
+            <div className="bg-gradient-to-br from-blue-50 to-white rounded-xl p-6 border border-blue-100 text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CreditCard className="text-blue-600" size={24} />
               </div>
-              <p className="text-gray-800 mb-3 font-medium">
-                "산모 선물 당일 배송 감사해요"
-              </p>
+              <h4 className="font-bold text-gray-900 mb-2">간편 결제 지원</h4>
               <p className="text-sm text-gray-600">
-                장안구 박○○님
+                수원페이 · 백화점상품권<br />
+                카드 · 비대면결제 · 계좌이체
               </p>
+            </div>
+
+            {/* 전국 배송 */}
+            <div className="bg-gradient-to-br from-green-50 to-white rounded-xl p-6 border border-green-100 text-center">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Package className="text-green-600" size={24} />
+              </div>
+              <h4 className="font-bold text-gray-900 mb-2">전국 배송 가능</h4>
+              <p className="text-sm text-gray-600">
+                당일/익일 배송<br />
+                안전 포장 보장
+              </p>
+            </div>
+          </div>
+
+          {/* 추가 신뢰 요소 */}
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-full border border-gray-200">
+              <CheckCircle className="text-green-600" size={16} />
+              <span className="text-sm text-gray-700">정품 인증</span>
+            </div>
+            <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-full border border-gray-200">
+              <CheckCircle className="text-green-600" size={16} />
+              <span className="text-sm text-gray-700">안전한 거래</span>
+            </div>
+            <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-full border border-gray-200">
+              <CheckCircle className="text-green-600" size={16} />
+              <span className="text-sm text-gray-700">개인정보 보호</span>
             </div>
           </div>
         </div>

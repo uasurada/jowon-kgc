@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
     template: '%s | 정관장 조원점',
   },
   
-  description: '정관장 공식 대리점 20년. 부모님 선물, 기업 단체 주문, 전국 배송. 수원시 장안구 조원동 위치. 상담 환영.',
+  description: '정관장 공식 가맹점. 부모님 선물, 기업 단체 주문, 전국 배송. 수원시 장안구 조원동 위치. 상담 환영.',
   
   keywords: [
     '정관장',
@@ -18,12 +19,16 @@ export const metadata: Metadata = {
     '수원',
     '장안구',
     '조원동',
+    '송원로',
     '홍삼',
+    '추석선물',
+    '설날선물',
+    '가정의달선물',
     '홍삼 선물',
     '부모님 선물',
     '기업 선물',
     '단체 주문',
-    '정관장 대리점',
+    '정관장 조원점',
     'KGC 조원',
     '수원 홍삼',
     '장안구 정관장',
@@ -45,7 +50,7 @@ export const metadata: Metadata = {
     url: 'https://jowon-kgc.com',
     siteName: '정관장 조원점',
     title: '정관장 조원점 | 수원 장안구 홍삼 선물 전문',
-    description: '정관장 공식 대리점 20년. 부모님 선물, 기업 단체 주문, 전국 배송 가능.',
+    description: '정관장 공식 가맹점. 부모님 선물, 기업 단체 주문, 전국 배송 가능.',
     images: [
       {
         url: '/og-image.jpg',
@@ -59,7 +64,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: '정관장 조원점 | 수원 장안구 홍삼 선물 전문',
-    description: '정관장 공식 대리점 20년. 부모님 선물, 기업 단체 주문, 전국 배송.',
+    description: '정관장 공식 가맹점. 부모님 선물, 기업 단체 주문, 전국 배송.',
     images: ['/og-image.jpg'],
   },
   
@@ -89,18 +94,54 @@ export const metadata: Metadata = {
   category: 'business',
 };
 
-// 이 부분이 빠져있었습니다!
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+  const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
+
   return (
     <html lang="ko">
+      <head>
+        {/* Google Analytics 4 */}
+        {GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}', {
+                  page_path: window.location.pathname,
+                });
+              `}
+            </Script>
+          </>
+        )}
+
+        {/* Microsoft Clarity */}
+        {CLARITY_ID && (
+          <Script id="microsoft-clarity" strategy="afterInteractive">
+            {`
+              (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", "${CLARITY_ID}");
+            `}
+          </Script>
+        )}
+      </head>
       <body className="antialiased">
         {children}
         
-        {/* 구조화 데이터 추가 */}
+        {/* 구조화 데이터 */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -110,7 +151,7 @@ export default function RootLayout({
               '@id': 'https://jowon-kgc.com',
               name: '정관장 조원점',
               alternateName: 'KGC 조원점',
-              description: '정관장 공식 대리점. 홍삼 선물, 건강 기능 식품 판매.',
+              description: '정관장 공식 가맹점. 홍삼 선물, 건강 기능 식품 판매.',
               url: 'https://jowon-kgc.com',
               telephone: '+82-31-268-0304',
               email: 'info@jowon-kgc.com',
