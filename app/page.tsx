@@ -113,7 +113,7 @@ export default function LandingPage() {
                 <span>전화 상담</span>
               </a>
               <a 
-                href="http://pf.kakao.com/_your_channel"
+                href="https://pf.kakao.com/_IrSRX/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-lg py-3 font-semibold text-gray-900 transition-colors"
@@ -261,7 +261,7 @@ export default function LandingPage() {
       {/* Floating Quick Action */}
       <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-40">
         <a
-          href="http://pf.kakao.com/_your_channel"
+          href="https://pf.kakao.com/_IrSRX/"
           target="_blank"
           rel="noopener noreferrer"
           className="w-14 h-14 bg-yellow-400 hover:bg-yellow-500 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"

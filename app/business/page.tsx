@@ -121,7 +121,7 @@ export default function BusinessOrderConsultation() {
 };
 
   const handleKakaoChat = () => {
-    window.open('http://pf.kakao.com/_your_channel', '_blank');
+    window.open('https://pf.kakao.com/_IrSRX/', '_blank');
   };
 
   if (step === 'complete') {
