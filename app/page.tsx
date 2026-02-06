@@ -9,7 +9,9 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <div className="text-2xl font-bold text-red-700">정관장 조원점</div>
-            <div className="text-xs text-gray-600">수원 장안구 공식 가맹점</div>
+            <div className="text-xs text-gray-600">
+              수원 장안구·북수원 정관장 공식 가맹점 | 홍삼 선물·상담
+            </div>
           </div>
           <a 
             href="tel:031-268-0304" 
@@ -25,21 +27,26 @@ export default function LandingPage() {
       <section className="bg-gradient-to-br from-red-50 to-white py-12 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            선물 고민,<br className="md:hidden" /> 2분이면 해결됩니다
+            정관장 홍삼 선물 상담<br className="md:hidden" /> 선물 선택이 어려우시죠?<br /> 정성을 담아 함께 고민해 드립니다
           </h1>
+
+          {/* ✅ SEO용 보강 문장 (첫 화면에 의도 키워드 자연 삽입) */}
+          <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto">
+            부모님 선물·면역력 관리·홍삼 처음 선택까지. 정관장 공식 가맹점(수원 장안구·북수원)에서<br /> 1:1 맞춤 상담을 도와드립니다.
+          </p>
           
           <div className="flex flex-wrap justify-center gap-4 mt-6 mb-8">
             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
               <CheckCircle className="text-green-600" size={18} />
-              <span className="text-sm font-medium text-gray-700">정관장 공식 가맹점</span>
+              <span className="text-sm font-medium text-gray-700">정관장 공식 가맹점(정품 보장)</span>
             </div>
             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
               <CheckCircle className="text-green-600" size={18} />
-              <span className="text-sm font-medium text-gray-700">개인/기업, 명절 선물 전문상담</span>
+              <span className="text-sm font-medium text-gray-700">부모님·직장 선물 / 기업 단체 주문 상담</span>
             </div>
             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
               <CheckCircle className="text-green-600" size={18} />
-              <span className="text-sm font-medium text-gray-700">전국 당일/익일 배송</span>
+              <span className="text-sm font-medium text-gray-700">홍삼 선물 전국 당일/익일 배송</span>
             </div>
           </div>
         </div>
@@ -48,9 +55,15 @@ export default function LandingPage() {
       {/* Main CTA Buttons */}
       <section className="py-8 px-4 bg-white">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">
+          <h2 className="text-2xl font-bold text-center text-gray-900 mb-3">
             어떤 선물을 찾으세요?
           </h2>
+
+          {/* ✅ CTA 위 SEO 보강 문장 (의도 키워드 자연 삽입) */}
+          <p className="text-sm text-gray-600 text-center mb-6">
+            수원 정관장 매장에서 홍삼 선물 추천을 빠르게 도와드립니다.<br />
+            부모님 선물, 면역력 관리, 기업 단체 주문까지 상황에 맞게 안내해드려요.
+          </p>
 
           <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
             {/* 개인 선물 버튼 */}
@@ -86,6 +99,45 @@ export default function LandingPage() {
                 <ChevronRight size={20} />
               </div>
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ✅ 질문형 섹션 (네이버 SEO에 특히 유리) */}
+      <section className="py-8 px-4 bg-gray-50">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-xl md:text-2xl font-bold text-center text-gray-900 mb-6">
+            홍삼 선물, 이런 고민이 있으신가요?
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-xl p-5 border border-gray-200">
+              <p className="font-semibold text-gray-900 mb-2">부모님 선물로 어떤 홍삼이 좋을까요?</p>
+              <p className="text-sm text-gray-600">
+                연령·건강 목표·복용 경험에 따라 추천이 달라집니다.<br /> 수원 정관장 조원점에서 1:1로 안내해드려요.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl p-5 border border-gray-200">
+              <p className="font-semibold text-gray-900 mb-2">홍삼이 처음인데 어떤 제품이 맞을까요?</p>
+              <p className="text-sm text-gray-600">
+                섭취 목적(면역력/활력/피로)과 예산에 맞춰 부담 없는 제품부터<br /> 추천해드립니다.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl p-5 border border-gray-200">
+              <p className="font-semibold text-gray-900 mb-2">기업·단체 주문은 어떻게 진행되나요?</p>
+              <p className="text-sm text-gray-600">
+                예산·수량·납품 일정에 맞춰 견적과 구성 제안을 드리고,<br /> 전국 일괄 배송도 가능합니다.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-xl p-5 border border-gray-200">
+              <p className="font-semibold text-gray-900 mb-2">수원/북수원 근처에서 바로 상담받을 수 있나요?</p>
+              <p className="text-sm text-gray-600">
+                장안구 조원동 매장 방문 상담 가능하며, 전화/카톡으로도<br /> 빠르게 상담해드립니다.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -201,23 +253,23 @@ export default function LandingPage() {
             <p className="text-gray-800 font-medium mb-2">정관장 조원점</p>
             <p className="text-sm text-gray-600 mb-3">
               경기도 수원시 장안구 송원로 81 메가플러스 A동 111호<br />
-              주차 가능 · 방문 상담 환영
+              주차 가능 · 방문 상담 환영<br />
+              수원·북수원 인근 홍삼 선물/면역력 상담은 정관장 조원점에서 도와드립니다.
             </p>
 
             {/* ✅ 지도 미리보기 (absolute 제거: 무조건 보임) */}
-           {/* ✅ 지도 바로 표시 (Google Maps Embed) */}
-<div className="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white">
-  <iframe
-    title="정관장 조원점 지도"
-    src="https://www.google.com/maps?q=37.302031,127.009303&z=16&output=embed"
-    width="100%"
-    height="280"
-    loading="lazy"
-    referrerPolicy="no-referrer-when-downgrade"
-    className="block w-full"
-  />
-</div>
-
+            {/* ✅ 지도 바로 표시 (Google Maps Embed) */}
+            <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white">
+              <iframe
+                title="정관장 조원점 지도"
+                src="https://www.google.com/maps?q=37.302031,127.009303&z=16&output=embed"
+                width="100%"
+                height="280"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="block w-full"
+              />
+            </div>
 
             {/* ✅ 액션 버튼 */}
             <div className="mt-3 flex flex-wrap gap-2">

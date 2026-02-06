@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, MessageCircle, Phone, ChevronRight, Building, Gift, Users, Award } from 'lucide-react';
 import PrivacyConsent from '@/components/PrivacyConsent';
 
+
 export default function BusinessOrderConsultation() {
   const [step, setStep] = useState('select');
   const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
@@ -20,8 +21,9 @@ export default function BusinessOrderConsultation() {
   });
   const [privacyConsent, setPrivacyConsent] = useState(false);
 
-    // ✅ 이거 추가
+  // ✅ 이거 추가
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const purposes = [
     {
       id: 'employee',
@@ -69,56 +71,55 @@ export default function BusinessOrderConsultation() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-
   const handleSubmit = async () => {
-  if (!formData.companyName || !formData.contactName || !formData.phone || !formData.quantity || !formData.budgetPerUnit) {
-    alert('필수 항목을 입력해주세요');
-    return;
-  }
-  if (!privacyConsent) {
-  alert('개인정보 수집 및 이용에 동의해 주세요.');
-  return;
-  }
-  setIsSubmitting(true);
-
-  try {
-    const response = await fetch('/api/submit', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        formType: 'business',
-        formData: {
-          companyName: formData.companyName,
-          contactName: formData.contactName,
-          phone: formData.phone,
-          email: formData.email,
-          purpose: selectedPurpose,
-          quantity: formData.quantity,
-          budgetPerUnit: formData.budgetPerUnit,
-          deliveryType: formData.deliveryType,
-          desiredDate: formData.desiredDate,
-          message: formData.message,
-        },
-      }),
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      console.log('✅ 견적 문의 완료:', result.id);
-      setStep('complete');
-    } else {
-      alert('견적 문의 중 오류가 발생했습니다: ' + result.error);
+    if (!formData.companyName || !formData.contactName || !formData.phone || !formData.quantity || !formData.budgetPerUnit) {
+      alert('필수 항목을 입력해주세요');
+      return;
     }
-  } catch (error) {
-    console.error('Submit error:', error);
-    alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    if (!privacyConsent) {
+      alert('개인정보 수집 및 이용에 동의해 주세요.');
+      return;
+    }
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          formType: 'business',
+          formData: {
+            companyName: formData.companyName,
+            contactName: formData.contactName,
+            phone: formData.phone,
+            email: formData.email,
+            purpose: selectedPurpose,
+            quantity: formData.quantity,
+            budgetPerUnit: formData.budgetPerUnit,
+            deliveryType: formData.deliveryType,
+            desiredDate: formData.desiredDate,
+            message: formData.message,
+          },
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('✅ 견적 문의 완료:', result.id);
+        setStep('complete');
+      } else {
+        alert('견적 문의 중 오류가 발생했습니다: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Submit error:', error);
+      alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleKakaoChat = () => {
     window.open('https://pf.kakao.com/_IrSRX/', '_blank');
@@ -222,11 +223,14 @@ export default function BusinessOrderConsultation() {
             <p className="text-center text-sm text-gray-600">주문 용도 선택</p>
           </div>
 
+          {/* ✅ H1에 핵심 키워드 자연 삽입 */}
           <h1 className="text-2xl font-bold text-center text-gray-900 mb-3">
-            어떤 용도의 선물인가요?
+            정관장 홍삼 기업·단체 주문 상담
           </h1>
+
+          {/* ✅ 설명 문구 보강 (네이버용 의도 키워드) */}
           <p className="text-center text-gray-600 mb-8">
-            용도에 맞는 최적의 구성과 견적을 제안드립니다
+            직원 선물·거래처 선물·행사 답례품 등 수량과 예산에 맞춰<br /> 구성안과 견적을 빠르게 제안드립니다.
           </p>
 
           <div className="grid md:grid-cols-2 gap-4 mb-8">
@@ -272,6 +276,11 @@ export default function BusinessOrderConsultation() {
                 <span>기업고객 맞춤 플랜 제공</span>
               </li>
             </ul>
+
+            {/* ✅ 짧은 SEO 보강 문장 (레이아웃/동작 영향 없음) */}
+            <p className="mt-3 text-xs text-gray-600">
+              수원 장안구·북수원 정관장 조원점에서 기업 홍삼 단체 주문/견적 상담을 도와드립니다.
+            </p>
           </div>
 
           <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 border border-yellow-300 rounded-xl p-6">
@@ -489,7 +498,6 @@ export default function BusinessOrderConsultation() {
                 </>
               )}
             </button>
-
 
             <p className="text-xs text-center text-gray-500">
               제출하시면 전담 매니저가 1시간 내로 구성안을 제안드립니다

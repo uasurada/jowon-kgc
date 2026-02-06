@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, MessageCircle, Phone, ChevronRight, Gift, Heart, Users, Baby, Briefcase, Sparkles } from 'lucide-react';
 import PrivacyConsent from '@/components/PrivacyConsent';
 
+
 export default function PersonalGiftConsultation() {
   const [step, setStep] = useState('select');
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -185,7 +186,7 @@ export default function PersonalGiftConsultation() {
         </div>
       </div>
     );
-    }
+  }
 
 
   return (
@@ -221,11 +222,14 @@ export default function PersonalGiftConsultation() {
             <p className="text-center text-sm text-gray-600">선물 대상 선택</p>
           </div>
 
+          {/* ✅ H1에 핵심 키워드 자연 삽입 */}
           <h1 className="text-2xl font-bold text-center text-gray-900 mb-3">
-            어떤 분께 드릴 선물인가요?
+            정관장 홍삼 개인 선물 상담
           </h1>
+
+          {/* ✅ 설명 문구 보강 (네이버용 의도 키워드) */}
           <p className="text-center text-gray-600 mb-8">
-            대상에 맞는 최적의 상품을 추천해드립니다
+            부모님 선물·면역력 관리·홍삼이 처음인 분까지, 예산과 목적에 맞는 최적의 구성을 추천해드립니다.
           </p>
 
           <div className="grid md:grid-cols-2 gap-4">
@@ -280,6 +284,11 @@ export default function PersonalGiftConsultation() {
                 <span>카톡 상담</span>
               </button>
             </div>
+
+            {/* ✅ 짧은 SEO 보강 문장 (레이아웃/동작 영향 없음) */}
+            <p className="mt-3 text-xs text-gray-600">
+              수원 장안구·북수원 정관장 조원점에서 홍삼 선물 상담을 도와드립니다.
+            </p>
           </div>
         </div>
       )}
@@ -402,7 +411,6 @@ export default function PersonalGiftConsultation() {
                 </>
               )}
             </button>
-
 
             <p className="text-xs text-center text-gray-500">
               신청하시면 담당자가 30분 내로 연락드립니다
