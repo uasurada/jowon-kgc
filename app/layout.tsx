@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     description: '정관장 공식 가맹점. 부모님 선물, 기업 단체 주문, 전국 배송 가능.',
     images: [
       {
-        url: '/og-image.png',
+        url: '/og-image_v1.png',
         width: 1200,
         height: 630,
         alt: '정관장 조원점',
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: '정관장 조원점 | 수원 장안구 홍삼 선물 전문',
     description: '정관장 공식 가맹점. 부모님 선물, 기업 단체 주문, 전국 배송.',
-    images: ['/og-image.png'],
+    images: ['/og-image_v1.png'],
   },
   
   robots: {
