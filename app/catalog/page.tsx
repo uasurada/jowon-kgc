@@ -23,7 +23,7 @@ export default function CatalogPage() {
               </h1>
 
               <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-                가격 노출 없이, 선물 구성과 추천 흐름을 확인하실 수 있어요.
+                선물 구성과 제품을 확인하실 수 있어요.
                 <br />
                 원하시면 카톡/전화로 목적에 맞춰 빠르게 추천해드립니다.
               </p>
