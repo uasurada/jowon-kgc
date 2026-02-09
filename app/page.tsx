@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, MessageCircle, MapPin, Clock, ChevronRight, CheckCircle, Award, CreditCard, Package, Navigation, ExternalLink } from 'lucide-react';
+import { Phone, MessageCircle, MapPin, Clock, ChevronRight, CheckCircle, Award, CreditCard, Package, Navigation, ExternalLink, BookOpen, Sparkles } from 'lucide-react';
 
 export default function LandingPage() {
   return (
@@ -49,6 +49,49 @@ export default function LandingPage() {
               <span className="text-sm font-medium text-gray-700">홍삼 선물 전국 당일/익일 배송</span>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 🎁 NEW: 카탈로그 배너 (히어로 바로 아래) */}
+      <section className="py-6 px-4 bg-white border-y border-gray-200">
+        <div className="max-w-4xl mx-auto">
+          <a
+            href="/catalog"
+            className="group relative block bg-gradient-to-r from-red-600 to-red-700 rounded-2xl p-6 overflow-hidden hover:shadow-xl transition-all"
+          >
+            {/* 배경 패턴 */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-white rounded-full translate-y-1/2 -translate-x-1/2"></div>
+            </div>
+
+            {/* 컨텐츠 */}
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center flex-shrink-0">
+                  <BookOpen className="text-red-600" size={28} />
+                </div>
+                <div className="text-white">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Sparkles size={16} />
+                    <span className="text-xs font-semibold bg-yellow-400 text-gray-900 px-2 py-1 rounded">
+                      NEW
+                    </span>
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold mb-1">
+                    2026 설날 선물 카탈로그
+                  </h3>
+                  <p className="text-sm text-red-100">
+                    예산별 추천 제품 한눈에 보기
+                  </p>
+                </div>
+              </div>
+              <div className="hidden md:flex items-center gap-2 text-white font-semibold group-hover:translate-x-2 transition-transform">
+                <span>카탈로그 보기</span>
+                <ChevronRight size={24} />
+              </div>
+            </div>
+          </a>
         </div>
       </section>
 
