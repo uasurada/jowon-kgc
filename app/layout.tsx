@@ -1,6 +1,13 @@
 import type { Metadata } from 'next';
+import { Noto_Sans_KR } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
+
+const notoSansKR = Noto_Sans_KR({
+  weight: ['400', '500', '700', '900'],
+  display: 'swap',
+  preload: false,
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://jowon-kgc.com'),
@@ -90,7 +97,9 @@ export const metadata: Metadata = {
   },
 
   verification: {
-    google: 'your-google-verification-code',
+    ...(process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION
+      ? { google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION }
+      : {}),
     other: {
       'naver-site-verification': '8156acdfc5e377be3d7cce27e313460757452b89',
     },
@@ -103,6 +112,59 @@ export const metadata: Metadata = {
   category: 'business',
 };
 
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Store',
+    '@id': 'https://jowon-kgc.com/#store',
+    name: '정관장 조원점',
+    alternateName: 'KGC 조원점',
+    description:
+      '정관장 공식 가맹점. 홍삼 선물, 부모님 건강 상담, 기업 단체 주문 및 전국 배송.',
+    url: 'https://jowon-kgc.com',
+    telephone: '+82-31-268-0304',
+    email: 'info@jowon-kgc.com',
+    image: 'https://jowon-kgc.com/og-image_v1.png',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '송원로 81 메가플러스 A동 111호',
+      addressLocality: '수원시',
+      addressRegion: '경기도',
+      postalCode: '16295',
+      addressCountry: 'KR',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 37.302031,
+      longitude: 127.009303,
+    },
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        opens: '10:00',
+        closes: '20:00',
+      },
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: 'Saturday',
+        opens: '10:00',
+        closes: '20:00',
+      },
+    ],
+    priceRange: '₩₩',
+    areaServed: ['수원', '수원시 장안구', '북수원'],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': 'https://jowon-kgc.com/#website',
+    url: 'https://jowon-kgc.com',
+    name: '정관장 조원점',
+    inLanguage: 'ko-KR',
+  },
+];
+
 export default function RootLayout({
   children,
 }: {
@@ -112,9 +174,8 @@ export default function RootLayout({
   const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
 
   return (
-    <html lang="ko">
+    <html lang="ko" className={notoSansKR.className}>
       <head>
-        {/* Google Analytics 4 */}
         {GA_ID && (
           <>
             <Script
@@ -134,7 +195,6 @@ export default function RootLayout({
           </>
         )}
 
-        {/* Microsoft Clarity */}
         {CLARITY_ID && (
           <Script id="microsoft-clarity" strategy="afterInteractive">
             {`
@@ -147,71 +207,13 @@ export default function RootLayout({
           </Script>
         )}
       </head>
-      <body className="antialiased">
+      <body>
         {children}
 
-        {/* 구조화 데이터 */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
-              {
-                '@context': 'https://schema.org',
-                '@type': 'Store',
-                '@id': 'https://jowon-kgc.com/#store',
-                name: '정관장 조원점',
-                alternateName: 'KGC 조원점',
-                description:
-                  '정관장 공식 가맹점. 홍삼 선물, 부모님 건강 상담, 기업 단체 주문 및 전국 배송.',
-                url: 'https://jowon-kgc.com',
-                telephone: '+82-31-268-0304',
-                email: 'info@jowon-kgc.com',
-                image: 'https://jowon-kgc.com/og-image_v1.png',
-                address: {
-                  '@type': 'PostalAddress',
-                  streetAddress: '송원로 81 메가플러스 A동 111호',
-                  addressLocality: '수원시',
-                  addressRegion: '경기도',
-                  postalCode: '16295',
-                  addressCountry: 'KR',
-                },
-                geo: {
-                  '@type': 'GeoCoordinates',
-                  latitude: 37.302031,
-                  longitude: 127.009303,
-                },
-                openingHoursSpecification: [
-                  {
-                    '@type': 'OpeningHoursSpecification',
-                    dayOfWeek: [
-                      'Monday',
-                      'Tuesday',
-                      'Wednesday',
-                      'Thursday',
-                      'Friday',
-                    ],
-                    opens: '10:00',
-                    closes: '20:00',
-                  },
-                  {
-                    '@type': 'OpeningHoursSpecification',
-                    dayOfWeek: 'Saturday',
-                    opens: '10:00',
-                    closes: '20:00',
-                  },
-                ],
-                priceRange: '₩₩',
-                areaServed: ['수원', '수원시 장안구', '북수원'],
-              },
-              {
-                '@context': 'https://schema.org',
-                '@type': 'WebSite',
-                '@id': 'https://jowon-kgc.com/#website',
-                url: 'https://jowon-kgc.com',
-                name: '정관장 조원점',
-                inLanguage: 'ko-KR',
-              },
-            ]),
+            __html: JSON.stringify(structuredData),
           }}
         />
       </body>

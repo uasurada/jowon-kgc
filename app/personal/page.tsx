@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { ArrowLeft, MessageCircle, Phone, ChevronRight, Gift, Heart, Users, Baby, Briefcase, Sparkles } from 'lucide-react';
 import PrivacyConsent from '@/components/PrivacyConsent';
 
@@ -113,7 +114,6 @@ export default function PersonalGiftConsultation() {
       const result = await response.json();
 
       if (result.success) {
-        console.log('✅ 문의 접수 완료:', result.id);
         setStep('complete');
       } else {
         alert('문의 접수 중 오류가 발생했습니다: ' + result.error);
@@ -144,12 +144,13 @@ export default function PersonalGiftConsultation() {
             상담 신청이 완료되었습니다!
           </h2>
 
-          {/* ✅ 여기 로고 추가 */}
           <div className="mt-4 mb-4">
-            <img
+            <Image
               src="/logos/kgc-logo.png"
               alt="정관장 조원점"
-              className="mx-auto w-[150px]"
+              width={150}
+              height={50}
+              className="mx-auto"
             />
             <p className="text-xs text-gray-500 mt-1">
               정관장 조원점 · 공식 인증 판매점
