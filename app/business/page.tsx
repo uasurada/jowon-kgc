@@ -1,79 +1,61 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, MessageCircle, Phone, ChevronRight, Building, Gift, Users, Award } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Phone, BookOpen } from 'lucide-react';
 import PrivacyConsent from '@/components/PrivacyConsent';
 
+const PURPOSES = [
+  { id: 'employee', label: '직원 선물' },
+  { id: 'client',   label: '거래처 선물' },
+  { id: 'event',    label: '행사 답례품' },
+  { id: 'other',    label: '기타' },
+];
+
+const QUANTITIES = [
+  { value: '30~49세트',    sub: '소규모' },
+  { value: '50~99세트',    sub: '중규모', popular: true },
+  { value: '100~199세트',  sub: '대규모' },
+  { value: '200세트 이상', sub: '대량 주문' },
+];
+
+const BUDGETS = [
+  { value: '3~5만원대' },
+  { value: '5~10만원대',  popular: true },
+  { value: '10~20만원대' },
+  { value: '20만원 이상' },
+];
+
+const SERVICES = [
+  { icon: '📄', title: '세금계산서',    desc: '법인 지출 처리 완비' },
+  { icon: '💳', title: '법인카드 결제', desc: '모든 법인카드 가능' },
+  { icon: '🚚', title: '일괄·개별 배송', desc: '전국 어디든 배송' },
+  { icon: '🏷️', title: '기업 특별가',  desc: '수량별 맞춤 공급가' },
+  { icon: '📋', title: '견적서 제공',   desc: '결재용 견적서 발행' },
+  { icon: '⚡', title: '1시간 내 응답', desc: '빠른 구성안 제안' },
+];
 
 export default function BusinessOrderConsultation() {
-  const [step, setStep] = useState('select');
-  const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     companyName: '',
     contactName: '',
     phone: '',
-    email: '',
+    purpose: '',
     quantity: '',
     budgetPerUnit: '',
-    deliveryType: 'bulk',
-    desiredDate: '',
-    message: ''
+    message: '',
   });
   const [privacyConsent, setPrivacyConsent] = useState(false);
-
-  // ✅ 이거 추가
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-  const purposes = [
-    {
-      id: 'employee',
-      icon: <Users className="text-blue-500" size={32} />,
-      title: '직원 선물',
-      desc: '명절, 창립기념일, 직원 복지',
-      popular: true
-    },
-    {
-      id: 'client',
-      icon: <Award className="text-purple-500" size={32} />,
-      title: '거래처 선물',
-      desc: '비즈니스 감사 선물, VIP 고객',
-      popular: true
-    },
-    {
-      id: 'event',
-      icon: <Gift className="text-green-500" size={32} />,
-      title: '행사 답례품',
-      desc: '세미나, 컨퍼런스, 기념품'
-    },
-    {
-      id: 'other',
-      icon: <Building className="text-orange-500" size={32} />,
-      title: '기타 단체 주문',
-      desc: '협회, 동호회, 각종 단체'
-    }
-  ];
-
-  const budgetOptions = [
-    '3~5만원대 구성',
-    '5~10만원대 구성',
-    '10~20만원대 구성',
-    '20~50만원대 구성',
-    '50만원 이상'
-  ];
-
-  const handlePurposeSelect = (purpose: string) => {
-    setSelectedPurpose(purpose);
-    setStep('form');
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
     if (!formData.companyName || !formData.contactName || !formData.phone || !formData.quantity || !formData.budgetPerUnit) {
-      alert('필수 항목을 입력해주세요');
+      alert('필수 항목을 모두 입력해주세요');
       return;
     }
     if (!privacyConsent) {
@@ -81,51 +63,28 @@ export default function BusinessOrderConsultation() {
       return;
     }
     setIsSubmitting(true);
-
     try {
-      const response = await fetch('/api/submit', {
+      const res = await fetch('/api/submit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          formType: 'business',
-          formData: {
-            companyName: formData.companyName,
-            contactName: formData.contactName,
-            phone: formData.phone,
-            email: formData.email,
-            purpose: selectedPurpose,
-            quantity: formData.quantity,
-            budgetPerUnit: formData.budgetPerUnit,
-            deliveryType: formData.deliveryType,
-            desiredDate: formData.desiredDate,
-            message: formData.message,
-          },
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ formType: 'business', formData }),
       });
-
-      const result = await response.json();
-
-      if (result.success) {
-        console.log('✅ 견적 문의 완료:', result.id);
-        setStep('complete');
-      } else {
-        alert('견적 문의 중 오류가 발생했습니다: ' + result.error);
-      }
-    } catch (error) {
-      console.error('Submit error:', error);
+      const result = await res.json();
+      if (result.success) setSubmitted(true);
+      else alert('오류가 발생했습니다: ' + result.error);
+    } catch {
       alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleKakaoChat = () => {
-    window.open('https://pf.kakao.com/_IrSRX/', '_blank');
-  };
+  const isValid = !!(
+    formData.companyName && formData.contactName && formData.phone &&
+    formData.quantity && formData.budgetPerUnit && privacyConsent
+  );
 
-  if (step === 'complete') {
+  if (submitted) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
@@ -134,57 +93,29 @@ export default function BusinessOrderConsultation() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            견적 문의가 접수되었습니다!
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">견적 문의가 접수되었습니다!</h2>
           <p className="text-gray-600 mb-6">
-            전담 매니저가 2~3가지 구성안을<br />
-            빠르게 제안드리겠습니다.<br />
-            (평균 응답 시간: 1시간 이내)
+            전담 매니저가 2~3가지 구성안을 빠르게 제안드립니다.<br />
+            <span className="text-blue-600 font-semibold">평균 응답 시간: 1시간 이내</span>
           </p>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-            <h3 className="font-semibold text-gray-900 mb-2">📋 다음 단계</h3>
-            <ul className="text-sm text-gray-700 text-left space-y-1">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4 text-left">
+            <p className="font-semibold text-gray-900 mb-2 text-sm">📋 다음 단계</p>
+            <ol className="text-sm text-gray-700 space-y-1">
               <li>1. 견적서 및 구성안 발송 (1시간 내)</li>
               <li>2. 상세 상담 및 조율</li>
               <li>3. 주문 확정 및 제작</li>
               <li>4. 납품 및 배송</li>
-            </ul>
+            </ol>
           </div>
-
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-            <p className="text-sm text-gray-700 font-medium mb-2">
-              💬 급하신가요?
-            </p>
-            <p className="text-xs text-gray-600 mb-3">
-              담당자와 바로 상담하실 수 있습니다
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <a
-                href="tel:031-268-0304"
-                className="flex items-center justify-center gap-1 bg-white border border-gray-300 hover:border-gray-400 rounded-lg py-2 text-sm font-semibold text-gray-900 transition-colors"
-              >
-                <Phone size={16} />
-                <span>전화</span>
-              </a>
-              <button
-                onClick={handleKakaoChat}
-                className="flex items-center justify-center gap-1 bg-yellow-400 hover:bg-yellow-500 rounded-lg py-2 text-sm font-semibold text-gray-900 transition-colors"
-              >
-                <MessageCircle size={16} />
-                <span>카톡</span>
-              </button>
-            </div>
+          <div className="grid grid-cols-2 gap-2 mb-5">
+            <a href="tel:031-268-0304" className="flex items-center justify-center gap-1.5 bg-white border border-gray-300 hover:border-gray-400 rounded-xl py-3 text-sm font-semibold text-gray-900 transition-colors">
+              <Phone size={15} />전화
+            </a>
+            <button onClick={() => window.open('https://pf.kakao.com/_IrSRX/', '_blank')} className="flex items-center justify-center gap-1.5 bg-yellow-400 hover:bg-yellow-500 rounded-xl py-3 text-sm font-semibold text-gray-900 transition-colors">
+              <MessageCircle size={15} />카톡
+            </button>
           </div>
-
-          <a
-            href="/"
-            className="text-sm text-gray-600 hover:text-gray-900 font-medium"
-          >
-            홈으로 돌아가기
-          </a>
+          <a href="/" className="text-sm text-gray-500 hover:text-gray-700">홈으로 돌아가기</a>
         </div>
       </div>
     );
@@ -193,318 +124,256 @@ export default function BusinessOrderConsultation() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <button 
-            onClick={() => step === 'form' ? setStep('select') : window.history.back()}
-            className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
-          >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <button onClick={() => window.history.back()} className="flex items-center gap-2 text-gray-700 hover:text-gray-900">
             <ArrowLeft size={20} />
             <span className="font-medium">뒤로</span>
           </button>
-          <div className="text-lg font-bold text-gray-900">기업 주문 상담</div>
-          <a 
-            href="tel:031-268-0304" 
-            className="flex items-center gap-1 text-blue-600 hover:text-blue-700"
-          >
+          <span className="text-base font-bold text-gray-900">기업 주문 상담</span>
+          <a href="tel:031-268-0304" className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700">
             <Phone size={18} />
-            <span className="text-sm font-semibold">전화</span>
+            <span className="text-sm font-semibold hidden sm:inline">031-268-0304</span>
+            <span className="text-sm font-semibold sm:hidden">전화</span>
           </a>
         </div>
       </header>
 
-      {step === 'select' && (
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
-              <div className="w-16 h-1 bg-gray-300"></div>
-              <div className="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-bold">2</div>
-            </div>
-            <p className="text-center text-sm text-gray-600">주문 용도 선택</p>
-          </div>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 lg:py-10">
+        <div className="lg:grid lg:grid-cols-[1fr_300px] lg:gap-10 lg:items-start">
 
-          {/* ✅ H1에 핵심 키워드 자연 삽입 */}
-          <h1 className="text-2xl font-bold text-center text-gray-900 mb-3">
-            정관장 홍삼 기업·단체 주문 상담
-          </h1>
+          {/* ── 폼 영역 ── */}
+          <div>
+            <h1 className="text-2xl font-black text-gray-900 mb-1">기업·단체 주문 견적 문의</h1>
+            <p className="text-sm text-gray-500 mb-6 break-keep">필수 정보만 입력하시면 1시간 내 맞춤 견적을 보내드립니다</p>
 
-          {/* ✅ 설명 문구 보강 (네이버용 의도 키워드) */}
-          <p className="text-center text-gray-600 mb-8">
-            직원 선물·거래처 선물·행사 답례품 등 수량과 예산에 맞춰<br /> 구성안과 견적을 빠르게 제안드립니다.
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-4 mb-8">
-            {purposes.map((purpose) => (
-              <button
-                key={purpose.id}
-                onClick={() => handlePurposeSelect(purpose.id)}
-                className="relative bg-white border-2 border-gray-200 hover:border-blue-400 rounded-xl p-6 text-left transition-all hover:shadow-md group"
-              >
-                {purpose.popular && (
-                  <span className="absolute top-3 right-3 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
-                    인기
-                  </span>
-                )}
-                <div className="mb-3">{purpose.icon}</div>
-                <h3 className="text-lg font-bold text-gray-900 mb-1">{purpose.title}</h3>
-                <p className="text-sm text-gray-600 mb-3">{purpose.desc}</p>
-                <div className="flex items-center text-blue-600 text-sm font-semibold group-hover:translate-x-1 transition-transform">
-                  <span>선택하기</span>
-                  <ChevronRight size={16} />
+            {/* 모바일 전용 배지 */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6 lg:hidden">
+              {[
+                { icon: '📄', label: '세금계산서' },
+                { icon: '💳', label: '법인카드' },
+                { icon: '🏷️', label: '기업 특별가' },
+                { icon: '⚡', label: '1시간 응답' },
+              ].map((b) => (
+                <div key={b.label} className="flex flex-col items-center bg-white border border-gray-200 rounded-xl py-3 px-1 text-center shadow-sm">
+                  <span className="text-lg mb-0.5">{b.icon}</span>
+                  <span className="text-[10px] font-semibold text-gray-700">{b.label}</span>
                 </div>
-              </button>
-            ))}
-          </div>
-
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 mb-6">
-            <h3 className="font-bold text-gray-900 mb-3">🏢 기업 고객 특별 혜택</h3>
-            <ul className="space-y-2 text-sm text-gray-700">
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600">✓</span>
-                <span>수량별 맞춤 가이드 제공</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600">✓</span>
-                <span>일괄 배송 / 개별 배송 모두 가능</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600">✓</span>
-                <span>세금계산서 발행 가능</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600">✓</span>
-                <span>기업고객 맞춤 플랜 제공</span>
-              </li>
-            </ul>
-
-            {/* ✅ 짧은 SEO 보강 문장 (레이아웃/동작 영향 없음) */}
-            <p className="mt-3 text-xs text-gray-600">
-              수원 장안구·북수원 정관장 조원점에서 기업 홍삼 단체 주문/견적 상담을 도와드립니다.
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 border border-yellow-300 rounded-xl p-6">
-            <p className="font-semibold text-gray-900 mb-2">💬 전담 매니저 직접 상담</p>
-            <p className="text-sm text-gray-600 mb-4">
-              복잡한 요구사항도 빠르게 해결해드립니다
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <a 
-                href="tel:031-268-0304"
-                className="flex items-center justify-center gap-2 bg-white border-2 border-gray-300 hover:border-gray-400 rounded-lg py-3 font-semibold text-gray-900 transition-colors"
-              >
-                <Phone size={18} />
-                <span>전화 상담</span>
-              </a>
-              <button
-                onClick={handleKakaoChat}
-                className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-lg py-3 font-semibold text-gray-900 transition-colors"
-              >
-                <MessageCircle size={18} />
-                <span>카톡 상담</span>
-              </button>
+              ))}
             </div>
-          </div>
-        </div>
-      )}
 
-      {step === 'form' && (
-        <div className="max-w-2xl mx-auto px-4 py-8">
-          <div className="mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">✓</div>
-              <div className="w-16 h-1 bg-blue-600"></div>
-              <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
-            </div>
-            <p className="text-center text-sm text-gray-600">견적 정보 입력</p>
-          </div>
+            <div className="space-y-5">
 
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-            <p className="text-sm text-gray-800">
-              <span className="font-semibold">선택한 용도:</span> {purposes.find(p => p.id === selectedPurpose)?.title}
-            </p>
-          </div>
-
-          <div className="space-y-5">
-            <div className="grid md:grid-cols-2 gap-4">
+              {/* 회사 · 담당자 */}
               <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  회사명 *
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
+                  회사 · 담당자 <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  name="companyName"
-                  value={formData.companyName}
-                  onChange={handleInputChange}
-                  placeholder="(주)회사명"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    name="companyName"
+                    value={formData.companyName}
+                    onChange={handleChange}
+                    placeholder="(주)회사명"
+                    className="flex-1 px-4 py-3.5 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none placeholder:text-gray-400"
+                  />
+                  <input
+                    type="text"
+                    name="contactName"
+                    value={formData.contactName}
+                    onChange={handleChange}
+                    placeholder="담당자명"
+                    className="w-[120px] px-3 py-3.5 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none placeholder:text-gray-400"
+                  />
+                </div>
               </div>
 
+              {/* 연락처 */}
               <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  담당자명 *
-                </label>
-                <input
-                  type="text"
-                  name="contactName"
-                  value={formData.contactName}
-                  onChange={handleInputChange}
-                  placeholder="홍길동"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  연락처 *
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
+                  연락처 <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="tel"
                   name="phone"
                   value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="01012345678"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none"
+                  onChange={handleChange}
+                  placeholder="010-0000-0000"
+                  autoComplete="tel"
+                  className="w-full sm:max-w-xs px-4 py-3.5 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none placeholder:text-gray-400"
                 />
+                <p className="mt-1.5 text-xs text-gray-400">견적 안내 목적으로만 사용됩니다</p>
               </div>
 
+              {/* 주문 용도 (선택) */}
               <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  이메일 (선택)
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
+                  주문 용도 <span className="text-gray-400 font-normal text-xs ml-1">(선택)</span>
                 </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="email@company.com"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  수량 (대략) *
-                </label>
-                <input
-                  type="text"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleInputChange}
-                  placeholder="예: 50개, 100개"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  1인당 예산 *
-                </label>
-                <select
-                  name="budgetPerUnit"
-                  value={formData.budgetPerUnit}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none"
-                >
-                  <option value="">선택해주세요</option>
-                  {budgetOptions.map(option => (
-                    <option key={option} value={option}>{option}</option>
+                <div className="flex flex-wrap gap-2">
+                  {PURPOSES.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, purpose: prev.purpose === p.id ? '' : p.id }))}
+                      className={`px-4 py-2 rounded-full border text-sm font-medium transition-all ${
+                        formData.purpose === p.id
+                          ? 'border-blue-600 bg-blue-600 text-white'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-blue-400'
+                      }`}
+                    >
+                      {p.label}
+                    </button>
                   ))}
-                </select>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                배송 방식
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, deliveryType: 'bulk' }))}
-                  className={`py-3 px-4 rounded-lg border-2 font-medium transition-all ${
-                    formData.deliveryType === 'bulk'
-                      ? 'border-blue-600 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
-                >
-                  일괄 배송
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, deliveryType: 'individual' }))}
-                  className={`py-3 px-4 rounded-lg border-2 font-medium transition-all ${
-                    formData.deliveryType === 'individual'
-                      ? 'border-blue-600 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
-                >
-                  개별 배송
-                </button>
+              {/* 주문 수량 */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
+                  주문 수량 <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {QUANTITIES.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, quantity: opt.value }))}
+                      className={`relative flex flex-col items-center justify-center py-3.5 rounded-xl border-2 transition-all min-h-[64px] ${
+                        formData.quantity === opt.value
+                          ? 'border-blue-600 bg-blue-50 text-blue-700'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'
+                      }`}
+                    >
+                      {opt.popular && (
+                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">인기</span>
+                      )}
+                      <span className="text-sm font-bold">{opt.value}</span>
+                      <span className="text-xs text-gray-400 mt-0.5">{opt.sub}</span>
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-blue-600 mt-2 font-medium">🏷️ 30세트 이상부터 기업 특별가 · 수량 많을수록 세트당 단가 ↓</p>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
-                {formData.deliveryType === 'bulk' ? '한 곳으로 일괄 배송' : '각 수령인에게 개별 배송'}
-              </p>
-            </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                희망 납기일 (선택)
-              </label>
-              <input
-                type="date"
-                name="desiredDate"
-                value={formData.desiredDate}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none"
-              />
-            </div>
+              {/* 1인당 예산 */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
+                  1인당 예산 <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {BUDGETS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, budgetPerUnit: opt.value }))}
+                      className={`relative flex items-center justify-center py-3.5 rounded-xl border-2 transition-all min-h-[52px] text-sm font-medium ${
+                        formData.budgetPerUnit === opt.value
+                          ? 'border-blue-600 bg-blue-50 text-blue-700'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'
+                      }`}
+                    >
+                      {opt.popular && (
+                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">인기</span>
+                      )}
+                      {opt.value}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
-                추가 요청사항 (선택)
-              </label>
-              <textarea
-                name="message"
-                value={formData.message}
-                onChange={handleInputChange}
-                placeholder="특별한 요청사항이나 문의사항을 입력해주세요"
-                rows={4}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none resize-none"
-              />
-            </div>
-            
-            <PrivacyConsent checked={privacyConsent} onChange={setPrivacyConsent} className="mt-4" />
-            
-            <button
-              onClick={handleSubmit}
-              disabled={isSubmitting || !privacyConsent}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>전송 중...</span>
-                </>
-              ) : (
-                <>
-                  <span>견적 문의하기</span>
-                  <ChevronRight size={20} />
-                </>
-              )}
-            </button>
+              {/* 추가 요청사항 */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 mb-2">
+                  추가 요청사항 <span className="text-gray-400 font-normal text-xs ml-1">(선택)</span>
+                </label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="납기 일정, 포장 방식, 기타 요청사항을 적어주세요"
+                  rows={3}
+                  className="w-full px-4 py-3.5 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none placeholder:text-gray-400"
+                />
+              </div>
 
-            <p className="text-xs text-center text-gray-500">
-              제출하시면 전담 매니저가 1시간 내로 구성안을 제안드립니다
-            </p>
+              <PrivacyConsent checked={privacyConsent} onChange={setPrivacyConsent} />
+
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting || !isValid}
+                className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all text-base min-h-[56px] flex items-center justify-center"
+              >
+                {isSubmitting ? (
+                  <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />전송 중...</>
+                ) : '무료 견적 신청하기 →'}
+              </button>
+              <p className="text-xs text-center text-gray-400">⚡ 1시간 내 구성안과 견적을 보내드립니다 · 세금계산서 발행 가능</p>
+
+              {/* 모바일 전용 직접 상담 */}
+              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 lg:hidden">
+                <p className="text-sm font-semibold text-gray-900 mb-3">💬 바로 상담하실 분</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <a href="tel:031-268-0304" className="flex items-center justify-center gap-2 bg-white border border-gray-300 hover:border-gray-400 rounded-xl py-3 text-sm font-semibold text-gray-900 transition-colors">
+                    <Phone size={16} />전화 상담
+                  </a>
+                  <button onClick={() => window.open('https://pf.kakao.com/_IrSRX/', '_blank')} className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl py-3 text-sm font-semibold text-gray-900 transition-colors">
+                    <MessageCircle size={16} />카톡 상담
+                  </button>
+                </div>
+              </div>
+
+            </div>
           </div>
+
+          {/* ── 데스크탑 사이드바 ── */}
+          <aside className="hidden lg:block sticky top-24 space-y-4">
+
+            {/* 기업 전용 서비스 */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-4 text-sm">🏢 기업 고객 전용 서비스</h3>
+              <div className="space-y-3">
+                {SERVICES.map((s) => (
+                  <div key={s.title} className="flex items-center gap-3">
+                    <span className="text-xl shrink-0 w-7 text-center">{s.icon}</span>
+                    <div>
+                      <div className="text-sm font-semibold text-gray-900">{s.title}</div>
+                      <div className="text-xs text-gray-500">{s.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 특별가 배너 */}
+            <div className="bg-gradient-to-br from-red-600 to-red-700 rounded-2xl p-5 text-white">
+              <p className="font-black text-base mb-1">🏷️ 수량별 기업 특별가</p>
+              <p className="text-sm text-red-100 mb-3 break-keep leading-relaxed">
+                카탈로그 정가와 별도로 기업 전용 공급가 적용.<br />
+                주문 수량이 많을수록 세트당 단가가 낮아집니다.
+              </p>
+              <a href="/catalog" className="inline-flex items-center gap-1.5 bg-white text-red-700 font-bold text-xs px-3 py-2 rounded-lg hover:bg-red-50 transition-colors">
+                <BookOpen size={13} />제품 카탈로그 보기
+              </a>
+            </div>
+
+            {/* 직접 상담 */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-5">
+              <p className="font-bold text-gray-900 mb-1 text-sm">💬 지금 바로 상담</p>
+              <p className="text-xs text-gray-500 mb-3">평일·토요일 10:00 – 20:00</p>
+              <div className="space-y-2">
+                <a href="tel:031-268-0304" className="flex items-center justify-center gap-2 bg-white border border-gray-300 hover:border-gray-400 rounded-xl py-3 text-sm font-semibold text-gray-900 transition-colors w-full">
+                  <Phone size={16} />031-268-0304
+                </a>
+                <button onClick={() => window.open('https://pf.kakao.com/_IrSRX/', '_blank')} className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl py-3 text-sm font-semibold text-gray-900 transition-colors w-full">
+                  <MessageCircle size={16} />카카오톡 상담
+                </button>
+              </div>
+            </div>
+
+          </aside>
         </div>
-      )}
+      </div>
     </div>
   );
 }
