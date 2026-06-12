@@ -4,7 +4,7 @@ import { ExternalLink, Phone, MessageCircle, BookOpen } from "lucide-react";
 
 export default function CatalogPage() {
   const catalogUrl = process.env.NEXT_PUBLIC_CATALOG_URL;
-  const title = process.env.NEXT_PUBLIC_CATALOG_TITLE || "시즌 선물 카탈로그";
+  const title = "2026 선물 카탈로그";
 
   return (
     <div className="min-h-screen bg-gray-50">
