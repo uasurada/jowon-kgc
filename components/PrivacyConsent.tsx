@@ -36,6 +36,14 @@ export default function PrivacyConsent({ checked, onChange, className }: Props) 
               <div>• 수집 목적: 상담 및 문의 응대, 서비스 개선</div>
               <div>• 보유 기간: 상담 완료 후 1년(분쟁 대응/이력 관리 목적) 또는 관련 법령에 따른 보관</div>
               <div>• 동의 거부: 필수 항목 동의 거부 시 상담 접수가 제한될 수 있습니다.</div>
+              <a
+                href="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-1 text-red-600 font-semibold hover:text-red-700 underline underline-offset-2"
+              >
+                개인정보처리방침 전문 보기
+              </a>
             </div>
           </details>
         </div>

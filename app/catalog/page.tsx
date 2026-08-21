@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ExternalLink, Phone, MessageCircle, BookOpen } from "lucide-react";
 
 export default function CatalogPage() {
-  const catalogUrl = process.env.NEXT_PUBLIC_CATALOG_URL;
-  const title = "2026 선물 카탈로그";
+  const catalogUrl = "https://heyzine.com/flip-book/26Chuseok_standard";
+  const title = "2026 추석 선물 카탈로그";
 
   return (
     <div className="min-h-screen bg-gray-50">

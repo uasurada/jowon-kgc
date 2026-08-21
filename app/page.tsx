@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import {
   Phone,
   MessageCircle,
@@ -70,8 +71,20 @@ export default function LandingPage() {
       <header className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div>
-            <div className="text-xl font-black text-red-700 tracking-tight">정관장 조원점</div>
-            <div className="text-[11px] text-gray-500 mt-0.5">수원 장안구·북수원 공식 가맹점</div>
+            <div className="flex items-center gap-2.5">
+              <div className="inline-flex items-center bg-black rounded-lg px-3 py-2">
+                <Image
+                  src="/logos/kgc-wordmark.png"
+                  alt="정관장 JUNG KWAN JANG"
+                  width={638}
+                  height={361}
+                  priority
+                  className="h-11 w-auto"
+                />
+              </div>
+              <span className="text-xl font-black text-gray-900 tracking-tight">조원점</span>
+            </div>
+            <div className="text-[11px] text-gray-500 mt-1">수원 장안구·북수원 공식 가맹점</div>
           </div>
           <a
             href="tel:031-268-0304"
@@ -317,12 +330,23 @@ export default function LandingPage() {
                 <a href="/personal" className="block hover:text-white transition-colors">개인 선물 상담</a>
                 <a href="/business" className="block hover:text-white transition-colors">기업 단체 주문</a>
                 <a href="/catalog" className="block hover:text-white transition-colors">제품 카탈로그</a>
+                <a href="/privacy" className="block hover:text-white transition-colors">개인정보처리방침</a>
                 <a href="tel:031-268-0304" className="block hover:text-white transition-colors">031-268-0304</a>
               </nav>
             </div>
           </div>
           <div className="border-t border-gray-800 pt-5 text-xs text-gray-500 flex flex-col sm:flex-row gap-2 sm:gap-4 break-keep">
-            <span>사업자등록번호: 441-17-02401</span>
+            <span>
+              사업자등록번호: 441-17-02401{' '}
+              <a
+                href="https://teht.hometax.go.kr/websquare/websquare.html?w2xPath=/ui/ab/a/a/UTEABAAA13.xml"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-white transition-colors"
+              >
+                (국세청 진위확인)
+              </a>
+            </span>
             <span>대표: 박시영</span>
             <span className="sm:ml-auto">© 2026 정관장 조원점. All rights reserved.</span>
           </div>

@@ -92,9 +92,17 @@ export default function PersonalGiftConsultation() {
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">상담 신청이 완료되었습니다!</h2>
-          <div className="my-4">
-            <Image src="/logos/kgc-logo.png" alt="정관장 조원점" width={150} height={50} className="mx-auto" />
-            <p className="text-xs text-gray-500 mt-1">정관장 조원점 · 공식 인증 판매점</p>
+          <div className="my-4 flex flex-col items-center">
+            <div className="inline-flex bg-black rounded-lg px-3 py-2">
+              <Image
+                src="/logos/kgc-wordmark.png"
+                alt="정관장 JUNG KWAN JANG"
+                width={638}
+                height={361}
+                className="h-9 w-auto"
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-2">정관장 조원점 · 공식 인증 판매점</p>
           </div>
           <p className="text-gray-600 mb-6">
             담당자가 확인 후 빠르게 연락드립니다.<br />
