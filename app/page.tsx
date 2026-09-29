@@ -1,383 +1,189 @@
-import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
-  Phone,
-  MessageCircle,
-  MapPin,
-  Clock,
-  ChevronRight,
-  CheckCircle,
-  CreditCard,
-  Navigation,
-  ExternalLink,
-  BookOpen,
-  Sparkles,
-  Shield,
-  Truck,
-  Building2,
-  ChevronDown,
+  ArrowRight, BookOpen, Building2, Check, ChevronDown, Clock3,
+  CreditCard, MapPin, MessageCircle, Navigation, PackageCheck,
+  Phone, ShieldCheck, Truck,
 } from 'lucide-react';
+import storeWide from '../img/KakaoTalk_20260928_162936624_10.jpg';
+import storeCounter from '../img/KakaoTalk_20260928_162936624_03.jpg';
+import storeDisplay from '../img/KakaoTalk_20260928_162936624_06.jpg';
+import storeProducts from '../img/KakaoTalk_20260928_162936624_08.jpg';
+import storeEntrance from '../img/KakaoTalk_20260928_162936624.jpg';
+
+const kakaoUrl = 'https://pf.kakao.com/_IrSRX/';
+const naverMapUrl = 'https://map.naver.com/v5/search/%EA%B2%BD%EA%B8%B0%20%EC%88%98%EC%9B%90%EC%8B%9C%20%EC%9E%A5%EC%95%88%EA%B5%AC%20%EA%B2%BD%EC%88%98%EB%8C%80%EB%A1%9C%20935';
 
 const faqItems = [
-  {
-    q: '정관장 조원점은 KGC 공식 가맹점인가요?',
-    a: '네, KGC한국인삼공사 공식 인증 가맹점입니다. 정품 보증서와 함께 제품을 구매하실 수 있으며 위조품·가품 걱정 없이 안심하고 구매하실 수 있습니다. 수원 장안구 조원동에 위치한 지역 밀착형 매장으로 오랫동안 운영해왔습니다.',
-  },
-  {
-    q: '부모님 선물로 어떤 홍삼 제품이 좋을까요?',
-    a: '연령과 건강 상태에 따라 추천이 달라집니다. 60대 이상 부모님께는 홍삼 농축액이나 최상급 녹용으로 만든 천녹 제품을 많이 선택하십니다. 예산과 복용 경험을 알려주시면 1:1로 맞춤 추천해드립니다. 전화(031-268-0304) 또는 카카오톡으로 문의주세요.',
-  },
-  {
-    q: '기업·단체 주문도 가능한가요?',
-    a: '기업 명절 선물, 직원 복지 선물, 거래처 선물 등 단체 주문을 전문으로 처리합니다. 수량과 예산에 따라 맞춤 구성 및 전국 일괄 배송, 세금계산서 발행이 가능합니다. 기업 주문 상담 버튼을 통해 견적을 신청해주세요.',
-  },
-  {
-    q: '전화나 카카오톡으로도 주문이 가능한가요?',
-    a: '전화(031-268-0304) 또는 카카오톡 채널로 상담 후 비대면 주문도 가능합니다. 매장 방문 없이 제품 확인·결제·배송까지 모두 진행하실 수 있습니다. 전국 택배 배송이 가능하며 오전 주문 시 당일 발송을 목표로 합니다.',
-  },
-  {
-    q: '수원페이·상품권으로도 결제가 되나요?',
-    a: '수원페이, 백화점상품권, 신용·체크카드, 계좌이체, 비대면 결제 등 다양한 결제 수단을 지원합니다. 자세한 결제 방법은 상담 시 안내해드립니다.',
-  },
+  { q: '온라인으로도 주문할 수 있나요?', a: '네. 전화 또는 카카오톡으로 용도와 예산을 알려주시면 제품 안내부터 결제, 배송까지 비대면으로 도와드립니다.' },
+  { q: '어떤 제품을 골라야 할지 모르겠어요.', a: '드시는 분의 연령, 평소 섭취 경험, 선물 목적과 예산을 기준으로 매장에서 직접 비교해 드립니다. 정해둔 제품이 없어도 편하게 문의해 주세요.' },
+  { q: '기업·단체 주문도 가능한가요?', a: '가능합니다. 수량과 예산에 맞춘 구성, 견적서와 세금계산서, 여러 주소로 나누어 보내는 배송까지 상담해 드립니다.' },
+  { q: '어떤 결제 수단을 이용할 수 있나요?', a: '신용·체크카드, 계좌이체, 수원페이, 상품권과 비대면 결제를 지원합니다. 결제 방법이 궁금하시면 매장으로 문의해 주세요.' },
 ];
 
 const faqSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: faqItems.map((item) => ({
-    '@type': 'Question',
-    name: item.q,
-    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqItems.map(({ q, a }) => ({
+    '@type': 'Question', name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
   })),
 };
 
-const TRUST_BADGES = [
-  { icon: <Shield className="text-green-600" size={20} />, title: '정관장 정품 보장', sub: '공식 가맹점 인증' },
-  { icon: <Truck className="text-blue-600" size={20} />,   title: '전국 배송',       sub: '당일·익일 가능' },
-  { icon: <CreditCard className="text-purple-600" size={20} />, title: '다양한 결제', sub: '수원페이·신용카드·상품권' },
-  { icon: <MessageCircle className="text-yellow-600" size={20} />, title: '1:1 상담', sub: '카카오톡·전화' },
-];
-
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white text-gray-900">
-
-      {/* 상단 알림 바 */}
-      <div className="bg-red-700 text-white text-center py-2 px-4 text-xs sm:text-sm font-medium tracking-wide">
-        ✅&nbsp; KGC 공식 인증 가맹점&nbsp;&nbsp;|&nbsp;&nbsp;전국 택배 배송&nbsp;&nbsp;|&nbsp;&nbsp;기업 단체 주문 환영
+    <main className="site-shell">
+      <div className="notice-bar">
+        <span>KGC 정관장 공식 가맹점</span><span className="notice-dot" />
+        <span>수원시 장안구</span><span className="notice-dot hidden sm:block" />
+        <span className="hidden sm:block">전국 택배 상담</span>
       </div>
 
-      {/* Header */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <div className="inline-flex items-center bg-black rounded-lg px-3 py-2">
-                <Image
-                  src="/logos/kgc-wordmark.png"
-                  alt="정관장 JUNG KWAN JANG"
-                  width={638}
-                  height={361}
-                  priority
-                  className="h-11 w-auto"
-                />
-              </div>
-              <span className="text-xl font-black text-gray-900 tracking-tight">조원점</span>
-            </div>
-            <div className="text-[11px] text-gray-500 mt-1">수원 장안구·북수원 공식 가맹점</div>
-          </div>
-          <a
-            href="tel:031-268-0304"
-            className="shrink-0 inline-flex items-center gap-1.5 bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-bold hover:bg-red-700 transition-colors"
-          >
-            <Phone size={15} />
-            <span className="whitespace-nowrap">031-268-0304</span>
-          </a>
+      <header className="site-header">
+        <div className="header-inner">
+          <Link href="/" className="brand" aria-label="정관장 조원점 홈">
+            <span className="brand-mark">
+              <Image src="/logos/jungkwanjang-wordmark-white-v2.png" alt="JUNG KWAN JANG" width={562} height={99} priority unoptimized />
+            </span>
+            <span className="brand-copy"><strong>정관장 조원점</strong><small>JOWON STORE</small></span>
+          </Link>
+          <nav className="desktop-nav" aria-label="주요 메뉴">
+            <a href="#store">매장 소개</a><a href="#service">주문 안내</a><a href="#location">오시는 길</a>
+          </nav>
+          <a href="tel:031-268-0304" className="header-call"><Phone size={16} /><span>031-268-0304</span></a>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="bg-gradient-to-b from-red-50 to-white py-12 px-4">
-        <div className="max-w-5xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-white border border-red-200 rounded-full px-4 py-1.5 mb-5 shadow-sm">
-            <CheckCircle className="text-green-600" size={14} />
-            <span className="text-sm font-semibold text-gray-700">KGC 공식 인증 가맹점</span>
+      <section className="hero">
+        <div className="hero-photo">
+          <Image src={storeWide} alt="리모델링을 마친 정관장 조원점 매장 내부 전경" fill priority sizes="100vw" className="object-cover" />
+          <div className="hero-shade" />
+        </div>
+        <div className="hero-content">
+          <p className="eyebrow light">새롭게 단장한 정관장 조원점</p>
+          <h1>직접 보고, 비교하고,<br />편안하게 고르세요.</h1>
+          <p className="hero-lead">선물 받는 분과 예산을 말씀해 주시면<br className="sm:hidden" /> 매장에서 꼭 맞는 제품을 함께 찾아드립니다.</p>
+          <div className="hero-actions">
+            <a href={kakaoUrl} target="_blank" rel="noopener noreferrer" className="button button-kakao"><MessageCircle size={19} /> 카카오톡 상담</a>
+            <Link href="/personal" className="button button-light">선물 추천받기 <ArrowRight size={18} /></Link>
           </div>
+          <div className="hero-proof">
+            <span><ShieldCheck size={17} /> 공식 가맹점</span>
+            <span><MapPin size={17} /> 동양파라곤 1층</span>
+          </div>
+        </div>
+        <div className="photo-caption">실제 정관장 조원점 매장입니다</div>
+      </section>
 
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight text-gray-900 mb-4 break-keep">
-            정관장 홍삼 선물,<br />
-            <span className="text-red-600">직접 고민해 드립니다</span>
-          </h1>
+      <section className="quick-info" aria-label="매장 주요 정보">
+        <div><Clock3 /><span><small>영업시간</small><strong>월–토 10:00–20:00</strong></span></div>
+        <div><MapPin /><span><small>매장 위치</small><strong>경수대로 935, 1층 105호</strong></span></div>
+        <div><Truck /><span><small>주문·배송</small><strong>비대면 주문 · 전국 택배</strong></span></div>
+      </section>
 
-          <p className="text-base text-gray-500 mb-8 break-keep leading-relaxed">
-            부모님 선물·면역력 관리·기업 단체 주문까지<br />
-            수원 장안구 정관장 조원점에서 1:1 맞춤 상담
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-sm sm:max-w-none mx-auto">
-            <a
-              href="/personal"
-              className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-xl font-bold text-base transition-all hover:shadow-lg"
-            >
-              개인 선물 상담 <ChevronRight size={18} />
-            </a>
-            <a
-              href="/business"
-              className="flex items-center justify-center gap-2 bg-white border-2 border-gray-300 hover:border-gray-500 text-gray-800 px-6 py-4 rounded-xl font-bold text-base transition-all hover:shadow-md"
-            >
-              <Building2 size={18} />
-              기업 단체 주문
-            </a>
+      <section id="store" className="section store-story">
+        <div className="section-heading">
+          <p className="eyebrow">JOWON STORE</p>
+          <h2>화면 속 매장이<br />바로 이곳입니다.</h2>
+          <p>수원 장안구에서 직접 운영하는 오프라인 매장입니다. 새롭게 단장한 공간에서 다양한 제품을 천천히 살펴보고 상담받으실 수 있습니다.</p>
+        </div>
+        <div className="store-grid">
+          <figure className="store-image store-image-main">
+            <Image src={storeCounter} alt="정관장 조원점 상담 카운터" fill sizes="(min-width: 768px) 58vw, 100vw" className="object-cover" />
+          </figure>
+          <figure className="store-image">
+            <Image src={storeDisplay} alt="정관장 조원점 홍삼 제품 진열대" fill sizes="(min-width: 768px) 32vw, 100vw" className="object-cover" />
+          </figure>
+          <div className="store-note">
+            <span>매장에서 직접</span><strong>제품 비교부터<br />선물 포장까지</strong>
+            <p>부담 없이 둘러보시고 궁금한 점만 물어보셔도 좋습니다.</p>
           </div>
         </div>
       </section>
 
-      {/* 신뢰 배지 */}
-      <section className="py-5 px-4 border-b border-gray-100">
-        <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {TRUST_BADGES.map((b, i) => (
-            <div key={i} className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-3 border border-gray-100">
-              <div className="shrink-0">{b.icon}</div>
-              <div>
-                <div className="text-sm font-bold text-gray-900 break-keep">{b.title}</div>
-                <div className="text-xs text-gray-500 break-keep">{b.sub}</div>
-              </div>
-            </div>
+      <section id="service" className="section service-section">
+        <div className="section-heading centered">
+          <p className="eyebrow">HOW TO ORDER</p>
+          <h2>필요한 방식으로<br className="sm:hidden" /> 간편하게 주문하세요.</h2>
+          <p>방문이 어려우시면 전화와 카카오톡으로도 제품 상담과 주문이 가능합니다.</p>
+        </div>
+        <div className="service-grid">
+          <article className="service-card personal-card">
+            <span className="card-number">01</span><div className="service-icon"><PackageCheck /></div>
+            <p className="card-kicker">한 분을 위한 선물</p><h3>개인 선물 상담</h3>
+            <p>부모님, 감사 선물, 나를 위한 건강 관리까지 용도와 예산에 맞춰 추천해 드립니다.</p>
+            <Link href="/personal">선물 상담 시작하기 <ArrowRight size={17} /></Link>
+          </article>
+          <article className="service-card business-card">
+            <span className="card-number">02</span><div className="service-icon"><Building2 /></div>
+            <p className="card-kicker">여러 분을 위한 선물</p><h3>기업·단체 주문</h3>
+            <p>직원과 거래처 선물의 견적, 세금계산서, 개별 배송까지 한 번에 진행합니다.</p>
+            <Link href="/business">단체 견적 요청하기 <ArrowRight size={17} /></Link>
+          </article>
+        </div>
+      </section>
+
+      <section className="section product-section">
+        <div className="product-image">
+          <Image src={storeProducts} alt="정관장 조원점의 다양한 홍삼 선물 제품" fill sizes="(min-width: 768px) 55vw, 100vw" className="object-cover" />
+        </div>
+        <div className="product-copy">
+          <p className="eyebrow light">PRODUCT GUIDE</p><h2>제품이 많을수록<br />상담은 더 쉬워야 합니다.</h2>
+          <p>받는 분의 연령, 섭취 방식, 예산을 알려주세요. 매장에 진열된 제품을 기준으로 이해하기 쉽게 비교해 드립니다.</p>
+          <ul>
+            <li><Check /> 예산에 맞는 제품 비교</li><li><Check /> 섭취 방법과 구성 안내</li><li><Check /> 선물 포장 및 전국 배송</li>
+          </ul>
+          <Link href="/catalog" className="text-link"><BookOpen size={18} /> 2026 선물 카탈로그 보기 <ArrowRight size={17} /></Link>
+        </div>
+      </section>
+
+      <section className="section consult-strip">
+        <div><p className="eyebrow">QUICK CONSULTATION</p><h2>정해둔 제품이 없어도 괜찮습니다.</h2><p>“부모님 선물 10만원대”처럼 간단히 말씀해 주세요. 매장에서 직접 답변드립니다.</p></div>
+        <div className="consult-actions">
+          <a href={kakaoUrl} target="_blank" rel="noopener noreferrer" className="button button-kakao"><MessageCircle size={19} /> 카카오톡 문의</a>
+          <a href="tel:031-268-0304" className="button button-dark"><Phone size={18} /> 전화 문의</a>
+        </div>
+      </section>
+
+      <section id="location" className="section location-section">
+        <div className="location-photo">
+          <Image src={storeEntrance} alt="거리에서 바라본 정관장 조원점 입구와 매장 내부" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+          <span>매장 입구에서 보이는 실제 모습</span>
+        </div>
+        <div className="location-copy">
+          <p className="eyebrow">VISIT US</p><h2>정관장 조원점</h2>
+          <div className="address-block"><MapPin /><div><strong>경기 수원시 장안구 경수대로 935</strong><span>동양파라곤 1층 105호</span></div></div>
+          <div className="location-list">
+            <p><Clock3 /> <span>월–토 10:00–20:00</span></p>
+            <p><Phone /> <a href="tel:031-268-0304">031-268-0304</a></p>
+            <p><CreditCard /> <span>수원페이 · 카드 · 상품권 · 비대면 결제</span></p>
+          </div>
+          <a href={naverMapUrl} target="_blank" rel="noopener noreferrer" className="button button-red"><Navigation size={18} /> 네이버 지도에서 길찾기</a>
+          <p className="parking-note">차량 방문 전 주차 안내가 필요하시면 매장으로 전화해 주세요.</p>
+        </div>
+      </section>
+
+      <section className="section faq-section">
+        <div className="section-heading centered"><p className="eyebrow">FAQ</p><h2>자주 묻는 질문</h2></div>
+        <div className="faq-list">
+          {faqItems.map((item) => (
+            <details key={item.q}><summary><span>{item.q}</span><ChevronDown className="faq-chevron" /></summary><p>{item.a}</p></details>
           ))}
         </div>
       </section>
 
-      {/* 카탈로그 배너 */}
-      <section className="py-5 px-4 bg-white">
-        <div className="max-w-5xl mx-auto">
-          <a
-            href="/catalog"
-            className="group relative flex items-center justify-between bg-gradient-to-r from-red-600 to-red-700 rounded-2xl px-5 py-4 overflow-hidden hover:shadow-lg transition-all"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-11 h-11 bg-white rounded-xl flex items-center justify-center shrink-0">
-                <BookOpen className="text-red-600" size={22} />
-              </div>
-              <div className="text-white">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <Sparkles size={12} />
-                  <span className="text-[11px] font-bold bg-yellow-400 text-gray-900 px-2 py-0.5 rounded">NEW</span>
-                </div>
-                <p className="font-bold text-base">2026 선물 카탈로그</p>
-                <p className="text-sm text-red-100">예산별 추천 제품 한눈에 보기</p>
-              </div>
-            </div>
-            <ChevronRight size={22} className="text-white group-hover:translate-x-1 transition-transform shrink-0" />
-          </a>
+      <footer className="footer">
+        <div className="footer-main">
+          <div><strong className="footer-title">정관장 조원점</strong><p>KGC 정관장 공식 가맹점<br />경기 수원시 장안구 경수대로 935 동양파라곤 1층 105호</p></div>
+          <div className="footer-contact"><small>매장 상담</small><a href="tel:031-268-0304">031-268-0304</a><span>월–토 10:00–20:00</span></div>
         </div>
-      </section>
-
-      {/* 서비스 카드 */}
-      <section className="py-6 px-4 bg-gray-50">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-lg font-bold text-center text-gray-900 mb-4">어떤 선물을 찾으세요?</h2>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <a
-              href="/personal"
-              className="group bg-white border-2 border-red-100 hover:border-red-400 rounded-2xl p-5 transition-all hover:shadow-md"
-            >
-              <div className="text-3xl mb-3">👤</div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">개인 선물 상담</h3>
-              <p className="text-sm text-gray-500 mb-4 break-keep leading-relaxed">
-                부모님 · 직장 상사 · 병문안<br />상견례 · 출산 선물 · 나를 위한 건강 선물
-              </p>
-              <div className="flex items-center text-red-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                무료 상담 신청하기 <ChevronRight size={16} />
-              </div>
-            </a>
-
-            <a
-              href="/business"
-              className="group bg-white border-2 border-blue-100 hover:border-blue-400 rounded-2xl p-5 transition-all hover:shadow-md"
-            >
-              <div className="text-3xl mb-3">🏢</div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">기업 주문 상담</h3>
-              <p className="text-sm text-gray-500 mb-4 break-keep leading-relaxed">
-                직원·거래처 선물 · 행사 답례품<br />세금계산서 · 기업 특별가 적용
-              </p>
-              <div className="flex items-center text-blue-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                무료 견적 신청하기 <ChevronRight size={16} />
-              </div>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* 빠른 상담 */}
-      <section className="py-6 px-4 bg-white">
-        <div className="max-w-5xl mx-auto">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-5">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 bg-yellow-400 rounded-full flex items-center justify-center shrink-0">
-                <MessageCircle size={18} className="text-gray-900" />
-              </div>
-              <div>
-                <p className="font-bold text-gray-900 text-sm">지금 바로 상담 가능합니다</p>
-                <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
-                  <Clock size={11} />
-                  <span>평일·토요일 10:00 – 20:00</span>
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <a
-                href="tel:031-268-0304"
-                className="flex items-center justify-center gap-2 bg-white border-2 border-gray-300 hover:border-gray-500 rounded-xl py-3.5 font-bold text-gray-900 text-sm transition-colors"
-              >
-                <Phone size={17} />전화 상담
-              </a>
-              <a
-                href="https://pf.kakao.com/_IrSRX/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl py-3.5 font-bold text-gray-900 text-sm transition-colors"
-              >
-                <MessageCircle size={17} />카톡 상담
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="py-8 px-4 bg-gray-50">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-lg font-bold text-center text-gray-900 mb-5">자주 묻는 질문</h2>
-          <div className="space-y-2">
-            {faqItems.map((item, i) => (
-              <details key={i} className="group bg-white border border-gray-200 rounded-xl overflow-hidden">
-                <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer select-none hover:bg-gray-50 transition-colors">
-                  <span className="font-semibold text-gray-900 text-sm break-keep">{item.q}</span>
-                  <ChevronDown size={17} className="faq-chevron text-gray-400 shrink-0" />
-                </summary>
-                <div className="px-5 pb-4 pt-2 text-sm text-gray-600 leading-relaxed border-t border-gray-100 break-keep">
-                  {item.a}
-                </div>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 매장 정보 */}
-      <section className="py-8 px-4 bg-white border-t border-gray-100">
-        <div className="max-w-5xl mx-auto">
-          <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <MapPin size={18} className="text-red-600" />
-            매장 정보
-          </h3>
-          <div className="bg-gray-50 rounded-2xl p-4 border border-gray-200">
-            <p className="font-bold text-gray-900 mb-0.5">정관장 조원점</p>
-            <p className="text-sm text-gray-600 mb-4 leading-relaxed break-keep">
-              경기도 수원시 장안구 송원로 81 메가플러스 A동 111호<br />
-              주차 가능 · 방문 상담 환영 · 평일·토요일 10:00–20:00
-            </p>
-            <div className="overflow-hidden rounded-xl border border-gray-100 mb-3">
-              <iframe
-                title="정관장 조원점 지도"
-                src="https://www.google.com/maps?q=37.302031,127.009303&z=16&output=embed"
-                width="100%"
-                height="220"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="block w-full"
-              />
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <a
-                href="https://map.naver.com/v5/search/%EC%A0%95%EA%B4%80%EC%9E%A5%20%EC%A1%B0%EC%9B%90%EC%A0%90?c=15,0,0,0,dh"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
-              >
-                <Navigation size={14} />길찾기
-              </a>
-              <a
-                href="https://map.naver.com/v5/search/%EC%A0%95%EA%B4%80%EC%9E%A5%20%EC%A1%B0%EC%9B%90%EC%A0%90"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 transition-colors"
-              >
-                지도 크게 보기 <ExternalLink size={13} />
-              </a>
-            </div>
-            <p className="mt-2 text-xs text-gray-400">네이버지도로 연결됩니다.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-8 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid sm:grid-cols-2 gap-6 mb-6">
-            <div>
-              <div className="text-white font-black text-base mb-2">정관장 조원점</div>
-              <p className="text-sm leading-relaxed break-keep mb-2">
-                KGC한국인삼공사 공식 인증 가맹점.<br />수원 장안구·북수원 홍삼 선물 상담 전문.
-              </p>
-              <p className="text-xs text-gray-500 break-keep leading-relaxed">
-                경기도 수원시 장안구 송원로 81<br />메가플러스 A동 111호
-              </p>
-            </div>
-            <div>
-              <div className="text-white font-semibold text-sm mb-3">바로가기</div>
-              <nav className="space-y-2 text-sm">
-                <a href="/personal" className="block hover:text-white transition-colors">개인 선물 상담</a>
-                <a href="/business" className="block hover:text-white transition-colors">기업 단체 주문</a>
-                <a href="/catalog" className="block hover:text-white transition-colors">제품 카탈로그</a>
-                <a href="/privacy" className="block hover:text-white transition-colors">개인정보처리방침</a>
-                <a href="tel:031-268-0304" className="block hover:text-white transition-colors">031-268-0304</a>
-              </nav>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-5 text-xs text-gray-500 flex flex-col sm:flex-row gap-2 sm:gap-4 break-keep">
-            <span>
-              사업자등록번호: 441-17-02401{' '}
-              <a
-                href="https://teht.hometax.go.kr/websquare/websquare.html?w2xPath=/ui/ab/a/a/UTEABAAA13.xml"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-2 hover:text-white transition-colors"
-              >
-                (국세청 진위확인)
-              </a>
-            </span>
-            <span>대표: 박시영</span>
-            <span className="sm:ml-auto">© 2026 정관장 조원점. All rights reserved.</span>
-          </div>
-        </div>
+        <div className="footer-bottom"><span>사업자등록번호 441-17-02401 · 대표 박시영</span><Link href="/privacy">개인정보처리방침</Link><span>© 2026 정관장 조원점</span></div>
       </footer>
 
-      {/* 플로팅 버튼 */}
-      <div className="fixed bottom-6 right-4 flex flex-col gap-3 z-40">
-        <a
-          href="https://pf.kakao.com/_IrSRX/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-14 h-14 bg-yellow-400 hover:bg-yellow-500 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
-          aria-label="카카오톡 상담"
-        >
-          <MessageCircle size={26} className="text-gray-900" />
-        </a>
-        <a
-          href="tel:031-268-0304"
-          className="w-14 h-14 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110"
-          aria-label="전화 상담"
-        >
-          <Phone size={26} className="text-white" />
-        </a>
+      <div className="mobile-contact" aria-label="빠른 상담">
+        <a href="tel:031-268-0304"><Phone size={19} /> 전화 상담</a>
+        <a href={kakaoUrl} target="_blank" rel="noopener noreferrer"><MessageCircle size={19} /> 카카오톡 상담</a>
       </div>
-
-      {/* FAQ 구조화 데이터 */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-    </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+    </main>
   );
 }

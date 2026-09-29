@@ -1,348 +1,105 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import { ArrowLeft, MessageCircle, Phone, Shield, Truck, Award } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, Check, MapPin, MessageCircle, Phone, ShieldCheck, Sparkles } from 'lucide-react';
 import PrivacyConsent from '@/components/PrivacyConsent';
+import ConsultationHeader from '@/components/ConsultationHeader';
+import storePhoto from '../../img/KakaoTalk_20260928_162936624_04.jpg';
 
-const GIFT_TYPES = [
-  { id: 'parents',    label: '부모님' },
-  { id: 'business',   label: '직장 상사' },
-  { id: 'hospital',   label: '병문안' },
-  { id: 'engagement', label: '상견례' },
-  { id: 'self',       label: '나를 위한' },
-  { id: 'baby',       label: '출산·산모' },
-  { id: 'other',      label: '기타' },
-];
-
-const BUDGETS = [
-  { value: '5만원대' },
-  { value: '10만원대', popular: true },
-  { value: '20만원대' },
-  { value: '30만원 이상' },
-];
-
-const QUANTITIES = [
-  { value: '1',   label: '1개' },
-  { value: '2',   label: '2개' },
-  { value: '3',   label: '3개' },
-  { value: '4-5', label: '4~5개' },
-  { value: '6+',  label: '6개+' },
-];
-
-const SIDEBAR_FEATURES = [
-  { icon: <Shield className="text-green-600" size={18} />, title: '정관장 정품 보장', desc: 'KGC 공식 가맹점 인증' },
-  { icon: <Truck className="text-blue-600" size={18} />,   title: '전국 당일·익일 배송', desc: '안전 포장 배송' },
-  { icon: <Award className="text-purple-600" size={18} />, title: '1:1 맞춤 추천', desc: '예산·목적별 최적 제품' },
-];
+const GIFT_TYPES = ['부모님', '직장 상사', '병문안', '상견례', '나를 위한', '출산·산모', '기타'];
+const BUDGETS = ['5만원대', '10만원대', '20만원대', '30만원 이상'];
+const QUANTITIES = ['1개', '2개', '3개', '4~5개', '6개 이상'];
 
 export default function PersonalGiftConsultation() {
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    giftType: '',
-    budget: '',
-    quantity: '1',
-    message: '',
-  });
+  const [formData, setFormData] = useState({ name: '', phone: '', giftType: '', budget: '', quantity: '1개', message: '' });
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const update = (key: string, value: string) => setFormData((prev) => ({ ...prev, [key]: value }));
 
   const handleSubmit = async () => {
-    if (!formData.name || !formData.phone || !formData.budget) {
-      alert('필수 항목을 모두 입력해주세요');
-      return;
-    }
-    if (!privacyConsent) {
-      alert('개인정보 수집 및 이용에 동의해 주세요.');
-      return;
-    }
+    if (!formData.name || !formData.phone || !formData.budget || !privacyConsent) return;
     setIsSubmitting(true);
     try {
       const res = await fetch('/api/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ formType: 'personal', formData }),
       });
       const result = await res.json();
       if (result.success) setSubmitted(true);
       else alert('오류가 발생했습니다: ' + result.error);
-    } catch {
-      alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    } catch { alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.'); }
+    finally { setIsSubmitting(false); }
   };
-
-  const isValid = !!(formData.name && formData.phone && formData.budget && privacyConsent);
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+      <main className="consult-success">
+        <div className="success-card">
+          <span className="success-icon"><Check /></span>
+          <p className="eyebrow">REQUEST COMPLETE</p>
+          <h1>상담 신청이<br />접수되었습니다.</h1>
+          <p>남겨주신 내용을 확인한 뒤 매장에서 직접 연락드리겠습니다.</p>
+          <div className="success-actions">
+            <a href="https://pf.kakao.com/_IrSRX/" target="_blank" rel="noopener noreferrer" className="button button-kakao"><MessageCircle size={18} /> 카카오톡 상담</a>
+            <Link href="/" className="button button-dark">홈으로 돌아가기</Link>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">상담 신청이 완료되었습니다!</h2>
-          <div className="my-4 flex flex-col items-center">
-            <div className="inline-flex bg-black rounded-lg px-3 py-2">
-              <Image
-                src="/logos/kgc-wordmark.png"
-                alt="정관장 JUNG KWAN JANG"
-                width={638}
-                height={361}
-                className="h-9 w-auto"
-              />
-            </div>
-            <p className="text-xs text-gray-500 mt-2">정관장 조원점 · 공식 인증 판매점</p>
-          </div>
-          <p className="text-gray-600 mb-6">
-            담당자가 확인 후 빠르게 연락드립니다.<br />
-            <span className="text-red-600 font-semibold">평균 응답 시간: 30분 이내</span>
-          </p>
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-5">
-            <p className="text-sm font-semibold text-gray-900 mb-2">💬 더 빠른 상담을 원하시나요?</p>
-            <button
-              onClick={() => window.open('https://pf.kakao.com/_IrSRX/', '_blank')}
-              className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
-            >
-              <MessageCircle size={18} />카톡으로 즉시 상담
-            </button>
-          </div>
-          <a href="/" className="text-sm text-gray-500 hover:text-gray-700">홈으로 돌아가기</a>
         </div>
-      </div>
+      </main>
     );
   }
 
+  const valid = formData.name && formData.phone && formData.budget && privacyConsent;
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <button onClick={() => window.history.back()} className="flex items-center gap-2 text-gray-700 hover:text-gray-900">
-            <ArrowLeft size={20} />
-            <span className="font-medium">뒤로</span>
-          </button>
-          <span className="text-base font-bold text-gray-900">개인 선물 상담</span>
-          <a href="tel:031-268-0304" className="flex items-center gap-1.5 text-red-600 hover:text-red-700">
-            <Phone size={18} />
-            <span className="text-sm font-semibold hidden sm:inline">031-268-0304</span>
-            <span className="text-sm font-semibold sm:hidden">전화</span>
-          </a>
+    <main className="consult-page">
+      <ConsultationHeader label="개인 선물 상담" />
+      <section className="consult-hero personal-hero">
+        <div className="consult-hero-image"><Image src={storePhoto} alt="정관장 조원점 선물 제품 진열" fill priority sizes="100vw" className="object-cover" /></div>
+        <div className="consult-hero-shade" />
+        <div className="consult-hero-copy">
+          <p className="eyebrow light">PERSONAL GIFT</p>
+          <h1>마음을 전하는 선물,<br />고르는 일부터 도와드립니다.</h1>
+          <p>받는 분과 예산만 알려주세요. 실제 매장에서 제품을 비교해 가장 알맞은 구성을 제안합니다.</p>
+          <div className="consult-proof"><span><ShieldCheck /> KGC 공식 가맹점</span><span><Sparkles /> 1:1 맞춤 추천</span></div>
         </div>
-      </header>
+      </section>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 lg:py-10">
-        <div className="lg:grid lg:grid-cols-[1fr_280px] lg:gap-10 lg:items-start">
-
-          {/* ── 폼 영역 ── */}
-          <div>
-            <h1 className="text-2xl font-black text-gray-900 mb-1">정관장 홍삼 개인 선물 상담</h1>
-            <p className="text-sm text-gray-500 mb-6 break-keep">예산과 목적에 맞는 최적의 구성을 1:1로 추천해드립니다</p>
-
-            <div className="space-y-5">
-
-              {/* 선물 대상 (선택) */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-2">
-                  선물 대상 <span className="text-gray-400 font-normal text-xs ml-1">(선택)</span>
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {GIFT_TYPES.map((t) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, giftType: prev.giftType === t.id ? '' : t.id }))}
-                      className={`px-4 py-2 rounded-full border text-sm font-medium transition-all ${
-                        formData.giftType === t.id
-                          ? 'border-red-600 bg-red-600 text-white'
-                          : 'border-gray-300 bg-white text-gray-700 hover:border-red-400'
-                      }`}
-                    >
-                      {t.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 예산 */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-2">
-                  예산 <span className="text-red-500">*</span>
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {BUDGETS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, budget: opt.value }))}
-                      className={`relative flex items-center justify-center py-3.5 rounded-xl border-2 transition-all min-h-[52px] text-sm font-medium ${
-                        formData.budget === opt.value
-                          ? 'border-red-600 bg-red-50 text-red-700'
-                          : 'border-gray-200 bg-white text-gray-700 hover:border-red-300'
-                      }`}
-                    >
-                      {opt.popular && (
-                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">인기</span>
-                      )}
-                      {opt.value}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 수량 */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-2">수량</label>
-                <div className="flex flex-wrap gap-2">
-                  {QUANTITIES.map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, quantity: opt.value }))}
-                      className={`px-5 py-3 rounded-xl border-2 font-medium transition-all text-sm min-h-[48px] ${
-                        formData.quantity === opt.value
-                          ? 'border-red-600 bg-red-50 text-red-700'
-                          : 'border-gray-200 bg-white text-gray-700 hover:border-red-300'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 성함 + 연락처 (데스크탑에서 한 줄) */}
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-800 mb-2">
-                    성함 <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="홍길동"
-                    autoComplete="name"
-                    className="w-full px-4 py-3.5 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none placeholder:text-gray-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-800 mb-2">
-                    연락처 <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="010-0000-0000"
-                    autoComplete="tel"
-                    className="w-full px-4 py-3.5 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none placeholder:text-gray-400"
-                  />
-                  <p className="mt-1.5 text-xs text-gray-400">상담 목적으로만 사용됩니다</p>
-                </div>
-              </div>
-
-              {/* 추가 요청사항 */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-2">
-                  추가 요청사항 <span className="text-gray-400 font-normal text-xs ml-1">(선택)</span>
-                </label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="특별히 원하시는 구성이나 배송 요청사항을 적어주세요"
-                  rows={3}
-                  className="w-full px-4 py-3.5 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none resize-none placeholder:text-gray-400"
-                />
-              </div>
-
-              <PrivacyConsent checked={privacyConsent} onChange={setPrivacyConsent} />
-
-              <button
-                onClick={handleSubmit}
-                disabled={isSubmitting || !isValid}
-                className="w-full bg-red-600 hover:bg-red-700 active:scale-[0.98] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all text-base min-h-[56px] flex items-center justify-center"
-              >
-                {isSubmitting ? (
-                  <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />전송 중...</>
-                ) : '무료 상담 신청하기 →'}
-              </button>
-              <p className="text-xs text-center text-gray-400">⚡ 30분 내 담당자가 연락드립니다</p>
-
-              {/* 모바일 전용 직접 상담 */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 lg:hidden">
-                <p className="text-sm font-semibold text-gray-900 mb-3">💬 바로 상담하실 분</p>
-                <div className="grid grid-cols-2 gap-2">
-                  <a href="tel:031-268-0304" className="flex items-center justify-center gap-2 bg-white border border-gray-300 hover:border-gray-400 rounded-xl py-3 text-sm font-semibold text-gray-900 transition-colors">
-                    <Phone size={16} />전화 상담
-                  </a>
-                  <button onClick={() => window.open('https://pf.kakao.com/_IrSRX/', '_blank')} className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl py-3 text-sm font-semibold text-gray-900 transition-colors">
-                    <MessageCircle size={16} />카톡 상담
-                  </button>
-                </div>
-                <p className="mt-2 text-xs text-gray-500 text-center">수원 장안구·북수원 정관장 조원점</p>
-              </div>
-
+      <section className="consult-body">
+        <div className="consult-form-wrap">
+          <div className="form-intro"><span>간편 상담 신청</span><h2>어떤 선물을 찾으세요?</h2><p>필수 항목만 입력하면 상담 신청이 완료됩니다.</p></div>
+          <div className="modern-form">
+            <fieldset>
+              <legend>선물 대상 <small>선택</small></legend>
+              <div className="choice-row">{GIFT_TYPES.map((item) => <button key={item} type="button" className={formData.giftType === item ? 'selected' : ''} onClick={() => update('giftType', item)}>{item}</button>)}</div>
+            </fieldset>
+            <fieldset>
+              <legend>예산 <em>필수</em></legend>
+              <div className="choice-grid">{BUDGETS.map((item) => <button key={item} type="button" className={formData.budget === item ? 'selected' : ''} onClick={() => update('budget', item)}>{item}</button>)}</div>
+            </fieldset>
+            <fieldset>
+              <legend>수량</legend>
+              <div className="choice-row">{QUANTITIES.map((item) => <button key={item} type="button" className={formData.quantity === item ? 'selected' : ''} onClick={() => update('quantity', item)}>{item}</button>)}</div>
+            </fieldset>
+            <div className="input-grid">
+              <label>성함 <em>필수</em><input value={formData.name} onChange={(e) => update('name', e.target.value)} placeholder="성함을 입력해 주세요" autoComplete="name" /></label>
+              <label>연락처 <em>필수</em><input type="tel" value={formData.phone} onChange={(e) => update('phone', e.target.value)} placeholder="010-0000-0000" autoComplete="tel" /></label>
             </div>
+            <label className="textarea-label">추가 요청사항 <small>선택</small><textarea value={formData.message} onChange={(e) => update('message', e.target.value)} placeholder="받는 분의 연령, 섭취 경험, 배송 요청 등을 적어주세요." rows={4} /></label>
+            <PrivacyConsent checked={privacyConsent} onChange={setPrivacyConsent} className="privacy-box" />
+            <button onClick={handleSubmit} disabled={isSubmitting || !valid} className="form-submit">
+              {isSubmitting ? '접수 중...' : <>무료 상담 신청하기 <ArrowRight size={18} /></>}
+            </button>
+            <p className="form-footnote">상담 신청은 결제나 주문 확정이 아닙니다.</p>
           </div>
-
-          {/* ── 데스크탑 사이드바 ── */}
-          <aside className="hidden lg:block sticky top-24 space-y-4">
-
-            {/* 왜 조원점인가 */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
-              <h3 className="font-bold text-gray-900 mb-4 text-sm">✅ 정관장 조원점이란?</h3>
-              <div className="space-y-3">
-                {SIDEBAR_FEATURES.map((f, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <div className="shrink-0 mt-0.5">{f.icon}</div>
-                    <div>
-                      <div className="text-sm font-semibold text-gray-900">{f.title}</div>
-                      <div className="text-xs text-gray-500">{f.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 직접 상담 */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-5">
-              <p className="font-bold text-gray-900 mb-1 text-sm">💬 지금 바로 상담</p>
-              <p className="text-xs text-gray-500 mb-3">평일·토요일 10:00 – 20:00</p>
-              <div className="space-y-2">
-                <a href="tel:031-268-0304" className="flex items-center justify-center gap-2 bg-white border border-gray-300 hover:border-gray-400 rounded-xl py-3 text-sm font-semibold text-gray-900 transition-colors w-full">
-                  <Phone size={16} />031-268-0304
-                </a>
-                <button onClick={() => window.open('https://pf.kakao.com/_IrSRX/', '_blank')} className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl py-3 text-sm font-semibold text-gray-900 transition-colors w-full">
-                  <MessageCircle size={16} />카카오톡 상담
-                </button>
-              </div>
-            </div>
-
-            {/* 매장 위치 */}
-            <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 text-sm text-gray-600">
-              <p className="font-semibold text-gray-900 mb-1">📍 정관장 조원점</p>
-              <p className="text-xs leading-relaxed break-keep">
-                경기도 수원시 장안구 송원로 81<br />메가플러스 A동 111호<br />
-                <span className="text-gray-400">주차 가능 · 방문 상담 환영</span>
-              </p>
-            </div>
-
-          </aside>
         </div>
-      </div>
-    </div>
+        <aside className="consult-aside">
+          <div className="aside-card direct-card"><p className="eyebrow">DIRECT CONTACT</p><h3>바로 상담할까요?</h3><p>월–토 10:00–20:00</p><a href="tel:031-268-0304"><Phone /> 031-268-0304</a><a href="https://pf.kakao.com/_IrSRX/" target="_blank" rel="noopener noreferrer"><MessageCircle /> 카카오톡 상담</a></div>
+          <div className="aside-card location-card"><MapPin /><div><strong>정관장 조원점</strong><p>경기 수원시 장안구 경수대로 935<br />동양파라곤 1층 105호</p></div></div>
+          <div className="aside-list"><p><Check /> 정품 보장</p><p><Check /> 선물 포장</p><p><Check /> 전국 택배 상담</p><p><Check /> 수원페이 · 카드 · 상품권</p></div>
+        </aside>
+      </section>
+    </main>
   );
 }
