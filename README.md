@@ -1,4 +1,11 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 정관장 조원점 홈페이지
+
+정관장 조원점의 매장 소개, 개인 선물 상담, 기업·단체 주문 상담을 위한 공식 운영 홈페이지입니다.
+
+- 운영 사이트: [https://www.jowon-kgc.com](https://www.jowon-kgc.com)
+- 매장: 경기 수원시 장안구 경수대로 935 동양파라곤 1층 105호
+- 전화: 031-268-0304
+- 2026년 9월 전면 개편 기록: [docs/2026-09-renewal.md](docs/2026-09-renewal.md)
 
 ## Getting Started
 
