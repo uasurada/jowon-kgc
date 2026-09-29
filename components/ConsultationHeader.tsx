@@ -10,7 +10,7 @@ export default function ConsultationHeader({ label }: { label: string }) {
           <ArrowLeft size={18} /><span>홈</span>
         </Link>
         <Link href="/" className="consult-brand">
-          <span><Image src="/logos/jungkwanjang-wordmark-white-v2.png" alt="JUNG KWAN JANG" width={562} height={99} priority unoptimized /></span>
+          <span><Image src="/logos/jungkwanjang-wordmark-clean.png" alt="JUNG KWAN JANG" width={562} height={99} priority unoptimized /></span>
           <strong>정관장 조원점</strong>
           <small>{label}</small>
         </Link>

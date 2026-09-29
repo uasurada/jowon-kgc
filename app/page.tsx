@@ -42,7 +42,7 @@ export default function LandingPage() {
         <div className="header-inner">
           <Link href="/" className="brand" aria-label="정관장 조원점 홈">
             <span className="brand-mark">
-              <Image src="/logos/jungkwanjang-wordmark-white-v2.png" alt="JUNG KWAN JANG" width={562} height={99} priority unoptimized />
+              <Image src="/logos/jungkwanjang-wordmark-clean.png" alt="JUNG KWAN JANG" width={562} height={99} priority unoptimized />
             </span>
             <span className="brand-copy"><strong>정관장 조원점</strong><small>JOWON STORE</small></span>
           </Link>
