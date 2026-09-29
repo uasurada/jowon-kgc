@@ -79,7 +79,7 @@ body { background: #fff; color: var(--ink); }
 .site-header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.94); border-bottom: 1px solid #e9e5de; backdrop-filter: blur(16px); }
 .header-inner { max-width: 1200px; height: 78px; margin: auto; padding: 0 28px; display: flex; align-items: center; justify-content: space-between; }
 .brand { display: inline-flex; align-items: center; gap: 13px; }
-.brand-mark { width: 148px; height: 44px; display: grid; place-items: center; overflow: hidden; background: #fff; }
+.brand-mark { width: 148px; height: 44px; display: grid; place-items: center; overflow: hidden; background: transparent; }
 .brand-mark img { width: 148px; height: auto; }
 .brand-copy { display: flex; flex-direction: column; line-height: 1.12; }
 .brand-copy strong { font-size: 17px; letter-spacing: -.04em; }
@@ -197,7 +197,7 @@ body { background: #fff; color: var(--ink); }
 .consult-back,.consult-call { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; }
 .consult-call { justify-self: end; color: var(--kgc-red); }
 .consult-brand { display: flex; align-items: center; gap: 10px; }
-.consult-brand > span { width: 132px; height: 38px; display: grid; place-items: center; overflow: hidden; background: #fff; }
+.consult-brand > span { width: 132px; height: 38px; display: grid; place-items: center; overflow: hidden; background: transparent; }
 .consult-brand img { width: 132px; height: auto; }
 .consult-brand strong { font-size: 15px; }.consult-brand small { padding-left: 10px; border-left: 1px solid #d9d4cc; color: #847e76; font-size: 11px; }
 .consult-hero { position: relative; min-height: 440px; display: flex; align-items: center; color: #fff; }
