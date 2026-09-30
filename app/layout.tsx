@@ -3,6 +3,7 @@ import { Noto_Sans_KR } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import storeWide from '../img/KakaoTalk_20260928_162936624_10.jpg';
+import InteractionGuard from '../components/InteractionGuard';
 
 const notoSansKR = Noto_Sans_KR({
   weight: ['400', '500', '700', '900'],
@@ -204,6 +205,7 @@ export default function RootLayout({
         )}
       </head>
       <body>
+        <InteractionGuard />
         {children}
 
         <script
