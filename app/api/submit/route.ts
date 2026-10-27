@@ -57,13 +57,24 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    const saved = await saveInquiry(inquiryData);
+    let saved: { id?: string | number } | null = null;
+    let databaseError: unknown = null;
 
-    // ✅ 텔레그램 알림 (DB 저장 성공 후)
+    // Supabase가 일시 중단되어도 상담 접수 자체가 막히지 않도록 한다.
+    try {
+      saved = await saveInquiry(inquiryData);
+    } catch (error) {
+      databaseError = error;
+      console.error('Database save failed; falling back to Telegram:', error);
+    }
+
+    let telegramSent = false;
+
+    // DB 저장 여부와 관계없이 텔레그램으로 상담 내용을 전달한다.
     try {
       if (formType === 'personal') {
         const html = buildPersonalTelegramMessageSafe({
-          id: saved.id,
+          id: saved?.id,
           giftTitle: mapPersonalGiftType(inquiryData.gift_type), // ✅ 한글 타이틀
           budget: inquiryData.budget,
           quantity: inquiryData.quantity, // ✅ 수량 포함
@@ -75,7 +86,7 @@ export async function POST(request: NextRequest) {
         await sendTelegramHtml(html);
       } else {
         const html = buildBusinessTelegramMessageSafe({
-          id: saved.id,
+          id: saved?.id,
           purposeTitle: mapBusinessPurpose(inquiryData.purpose), // ✅ 한글 타이틀
           quantity: inquiryData.quantity, // ✅ 수량 포함
           budgetPerUnit: inquiryData.budget_per_unit,
@@ -91,14 +102,20 @@ export async function POST(request: NextRequest) {
 
         await sendTelegramHtml(html);
       }
+      telegramSent = true;
     } catch (e) {
-      // 🔥 알림 실패해도 문의 저장은 성공 처리
+      // DB 저장이 성공했다면 텔레그램 알림 실패만으로 접수를 실패시키지 않는다.
       console.error('❌ Telegram notify failed:', e);
+    }
+
+    if (!saved && !telegramSent) {
+      throw databaseError ?? new Error('No consultation delivery channel is available.');
     }
 
     return NextResponse.json({
       success: true,
-      id: saved.id,
+      id: saved?.id ?? null,
+      channel: saved ? 'database' : 'telegram',
     });
 
   } catch (error: any) {
