@@ -3,6 +3,13 @@ import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase-server';
 
 export async function GET() {
+  if (!supabaseServer) {
+    return NextResponse.json(
+      { error: 'Supabase is not configured' },
+      { status: 503 }
+    );
+  }
+
   const now = new Date();
 
   // 오늘 시작

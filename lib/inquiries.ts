@@ -39,6 +39,10 @@ export type Inquiry = PersonalInquiry | BusinessInquiry;
 ====================== */
 
 export async function saveInquiry(inquiry: Inquiry) {
+  if (!supabaseServer) {
+    throw new Error('Supabase is not configured');
+  }
+
   const { data, error } = await supabaseServer
     .from('inquiries')
     .insert(inquiry)
