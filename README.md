@@ -7,6 +7,13 @@
 - 전화: 031-268-0304
 - 2026년 9월 전면 개편 기록: [docs/2026-09-renewal.md](docs/2026-09-renewal.md)
 
+## 상담 접수 · 관리자
+
+- 접수(`/api/submit`)는 Neon Postgres(`inquiries` 테이블)에 저장하고 텔레그램으로 알림을 보낸다. 둘 중 하나만 성공해도 접수는 성공 처리된다.
+- DB는 Vercel Marketplace의 Neon(`jowon-kgc-db`)이며 `DATABASE_URL`이 자동 등록된다. 스키마 변경 시 `db/schema.sql` 수정 후 `node db/migrate.mjs`.
+- 관리자 페이지 `/admin`(목록·검색·상태/메모·엑셀 다운로드)과 `/api/admin/*`는 루트의 `proxy.ts`가 Basic 인증으로 보호한다(`ADMIN_BASIC_USER`, `ADMIN_BASIC_PASS`). Next.js 16은 `proxy.ts`가 프로젝트 루트에 있어야만 적용한다.
+- `.env.local`에서 `#`, `$`가 들어간 값은 작은따옴표로 감싼다(그렇지 않으면 `#` 뒤가 주석으로 잘린다).
+
 ## Getting Started
 
 First, run the development server:

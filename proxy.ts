@@ -1,4 +1,4 @@
-// middleware.ts
+// proxy.ts (Next.js 16: 프로젝트 루트에 있어야 적용됨. app/ 아래에 두면 무시됨)
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -11,7 +11,7 @@ function unauthorized() {
   });
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const user = process.env.ADMIN_BASIC_USER || 'admin';
   const pass = process.env.ADMIN_BASIC_PASS || '';
 
@@ -29,7 +29,11 @@ export function middleware(req: NextRequest) {
     return unauthorized();
   }
 
-  const [u, p] = decoded.split(':');
+  // 비밀번호에 ':'가 들어가도 동작하도록 첫 번째 ':'에서만 분리
+  const sep = decoded.indexOf(':');
+  if (sep < 0) return unauthorized();
+  const u = decoded.slice(0, sep);
+  const p = decoded.slice(sep + 1);
   if (u !== user || p !== pass) return unauthorized();
 
   return NextResponse.next();
