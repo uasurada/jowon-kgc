@@ -100,7 +100,7 @@ export default function BusinessOrderConsultation() {
             <label className="textarea-label">추가 요청사항 <small>선택</small><textarea value={formData.message} onChange={(e) => update('message', e.target.value)} placeholder="희망 납기, 배송지 수, 포장 방식 등 필요한 내용을 적어주세요." rows={4} /></label>
             <p className="form-notice">
               기업·단체 주문은 <strong>선입금 또는 법인카드 결제 확인 후 출고</strong>됩니다.<br />
-              정관장 제품 외 타 업체 물품의 대리 구매나 대금 송금 요청에는 응하지 않습니다.
+              입금은 <strong>정관장 조원점(예금주 박시영) 계좌로만</strong> 안내드리며, 정관장 제품 외 타 업체 물품의 대리 구매나 대금 송금 요청에는 응하지 않습니다.
             </p>
             <PrivacyConsent checked={privacyConsent} onChange={setPrivacyConsent} className="privacy-box" />
             <button onClick={handleSubmit} disabled={isSubmitting || !valid} className="form-submit">

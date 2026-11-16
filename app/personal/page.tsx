@@ -87,6 +87,10 @@ export default function PersonalGiftConsultation() {
               <label>연락처 <em>필수</em><input type="tel" value={formData.phone} onChange={(e) => update('phone', e.target.value)} placeholder="010-0000-0000" autoComplete="tel" /></label>
             </div>
             <label className="textarea-label">추가 요청사항 <small>선택</small><textarea value={formData.message} onChange={(e) => update('message', e.target.value)} placeholder="받는 분의 연령, 섭취 경험, 배송 요청 등을 적어주세요." rows={4} /></label>
+            <p className="form-notice">
+              모든 주문은 <strong>결제 확인 후 출고</strong>됩니다. (계좌이체 · 카드 결제 · 전화 카드결제 가능)<br />
+              입금은 <strong>정관장 조원점(예금주 박시영) 계좌로만</strong> 안내드리며, 정관장 제품 외 타 업체 물품의 대리 구매나 대금 송금 요청에는 응하지 않습니다.
+            </p>
             <PrivacyConsent checked={privacyConsent} onChange={setPrivacyConsent} className="privacy-box" />
             <button onClick={handleSubmit} disabled={isSubmitting || !valid} className="form-submit">
               {isSubmitting ? '접수 중...' : <>무료 상담 신청하기 <ArrowRight size={18} /></>}
