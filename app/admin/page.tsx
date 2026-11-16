@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import {
   Calendar, TrendingUp, Users, FileText, DollarSign, Package, RefreshCw, ExternalLink,
-  Search, Download, Phone, X, Bell, ChevronLeft, ChevronRight,
+  Search, Download, Phone, X, Bell, ChevronLeft, ChevronRight, LogOut,
 } from 'lucide-react';
 
 interface Stats {
@@ -91,6 +91,11 @@ function toQuery(f: Filters, page?: number) {
 
 async function fetchJson(url: string, init?: RequestInit) {
   const res = await fetch(url, { cache: 'no-store', ...init });
+  if (res.status === 401) {
+    // 로그인 유지 기간이 끝났거나 비밀번호가 바뀐 경우
+    window.location.href = '/admin/login?next=/admin';
+    throw new Error('로그인이 필요합니다.');
+  }
   const body = await res.json().catch(() => null);
   if (!res.ok) throw new Error(body?.error ? `${body.error} (${res.status})` : `API 오류: ${res.status}`);
   return body;
@@ -247,6 +252,17 @@ export default function AdminDashboard() {
               >
                 <span className="text-sm font-medium">사이트</span>
               </Link>
+              <button
+                onClick={async () => {
+                  await fetch('/api/admin-auth/logout', { method: 'POST' });
+                  window.location.href = '/admin/login';
+                }}
+                className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                aria-label="로그아웃"
+              >
+                <LogOut size={16} />
+                <span className="text-sm font-medium hidden sm:inline">로그아웃</span>
+              </button>
             </div>
           </div>
         </div>
