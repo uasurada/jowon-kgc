@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { listInquiries } from '@/lib/inquiries';
 import { errorMessage } from '@/lib/db';
 import { mapPersonalGiftType, mapBusinessPurpose, mapDeliveryType } from '@/lib/formLabels';
+import { emailVerdict, historyLabel } from '@/lib/emailCheck';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,8 +43,8 @@ export async function GET(request: NextRequest) {
     );
 
     const header = [
-      '번호', '접수일시', '구분', '상태', '이름/담당자', '기관·회사명', '연락처', '이메일',
-      '유형/목적', '예산', '수량', '배송', '희망일', '요청사항', '메모',
+      '번호', '접수일시', '구분', '상태', '접수 이력', '이름/담당자', '직책', '기관 구분', '기관·회사명', '부서',
+      '연락처', '이메일', '이메일 판정', '유형/목적', '예산', '수량', '배송', '희망일', '요청사항', '메모',
     ];
 
     const lines = rows.map((r) =>
@@ -52,10 +53,15 @@ export async function GET(request: NextRequest) {
         kst(r.created_at),
         r.type === 'personal' ? '개인' : '기업',
         STATUS_LABEL[r.status] ?? r.status,
+        historyLabel(r),
         r.name,
+        r.job_title,
+        r.org_type,
         r.company_name,
+        r.department,
         r.phone,
         r.email,
+        r.type === 'business' ? emailVerdict(r.email, r.org_type).label : '',
         r.type === 'personal' ? mapPersonalGiftType(r.gift_type) : mapBusinessPurpose(r.purpose),
         r.budget || r.budget_per_unit,
         r.quantity,

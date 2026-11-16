@@ -7,6 +7,7 @@ import {
   Calendar, TrendingUp, Users, FileText, DollarSign, Package, RefreshCw, ExternalLink,
   Search, Download, Phone, X, Bell, ChevronLeft, ChevronRight, LogOut,
 } from 'lucide-react';
+import { emailVerdict, historyLabel, type RiskLevel } from '@/lib/emailCheck';
 
 interface Stats {
   today: number;
@@ -35,6 +36,13 @@ interface InquiryData {
   message?: string | null;
   status: string;
   memo?: string | null;
+  org_type?: string | null;
+  department?: string | null;
+  job_title?: string | null;
+  // 같은 번호로 이 건보다 먼저 들어온 접수
+  prev?: number;
+  completed?: number;
+  canceled?: number;
 }
 
 interface Filters {
@@ -122,6 +130,37 @@ function TypeBadge({ type }: { type: string }) {
   );
 }
 
+function HistoryBadge({ r }: { r: InquiryData }) {
+  const color = !r.prev
+    ? 'bg-sky-50 text-sky-700'
+    : r.completed
+      ? 'bg-amber-100 text-amber-800'
+      : 'bg-gray-100 text-gray-700';
+  return (
+    <span className={`px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${color}`}>
+      {historyLabel(r)}
+    </span>
+  );
+}
+
+const RISK_COLOR: Record<RiskLevel, string> = {
+  ok: 'bg-green-50 text-green-700',
+  warn: 'bg-orange-100 text-orange-800',
+  danger: 'bg-red-100 text-red-700',
+};
+
+function EmailBadge({ r, short = false }: { r: InquiryData; short?: boolean }) {
+  if (r.type !== 'business') return null;
+  const v = emailVerdict(r.email, r.org_type);
+  // 목록에서는 판정 아이콘과 앞부분만
+  const text = short ? v.label.replace(/\s*\(.*$/, '') : v.label;
+  return (
+    <span className={`inline-block px-2 py-1 rounded-md text-xs font-semibold ${RISK_COLOR[v.level]}`}>
+      {text}
+    </span>
+  );
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({ today: 0, week: 0, month: 0, total: 0, pending: 0 });
   const [giftTypeStats, setGiftTypeStats] = useState<Record<string, number>>({});
@@ -193,8 +232,10 @@ export default function AdminDashboard() {
   };
 
   const onRowUpdated = (row: InquiryData) => {
-    setRows((prev) => prev.map((r) => (r.id === row.id ? row : r)));
-    setSelected(row);
+    // PATCH 응답에는 재접수 이력(prev 등)이 없으므로 기존 행에 덮어쓴다
+    const merged = { ...rows.find((r) => r.id === row.id), ...row };
+    setRows((prev) => prev.map((r) => (r.id === row.id ? merged : r)));
+    setSelected(merged);
     loadStats().catch(() => {});
   };
 
@@ -396,6 +437,10 @@ export default function AdminDashboard() {
                       <p className="text-sm text-gray-600">
                         {getGiftTypeName(r.gift_type || r.purpose)} · {r.budget || r.budget_per_unit || '-'} · {r.quantity || '-'}
                       </p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        <HistoryBadge r={r} />
+                        <EmailBadge r={r} short />
+                      </div>
                       {r.memo && <p className="text-xs text-gray-500 mt-1 truncate">📝 {r.memo}</p>}
                     </button>
                   </li>
@@ -407,7 +452,7 @@ export default function AdminDashboard() {
                 <table className="w-full">
                   <thead className="bg-gray-50">
                     <tr>
-                      {['접수일시', '구분', '상태', '이름/기관', '연락처', '유형', '예산', '수량', '메모'].map((h) => (
+                      {['접수일시', '구분', '상태', '이름/기관', '연락처', '이력·확인', '유형', '예산', '수량', '메모'].map((h) => (
                         <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-600 whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
@@ -427,6 +472,12 @@ export default function AdminDashboard() {
                           ) : r.name}
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{r.phone}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-col items-start gap-1">
+                            <HistoryBadge r={r} />
+                            <EmailBadge r={r} short />
+                          </div>
+                        </td>
                         <td className="px-4 py-3 text-sm text-gray-600">{getGiftTypeName(r.gift_type || r.purpose)}</td>
                         <td className="px-4 py-3 text-sm text-gray-600">{r.budget || r.budget_per_unit || '-'}</td>
                         <td className="px-4 py-3 text-sm text-gray-600">{r.quantity || '-'}</td>
@@ -592,15 +643,22 @@ function InquiryDetail({
 
   const fields: [string, React.ReactNode][] = [
     ['접수일시', formatDate(inquiry.created_at, true)],
-    ['구분', inquiry.type === 'personal' ? '개인' : '기업'],
+    ['구분', inquiry.type === 'personal' ? '개인' : `기업${inquiry.org_type ? ` · ${inquiry.org_type}` : ''}`],
+    ['접수 이력', <HistoryBadge key="h" r={inquiry} />],
     ['기관·회사명', inquiry.company_name],
-    [inquiry.type === 'business' ? '담당자' : '이름', inquiry.name],
+    ['부서', inquiry.department],
+    [inquiry.type === 'business' ? '담당자' : '이름', [inquiry.name, inquiry.job_title].filter(Boolean).join(' ')],
     ['연락처', inquiry.phone ? (
       <a href={`tel:${inquiry.phone.replace(/[^\d+]/g, '')}`} className="inline-flex items-center gap-1 text-red-600 font-semibold">
         <Phone size={14} /> {inquiry.phone}
       </a>
     ) : null],
-    ['이메일', inquiry.email ? <a href={`mailto:${inquiry.email}`} className="text-blue-600">{inquiry.email}</a> : null],
+    ['이메일', inquiry.email ? (
+      <div className="space-y-1">
+        <a href={`mailto:${inquiry.email}`} className="text-blue-600">{inquiry.email}</a>
+        <div><EmailBadge r={inquiry} /></div>
+      </div>
+    ) : inquiry.type === 'business' ? <EmailBadge r={inquiry} /> : null],
     [inquiry.type === 'business' ? '목적' : '선물 유형', getGiftTypeName(inquiry.gift_type || inquiry.purpose)],
     [inquiry.type === 'business' ? '1개당 예산' : '예산', inquiry.budget || inquiry.budget_per_unit],
     ['수량', inquiry.quantity],
@@ -635,6 +693,14 @@ function InquiryDetail({
                 </React.Fragment>
               ))}
           </dl>
+
+          {inquiry.type === 'business' && (
+            <ul className="text-xs text-gray-700 bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-1">
+              <li>☎️ 받은 번호가 아닌 <b>기관·회사 대표번호</b>(홈페이지·114 확인)로 전화해 부서·담당자 재직 확인</li>
+              <li>📧 견적서는 입력한 공식 이메일로만 발송</li>
+              <li>💳 선입금/법인카드 확인 후 출고 · 후불·타 업체 대리구매·송금 요청은 거절</li>
+            </ul>
+          )}
 
           {inquiry.message && (
             <div>

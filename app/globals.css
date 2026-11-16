@@ -267,6 +267,8 @@ body { background: #fff; color: var(--ink); }
 .form-submit { min-height: 58px; display: flex; align-items: center; justify-content: center; gap: 9px; background: var(--kgc-red); color: #fff; font-size: 15px; font-weight: 800; transition: .2s; }
 .form-submit:hover { background: #971018; }.form-submit:disabled { background: #d4d0ca; color: #8e8982; cursor: not-allowed; }
 .form-footnote { margin-top: -22px; color: #9a938a; text-align: center; font-size: 11px; }
+.form-hint { margin-top: -12px; color: #8a8379; font-size: 12px; }.form-hint.error { color: var(--kgc-red); }
+.form-notice { padding: 14px 16px; background: #f8f6f2; border: 1px solid #e5e0d8; color: #5e5851; font-size: 12px; line-height: 1.7; }.form-notice strong { color: #2b2824; }
 .consult-aside { position: sticky; top: 100px; display: grid; gap: 14px; }
 .aside-card { padding: 28px; background: #fff; border: 1px solid #e3ddd4; }
 .direct-card h3,.catalog-card h3 { margin-top: 7px; font-size: 22px; line-height: 1.35; letter-spacing: -.04em; }.direct-card > p:not(.eyebrow),.catalog-card p { margin-top: 7px; color: #817a71; font-size: 13px; line-height: 1.65; }

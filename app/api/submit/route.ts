@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { saveInquiry } from '@/lib/inquiries';
+import { saveInquiry, getPhoneHistory } from '@/lib/inquiries';
+import { ORG_TYPES, isValidEmail, emailVerdict, historyLabel, type PhoneHistory } from '@/lib/emailCheck';
 
 import {
   sendTelegramHtml,
@@ -40,12 +41,31 @@ export async function POST(request: NextRequest) {
         privacy_consent_at: new Date().toISOString(),        
       };
     } else {
+      // 기업 주문은 금액이 커서 사칭 확인에 필요한 항목을 서버에서도 필수로 검사한다
+      const missing = [
+        !String(formData.companyName ?? '').trim() && '회사·기관명',
+        !(ORG_TYPES as readonly string[]).includes(formData.orgType) && '기관 구분',
+        !String(formData.department ?? '').trim() && '부서명',
+        !String(formData.contactName ?? '').trim() && '담당자명',
+        !String(formData.phone ?? '').trim() && '연락처',
+        !isValidEmail(formData.email) && '이메일',
+      ].filter(Boolean);
+      if (missing.length) {
+        return NextResponse.json(
+          { error: `${missing.join(', ')}을(를) 확인해 주세요.` },
+          { status: 400 }
+        );
+      }
+
       inquiryData = {
         type: 'business',
         name: formData.contactName, // 담당자명
         phone: formData.phone,
-        email: formData.email || null,
+        email: String(formData.email).trim(),
         company_name: formData.companyName,
+        org_type: formData.orgType,
+        department: String(formData.department).trim(),
+        job_title: String(formData.jobTitle ?? '').trim() || null,
         purpose: formData.purpose, // id (employee/client...)
         quantity: formData.quantity,
         budget_per_unit: formData.budgetPerUnit,
@@ -68,6 +88,15 @@ export async function POST(request: NextRequest) {
       console.error('Database save failed; falling back to Telegram:', error);
     }
 
+    // 같은 번호 재접수 여부 (조회 실패해도 접수는 계속)
+    let history: PhoneHistory | null = null;
+    if (saved) {
+      history = await getPhoneHistory(inquiryData.phone, saved.id).catch((e) => {
+        console.error('Phone history lookup failed:', e);
+        return null;
+      });
+    }
+
     let telegramSent = false;
 
     // DB 저장 여부와 관계없이 텔레그램으로 상담 내용을 전달한다.
@@ -81,6 +110,7 @@ export async function POST(request: NextRequest) {
           name: inquiryData.name,
           phone: inquiryData.phone, // ✅ tel: 링크 처리됨
           message: inquiryData.message,
+          history: history ? historyLabel(history) : null,
         });
 
         await sendTelegramHtml(html);
@@ -94,6 +124,11 @@ export async function POST(request: NextRequest) {
           desiredDate: inquiryData.desired_date, // ✅ 값 없으면 줄 숨김
 
           companyName: inquiryData.company_name,
+          orgType: inquiryData.org_type,
+          department: inquiryData.department,
+          jobTitle: inquiryData.job_title,
+          emailCheck: emailVerdict(inquiryData.email, inquiryData.org_type).label,
+          history: history ? historyLabel(history) : null,
           contactName: inquiryData.name, // 담당자명
           phone: inquiryData.phone, // ✅ tel: 링크 처리됨
           email: inquiryData.email, // ✅ mailto: 링크 처리됨

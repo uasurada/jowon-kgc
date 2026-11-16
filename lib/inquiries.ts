@@ -1,4 +1,5 @@
 import { sql } from './db';
+import type { PhoneHistory } from './emailCheck';
 
 /* ======================
    타입 정의
@@ -20,8 +21,11 @@ export interface BusinessInquiry {
   type: 'business';
   name: string;
   phone: string;
-  email?: string;
+  email: string;
   company_name: string;
+  org_type: string;
+  department: string;
+  job_title?: string | null;
   purpose: string;
   quantity: string;
   budget_per_unit: string;
@@ -63,12 +67,14 @@ export async function saveInquiry(inquiry: Inquiry) {
 
   const rows = await db`
     INSERT INTO inquiries (
-      type, name, phone, email, company_name, gift_type, purpose,
+      type, name, phone, email, company_name, org_type, department, job_title,
+      gift_type, purpose,
       budget, budget_per_unit, quantity, delivery_type, desired_date,
       message, privacy_consent, privacy_consent_at
     ) VALUES (
       ${i.type}, ${i.name ?? null}, ${i.phone ?? null}, ${i.email ?? null},
-      ${i.company_name ?? null}, ${i.gift_type ?? null}, ${i.purpose ?? null},
+      ${i.company_name ?? null}, ${i.org_type ?? null}, ${i.department ?? null}, ${i.job_title ?? null},
+      ${i.gift_type ?? null}, ${i.purpose ?? null},
       ${i.budget ?? null}, ${i.budget_per_unit ?? null}, ${i.quantity ?? null},
       ${i.delivery_type ?? null}, ${i.desired_date ?? null}, ${i.message ?? null},
       ${i.privacy_consent ?? false}, ${i.privacy_consent_at ?? null}
@@ -77,6 +83,24 @@ export async function saveInquiry(inquiry: Inquiry) {
   `;
 
   return rows[0] as { id: string };
+}
+
+/** 같은 전화번호(숫자만 비교)로 들어온 기존 접수 수. excludeId는 방금 저장한 건 */
+export async function getPhoneHistory(phone: string, excludeId?: string | number | null): Promise<PhoneHistory> {
+  const db = requireDb();
+  const digits = String(phone ?? '').replace(/\D/g, '');
+  if (digits.length < 8) return { prev: 0, completed: 0, canceled: 0 };
+
+  const [row] = await db`
+    SELECT
+      count(*)::int AS prev,
+      count(*) FILTER (WHERE status = 'completed')::int AS completed,
+      count(*) FILTER (WHERE status = 'canceled')::int AS canceled
+    FROM inquiries
+    WHERE regexp_replace(phone, '\\D', '', 'g') = ${digits}
+      AND id <> ${excludeId ?? -1}
+  `;
+  return row as PhoneHistory;
 }
 
 /* ======================
@@ -100,6 +124,8 @@ function buildWhere(f: InquiryFilter) {
       `company_name ILIKE ${like}`,
       `message ILIKE ${like}`,
       `memo ILIKE ${like}`,
+      `email ILIKE ${like}`,
+      `department ILIKE ${like}`,
     ];
     // 전화번호는 하이픈/공백 차이를 무시하고 숫자로 비교
     if (digits.length >= 3) {
@@ -129,8 +155,19 @@ export async function listInquiries(f: InquiryFilter, limit = 30, offset = 0) {
   const off = Math.max(Math.trunc(offset) || 0, 0);
 
   const [rows, countRows] = await Promise.all([
+    // h: 같은 번호로 이 건보다 먼저 들어온 접수 (첫 접수/재접수 표시용)
     db.query(
-      `SELECT * FROM inquiries ${where} ORDER BY created_at DESC LIMIT ${lim} OFFSET ${off}`,
+      `SELECT i.*, h.prev, h.completed, h.canceled
+       FROM (SELECT * FROM inquiries ${where} ORDER BY created_at DESC LIMIT ${lim} OFFSET ${off}) i
+       LEFT JOIN LATERAL (
+         SELECT count(*)::int AS prev,
+                count(*) FILTER (WHERE j.status = 'completed')::int AS completed,
+                count(*) FILTER (WHERE j.status = 'canceled')::int AS canceled
+         FROM inquiries j
+         WHERE regexp_replace(j.phone, '\\D', '', 'g') = regexp_replace(i.phone, '\\D', '', 'g')
+           AND j.created_at < i.created_at
+       ) h ON true
+       ORDER BY i.created_at DESC`,
       params
     ),
     db.query(`SELECT count(*)::int AS n FROM inquiries ${where}`, params),

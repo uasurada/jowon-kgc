@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowRight, BookOpen, Building2, Check, FileText, MessageCircle, Phone, ReceiptText, Truck } from 'lucide-react';
 import PrivacyConsent from '@/components/PrivacyConsent';
 import ConsultationHeader from '@/components/ConsultationHeader';
+import { ORG_TYPES, isValidEmail } from '@/lib/emailCheck';
 import storePhoto from '../../img/KakaoTalk_20260928_162936624_08.jpg';
 
 const PURPOSES = ['직원 선물', '거래처 선물', '행사 답례품', '기타'];
@@ -13,14 +14,17 @@ const QUANTITIES = ['30~49세트', '50~99세트', '100~199세트', '200세트 �
 const BUDGETS = ['3~5만원대', '5~10만원대', '10~20만원대', '20만원 이상'];
 
 export default function BusinessOrderConsultation() {
-  const [formData, setFormData] = useState({ companyName: '', contactName: '', phone: '', purpose: '', quantity: '', budgetPerUnit: '', message: '' });
+  const [formData, setFormData] = useState({ orgType: '', companyName: '', department: '', contactName: '', jobTitle: '', phone: '', email: '', purpose: '', quantity: '', budgetPerUnit: '', message: '' });
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const update = (key: string, value: string) => setFormData((prev) => ({ ...prev, [key]: value }));
 
+  const emailOk = isValidEmail(formData.email);
+  const valid = formData.orgType && formData.companyName.trim() && formData.department.trim() && formData.contactName.trim() && formData.phone.trim() && emailOk && formData.quantity && formData.budgetPerUnit && privacyConsent;
+
   const handleSubmit = async () => {
-    if (!formData.companyName || !formData.contactName || !formData.phone || !formData.quantity || !formData.budgetPerUnit || !privacyConsent) return;
+    if (!valid) return;
     setIsSubmitting(true);
     try {
       const res = await fetch('/api/submit', {
@@ -48,7 +52,6 @@ export default function BusinessOrderConsultation() {
     );
   }
 
-  const valid = formData.companyName && formData.contactName && formData.phone && formData.quantity && formData.budgetPerUnit && privacyConsent;
   return (
     <main className="consult-page business-page">
       <ConsultationHeader label="기업·단체 주문" />
@@ -73,15 +76,32 @@ export default function BusinessOrderConsultation() {
         <div className="consult-form-wrap">
           <div className="form-intro"><span>기업 견적 문의</span><h2>필요한 주문 정보를 알려주세요.</h2><p>확인 후 매장에서 구성과 견적을 안내해 드립니다.</p></div>
           <div className="modern-form">
+            <fieldset><legend>기관 구분 <em>필수</em></legend><div className="choice-row">{ORG_TYPES.map((item) => <button key={item} type="button" className={formData.orgType === item ? 'selected' : ''} onClick={() => update('orgType', item)}>{item}</button>)}</div></fieldset>
             <div className="input-grid">
-              <label>회사명 <em>필수</em><input value={formData.companyName} onChange={(e) => update('companyName', e.target.value)} placeholder="회사 또는 단체명" /></label>
-              <label>담당자명 <em>필수</em><input value={formData.contactName} onChange={(e) => update('contactName', e.target.value)} placeholder="담당자 성함" autoComplete="name" /></label>
+              <label>회사·기관명 <em>필수</em><input value={formData.companyName} onChange={(e) => update('companyName', e.target.value)} placeholder="회사 또는 기관·단체명" autoComplete="organization" /></label>
+              <label>부서명 <em>필수</em><input value={formData.department} onChange={(e) => update('department', e.target.value)} placeholder="예: 총무팀, 복지정책과" /></label>
             </div>
-            <label className="single-input">연락처 <em>필수</em><input type="tel" value={formData.phone} onChange={(e) => update('phone', e.target.value)} placeholder="010-0000-0000" autoComplete="tel" /></label>
+            <div className="input-grid">
+              <label>담당자명 <em>필수</em><input value={formData.contactName} onChange={(e) => update('contactName', e.target.value)} placeholder="담당자 성함" autoComplete="name" /></label>
+              <label>직책 <small>선택</small><input value={formData.jobTitle} onChange={(e) => update('jobTitle', e.target.value)} placeholder="예: 대리, 주무관" autoComplete="organization-title" /></label>
+            </div>
+            <div className="input-grid">
+              <label>연락처 <em>필수</em><input type="tel" value={formData.phone} onChange={(e) => update('phone', e.target.value)} placeholder="010-0000-0000" autoComplete="tel" /></label>
+              <label>이메일 <em>필수</em><input type="email" value={formData.email} onChange={(e) => update('email', e.target.value)} placeholder="회사·기관 공식 이메일" autoComplete="email" inputMode="email" /></label>
+            </div>
+            <p className={`form-hint${formData.email && !emailOk ? ' error' : ''}`}>
+              {formData.email && !emailOk
+                ? '이메일 형식을 확인해 주세요.'
+                : '견적서는 회사·기관 공식 이메일(@회사도메인, @○○.go.kr 등)로 보내드립니다.'}
+            </p>
             <fieldset><legend>주문 용도 <small>선택</small></legend><div className="choice-row">{PURPOSES.map((item) => <button key={item} type="button" className={formData.purpose === item ? 'selected' : ''} onClick={() => update('purpose', item)}>{item}</button>)}</div></fieldset>
             <fieldset><legend>주문 수량 <em>필수</em></legend><div className="choice-grid">{QUANTITIES.map((item) => <button key={item} type="button" className={formData.quantity === item ? 'selected' : ''} onClick={() => update('quantity', item)}>{item}</button>)}</div></fieldset>
             <fieldset><legend>세트당 예산 <em>필수</em></legend><div className="choice-grid">{BUDGETS.map((item) => <button key={item} type="button" className={formData.budgetPerUnit === item ? 'selected' : ''} onClick={() => update('budgetPerUnit', item)}>{item}</button>)}</div></fieldset>
             <label className="textarea-label">추가 요청사항 <small>선택</small><textarea value={formData.message} onChange={(e) => update('message', e.target.value)} placeholder="희망 납기, 배송지 수, 포장 방식 등 필요한 내용을 적어주세요." rows={4} /></label>
+            <p className="form-notice">
+              기업·단체 주문은 <strong>선입금 또는 법인카드 결제 확인 후 출고</strong>됩니다.<br />
+              정관장 제품 외 타 업체 물품의 대리 구매나 대금 송금 요청에는 응하지 않습니다.
+            </p>
             <PrivacyConsent checked={privacyConsent} onChange={setPrivacyConsent} className="privacy-box" />
             <button onClick={handleSubmit} disabled={isSubmitting || !valid} className="form-submit">
               {isSubmitting ? '접수 중...' : <>무료 견적 요청하기 <ArrowRight size={18} /></>}

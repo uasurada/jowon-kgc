@@ -26,3 +26,11 @@ CREATE TABLE IF NOT EXISTS inquiries (
 
 CREATE INDEX IF NOT EXISTS inquiries_created_at_idx ON inquiries (created_at DESC);
 CREATE INDEX IF NOT EXISTS inquiries_phone_idx ON inquiries (phone);
+
+-- 기업 주문 사칭 방지용 (2026-11)
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS org_type   TEXT;  -- 기업/공공기관/학교·병원·단체
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS department TEXT;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS job_title  TEXT;
+
+-- 같은 번호 재접수 조회 (하이픈 차이 무시)
+CREATE INDEX IF NOT EXISTS inquiries_phone_digits_idx ON inquiries (regexp_replace(phone, '\D', '', 'g'));

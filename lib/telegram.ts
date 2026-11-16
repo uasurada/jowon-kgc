@@ -68,11 +68,13 @@ export function buildPersonalTelegramMessageSafe(params: {
   name?: string;
   phone?: string;
   message?: string | null;
+  history?: string | null;
 }) {
   const phone = params.phone ?? "";
 
   let html = "";
   html += sectionTitle("📦 개인 상담 접수");
+  if (isNonEmpty(params.history)) html += `${escapeHtml(params.history)}\n`;
   html += line(`<b>선물</b>`, params.giftTitle);
   html += line(`<b>예산</b>`, params.budget);
   html += line(`<b>수량</b>`, params.quantity);
@@ -104,9 +106,14 @@ export function buildBusinessTelegramMessageSafe(params: {
   desiredDate?: string | null;
 
   companyName?: string;
+  orgType?: string | null;
+  department?: string | null;
+  jobTitle?: string | null;
   contactName?: string;
   phone?: string;
   email?: string | null;
+  emailCheck?: string | null;
+  history?: string | null;
 
   message?: string | null;
 }) {
@@ -115,6 +122,9 @@ export function buildBusinessTelegramMessageSafe(params: {
 
   let html = "";
   html += sectionTitle("🏢 기업 견적 문의 접수");
+  if (isNonEmpty(params.history)) html += `${escapeHtml(params.history)}\n`;
+  if (isNonEmpty(params.emailCheck)) html += `<b>${escapeHtml(params.emailCheck)}</b>\n`;
+  html += "\n";
   html += line(`<b>용도</b>`, params.purposeTitle);
   html += line(`<b>수량</b>`, params.quantity);
   html += line(`<b>1인 예산</b>`, params.budgetPerUnit);
@@ -125,8 +135,13 @@ export function buildBusinessTelegramMessageSafe(params: {
   html += divider();
 
   html += sectionTitle("📇 담당자");
-  html += line(`<b>회사</b>`, params.companyName);
-  html += line(`<b>담당자</b>`, params.contactName);
+  html += line(`<b>구분</b>`, params.orgType);
+  html += line(`<b>회사·기관</b>`, params.companyName);
+  html += line(`<b>부서</b>`, params.department);
+  html += line(
+    `<b>담당자</b>`,
+    [params.contactName, params.jobTitle].filter(isNonEmpty).join(" ")
+  );
 
   if (isNonEmpty(phone)) {
     const digits = String(phone).replace(/[^\d+]/g, "");
@@ -140,6 +155,8 @@ export function buildBusinessTelegramMessageSafe(params: {
   if (isNonEmpty(params.message)) {
     html += `\n<b>📝 요청사항</b>\n${escapeHtml(params.message)}\n`;
   }
+
+  html += `\n☎️ 진행 전 기관·회사 <b>대표번호</b>로 부서·담당자 재직 확인\n💳 선입금/법인카드 확인 후 출고 · 타 업체 대리구매·송금 요청은 거절\n`;
 
   return html.trim();
 }
