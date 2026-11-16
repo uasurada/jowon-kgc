@@ -20,7 +20,6 @@ export interface PersonalInquiry {
   recipient_name?: string | null;
   recipient_phone?: string | null;
   sender_label?: string | null;
-  card_message?: string | null;
   recipient_address?: string | null;
 }
 
@@ -78,7 +77,7 @@ export async function saveInquiry(inquiry: Inquiry) {
       gift_type, purpose,
       budget, budget_per_unit, quantity, delivery_type, desired_date,
       message, privacy_consent, privacy_consent_at,
-      gift_send, recipient_name, recipient_phone, sender_label, card_message, recipient_address
+      gift_send, recipient_name, recipient_phone, sender_label, recipient_address
     ) VALUES (
       ${i.type}, ${i.name ?? null}, ${i.phone ?? null}, ${i.email ?? null},
       ${i.company_name ?? null}, ${i.org_type ?? null}, ${i.department ?? null}, ${i.job_title ?? null},
@@ -87,7 +86,7 @@ export async function saveInquiry(inquiry: Inquiry) {
       ${i.delivery_type ?? null}, ${i.desired_date ?? null}, ${i.message ?? null},
       ${i.privacy_consent ?? false}, ${i.privacy_consent_at ?? null},
       ${i.gift_send ?? false}, ${i.recipient_name ?? null}, ${i.recipient_phone ?? null},
-      ${i.sender_label ?? null}, ${i.card_message ?? null}, ${i.recipient_address ?? null}
+      ${i.sender_label ?? null}, ${i.recipient_address ?? null}
     )
     RETURNING id
   `;

@@ -73,7 +73,6 @@ export function buildPersonalTelegramMessageSafe(params: {
     recipientName?: string | null;
     recipientPhone?: string | null;
     senderLabel?: string | null;
-    cardMessage?: string | null;
     address?: string | null;   // 구매자가 입력한 주소 (없으면 매장이 받는 분께 문의)
     sms: string;
   } | null;
@@ -109,9 +108,6 @@ export function buildPersonalTelegramMessageSafe(params: {
     }
     html += line(`<b>주소</b>`, gift.address || "모름 → 매장이 문자로 문의");
     html += line(`<b>안내할 보낸 분</b>`, gift.senderLabel || params.name);
-    if (isNonEmpty(gift.cardMessage)) {
-      html += `<b>💌 카드 메시지</b>\n${escapeHtml(gift.cardMessage)}\n`;
-    }
   }
 
   if (isNonEmpty(params.message)) {

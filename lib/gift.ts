@@ -1,7 +1,5 @@
 // lib/gift.ts — 개인 "선물로 보내기" (텔레그램·관리자 화면 공용)
 
-export const CARD_MESSAGE_MAX = 200;
-
 /** 받는 분께 처음 보낼 안내 문자. 매장 휴대폰에서 보내므로 "이 번호로 회신" */
 export function giftSmsText(p: { recipientName?: string | null; senderLabel?: string | null; buyerName?: string | null }) {
   const to = p.recipientName?.trim() ? `${p.recipientName.trim()}님, ` : '';

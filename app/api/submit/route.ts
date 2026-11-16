@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { saveInquiry, getPhoneHistory } from '@/lib/inquiries';
 import { ORG_TYPES, isValidEmail, emailVerdict, historyLabel, type PhoneHistory } from '@/lib/emailCheck';
-import { CARD_MESSAGE_MAX, giftSmsText } from '@/lib/gift';
+import { giftSmsText } from '@/lib/gift';
 
 import {
   sendTelegramHtml,
@@ -69,7 +69,6 @@ export async function POST(request: NextRequest) {
           recipient_name: String(formData.recipientName).trim(),
           recipient_phone: String(formData.recipientPhone).trim(),
           sender_label: String(formData.senderLabel ?? '').trim() || null,
-          card_message: String(formData.cardMessage ?? '').trim().slice(0, CARD_MESSAGE_MAX) || null,
           recipient_address: recipientAddress,
         }),
       };
@@ -149,7 +148,6 @@ export async function POST(request: NextRequest) {
                 recipientName: inquiryData.recipient_name,
                 recipientPhone: inquiryData.recipient_phone,
                 senderLabel: inquiryData.sender_label,
-                cardMessage: inquiryData.card_message,
                 address: inquiryData.recipient_address,
                 sms: giftSmsText({
                   recipientName: inquiryData.recipient_name,

@@ -44,7 +44,6 @@ interface InquiryData {
   recipient_name?: string | null;
   recipient_phone?: string | null;
   sender_label?: string | null;
-  card_message?: string | null;
   recipient_address?: string | null;
   // 같은 번호로 이 건보다 먼저 들어온 접수
   prev?: number;
@@ -667,12 +666,6 @@ function GiftPanel({ inquiry }: { inquiry: InquiryData }) {
         <dt className="text-gray-500">안내할 이름</dt>
         <dd className="col-span-2 text-gray-900">{inquiry.sender_label || inquiry.name}</dd>
       </dl>
-      {inquiry.card_message && (
-        <div>
-          <p className="text-gray-500 mb-1">💌 카드 메시지</p>
-          <p className="whitespace-pre-wrap bg-white rounded p-2 text-gray-900">{inquiry.card_message}</p>
-        </div>
-      )}
       {inquiry.recipient_address ? (
         <p className="text-xs text-gray-600">📦 보내는 분이 주소를 입력함 → 결제 확인 후 바로 발송 (받는 분께 따로 연락 불필요)</p>
       ) : (

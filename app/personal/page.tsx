@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Check, Gift, MapPin, MessageCircle, Phone, ShieldCheck, Sparkles } from 'lucide-react';
-import { CARD_MESSAGE_MAX } from '@/lib/gift';
 import PrivacyConsent from '@/components/PrivacyConsent';
 import ConsultationHeader from '@/components/ConsultationHeader';
 import storePhoto from '../../img/KakaoTalk_20260928_162936624_04.jpg';
@@ -34,7 +33,7 @@ function loadDaumPostcode() {
 export default function PersonalGiftConsultation() {
   const [formData, setFormData] = useState({
     name: '', phone: '', giftType: '', budget: '', quantity: '1개', message: '',
-    delivery: 'self', recipientName: '', recipientPhone: '', senderLabel: '', cardMessage: '',
+    delivery: 'self', recipientName: '', recipientPhone: '', senderLabel: '',
     addressKnown: 'no', zipcode: '', address1: '', address2: '',
   });
   const [privacyConsent, setPrivacyConsent] = useState(false);
@@ -151,7 +150,6 @@ export default function PersonalGiftConsultation() {
                   </div>
                 )}
                 <label className="single-input">받는 분께 안내할 보내는 분 이름 <small>선택</small><input value={formData.senderLabel} onChange={(e) => update('senderLabel', e.target.value)} placeholder="예: 막내아들 민수 (비우면 신청자 성함)" /></label>
-                <label className="textarea-label">카드 메시지 <small>선택 · 손글씨 카드로 동봉</small><textarea value={formData.cardMessage} onChange={(e) => update('cardMessage', e.target.value)} maxLength={CARD_MESSAGE_MAX} placeholder="예: 늘 감사드립니다. 건강하세요!" rows={3} /></label>
                 {!knowsAddress && <p className="form-hint">받는 분이 7일 안에 회신하지 않으시면 보내시는 분께 연락드려 환불 또는 다른 주소 발송을 안내해 드립니다.</p>}
               </div>
             )}
@@ -174,7 +172,8 @@ export default function PersonalGiftConsultation() {
             <label className="textarea-label">추가 요청사항 <small>선택</small><textarea value={formData.message} onChange={(e) => update('message', e.target.value)} placeholder="받는 분의 연령, 섭취 경험, 배송 요청 등을 적어주세요." rows={4} /></label>
             <p className="form-notice">
               모든 주문은 <strong>결제 확인 후 출고</strong>됩니다. (계좌이체 · 카드 결제 · 전화 카드결제 가능)<br />
-              입금은 <strong>정관장 조원점(예금주 박시영) 계좌로만</strong> 안내드리며, 정관장 제품 외 타 업체 물품의 대리 구매나 대금 송금 요청에는 응하지 않습니다.
+              입금은 <strong>정관장 조원점(예금주 박시영) 계좌로만</strong> 안내드리며, 정관장 제품 외 타 업체 물품의 대리 구매나 대금 송금 요청에는 응하지 않습니다.<br />
+              택배 송장의 보내는 분 주소는 반품·교환 처리를 위해 <strong>정관장 조원점 매장 주소</strong>로 표기되며, 보내는 분 성함과 연락처만 주문하신 분 정보로 기재됩니다.
             </p>
             <PrivacyConsent checked={privacyConsent} onChange={setPrivacyConsent} className="privacy-box" />
             <button onClick={handleSubmit} disabled={isSubmitting || !valid} className="form-submit">
