@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { saveInquiry, getPhoneHistory } from '@/lib/inquiries';
 import { ORG_TYPES, isValidEmail, emailVerdict, historyLabel, type PhoneHistory } from '@/lib/emailCheck';
+import { CARD_MESSAGE_MAX, giftSmsText } from '@/lib/gift';
 
 import {
   sendTelegramHtml,
@@ -29,6 +30,30 @@ export async function POST(request: NextRequest) {
     let inquiryData: any;
 
     if (formType === 'personal') {
+      const isGift = formData.delivery === 'gift';
+      const knowsAddress = isGift && formData.addressKnown === 'yes';
+      // "(12345) 도로명주소 상세주소" 한 줄로 저장
+      const recipientAddress = knowsAddress
+        ? [
+            String(formData.zipcode ?? '').trim() && `(${String(formData.zipcode).trim()})`,
+            String(formData.address1 ?? '').trim(),
+            String(formData.address2 ?? '').trim(),
+          ].filter(Boolean).join(' ').slice(0, 300)
+        : null;
+      if (isGift) {
+        const missing = [
+          !String(formData.recipientName ?? '').trim() && '받는 분 성함',
+          String(formData.recipientPhone ?? '').replace(/\D/g, '').length < 9 && '받는 분 연락처',
+          knowsAddress && !String(formData.address1 ?? '').trim() && '받는 분 주소',
+        ].filter(Boolean);
+        if (missing.length) {
+          return NextResponse.json(
+            { error: `${missing.join(', ')}을(를) 확인해 주세요.` },
+            { status: 400 }
+          );
+        }
+      }
+
       inquiryData = {
         type: 'personal',
         name: formData.name,
@@ -38,7 +63,15 @@ export async function POST(request: NextRequest) {
         quantity: formData.quantity,
         message: formData.message || null,
         privacy_consent: true,
-        privacy_consent_at: new Date().toISOString(),        
+        privacy_consent_at: new Date().toISOString(),
+        ...(isGift && {
+          gift_send: true,
+          recipient_name: String(formData.recipientName).trim(),
+          recipient_phone: String(formData.recipientPhone).trim(),
+          sender_label: String(formData.senderLabel ?? '').trim() || null,
+          card_message: String(formData.cardMessage ?? '').trim().slice(0, CARD_MESSAGE_MAX) || null,
+          recipient_address: recipientAddress,
+        }),
       };
     } else {
       // 기업 주문은 금액이 커서 사칭 확인에 필요한 항목을 서버에서도 필수로 검사한다
@@ -111,6 +144,20 @@ export async function POST(request: NextRequest) {
           phone: inquiryData.phone, // ✅ tel: 링크 처리됨
           message: inquiryData.message,
           history: history ? historyLabel(history) : null,
+          gift: inquiryData.gift_send
+            ? {
+                recipientName: inquiryData.recipient_name,
+                recipientPhone: inquiryData.recipient_phone,
+                senderLabel: inquiryData.sender_label,
+                cardMessage: inquiryData.card_message,
+                address: inquiryData.recipient_address,
+                sms: giftSmsText({
+                  recipientName: inquiryData.recipient_name,
+                  senderLabel: inquiryData.sender_label,
+                  buyerName: inquiryData.name,
+                }),
+              }
+            : null,
         });
 
         await sendTelegramHtml(html);

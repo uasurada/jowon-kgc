@@ -32,5 +32,13 @@ ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS org_type   TEXT;  -- 기업/공�
 ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS department TEXT;
 ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS job_title  TEXT;
 
+-- 개인 선물 보내기: 받는 분 전화번호만으로 매장이 연락해 배송지를 받는다 (2026-11)
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS gift_send       BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS recipient_name  TEXT;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS recipient_phone TEXT;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS sender_label    TEXT;  -- 받는 분께 안내할 보내는 분 이름
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS card_message    TEXT;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS recipient_address TEXT;  -- 구매자가 주소를 아는 경우만. 비어 있으면 매장이 받는 분께 문의
+
 -- 같은 번호 재접수 조회 (하이픈 차이 무시)
 CREATE INDEX IF NOT EXISTS inquiries_phone_digits_idx ON inquiries (regexp_replace(phone, '\D', '', 'g'));

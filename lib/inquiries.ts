@@ -15,6 +15,13 @@ export interface PersonalInquiry {
   message?: string;
   privacy_consent?: boolean;
   privacy_consent_at?: string;
+  // 선물로 보내기
+  gift_send?: boolean;
+  recipient_name?: string | null;
+  recipient_phone?: string | null;
+  sender_label?: string | null;
+  card_message?: string | null;
+  recipient_address?: string | null;
 }
 
 export interface BusinessInquiry {
@@ -70,14 +77,17 @@ export async function saveInquiry(inquiry: Inquiry) {
       type, name, phone, email, company_name, org_type, department, job_title,
       gift_type, purpose,
       budget, budget_per_unit, quantity, delivery_type, desired_date,
-      message, privacy_consent, privacy_consent_at
+      message, privacy_consent, privacy_consent_at,
+      gift_send, recipient_name, recipient_phone, sender_label, card_message, recipient_address
     ) VALUES (
       ${i.type}, ${i.name ?? null}, ${i.phone ?? null}, ${i.email ?? null},
       ${i.company_name ?? null}, ${i.org_type ?? null}, ${i.department ?? null}, ${i.job_title ?? null},
       ${i.gift_type ?? null}, ${i.purpose ?? null},
       ${i.budget ?? null}, ${i.budget_per_unit ?? null}, ${i.quantity ?? null},
       ${i.delivery_type ?? null}, ${i.desired_date ?? null}, ${i.message ?? null},
-      ${i.privacy_consent ?? false}, ${i.privacy_consent_at ?? null}
+      ${i.privacy_consent ?? false}, ${i.privacy_consent_at ?? null},
+      ${i.gift_send ?? false}, ${i.recipient_name ?? null}, ${i.recipient_phone ?? null},
+      ${i.sender_label ?? null}, ${i.card_message ?? null}, ${i.recipient_address ?? null}
     )
     RETURNING id
   `;
@@ -126,10 +136,13 @@ function buildWhere(f: InquiryFilter) {
       `memo ILIKE ${like}`,
       `email ILIKE ${like}`,
       `department ILIKE ${like}`,
+      `recipient_name ILIKE ${like}`,
     ];
-    // 전화번호는 하이픈/공백 차이를 무시하고 숫자로 비교
+    // 전화번호는 하이픈/공백 차이를 무시하고 숫자로 비교 (받는 분 번호 포함)
     if (digits.length >= 3) {
-      parts.push(`regexp_replace(phone, '\\D', '', 'g') LIKE ${p(`%${digits}%`)}`);
+      const d = p(`%${digits}%`);
+      parts.push(`regexp_replace(phone, '\\D', '', 'g') LIKE ${d}`);
+      parts.push(`regexp_replace(coalesce(recipient_phone, ''), '\\D', '', 'g') LIKE ${d}`);
     }
     conds.push(`(${parts.join(' OR ')})`);
   }

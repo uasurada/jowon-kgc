@@ -110,7 +110,7 @@ export default function LandingPage() {
           <article className="service-card personal-card">
             <span className="card-number">01</span><div className="service-icon"><PackageCheck /></div>
             <p className="card-kicker">한 분을 위한 선물</p><h3>개인 선물 상담</h3>
-            <p>부모님, 감사 선물, 나를 위한 건강 관리까지 용도와 예산에 맞춰 추천해 드립니다.</p>
+            <p>부모님, 감사 선물, 나를 위한 건강 관리까지 용도와 예산에 맞춰 추천해 드립니다. 받는 분 주소를 몰라도 전화번호만으로 선물을 보내실 수 있습니다.</p>
             <Link href="/personal">선물 상담 시작하기 <ArrowRight size={17} /></Link>
           </article>
           <article className="service-card business-card">

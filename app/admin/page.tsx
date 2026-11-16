@@ -8,6 +8,7 @@ import {
   Search, Download, Phone, X, Bell, ChevronLeft, ChevronRight, LogOut,
 } from 'lucide-react';
 import { emailVerdict, historyLabel, type RiskLevel } from '@/lib/emailCheck';
+import { giftSmsText } from '@/lib/gift';
 
 interface Stats {
   today: number;
@@ -39,6 +40,12 @@ interface InquiryData {
   org_type?: string | null;
   department?: string | null;
   job_title?: string | null;
+  gift_send?: boolean;
+  recipient_name?: string | null;
+  recipient_phone?: string | null;
+  sender_label?: string | null;
+  card_message?: string | null;
+  recipient_address?: string | null;
   // 같은 번호로 이 건보다 먼저 들어온 접수
   prev?: number;
   completed?: number;
@@ -118,7 +125,14 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function TypeBadge({ type }: { type: string }) {
+function TypeBadge({ type, gift }: { type: string; gift?: boolean }) {
+  if (gift) {
+    return (
+      <span className="px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap bg-pink-100 text-pink-800">
+        🎁 선물
+      </span>
+    );
+  }
   return (
     <span
       className={`px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
@@ -427,12 +441,13 @@ export default function AdminDashboard() {
                   <li key={r.id}>
                     <button type="button" onClick={() => setSelected(r)} className="w-full text-left p-4 hover:bg-gray-50">
                       <div className="flex items-center gap-2 mb-1">
-                        <TypeBadge type={r.type} />
+                        <TypeBadge type={r.type} gift={r.gift_send} />
                         <StatusBadge status={r.status} />
                         <span className="ml-auto text-xs text-gray-500">{formatDate(r.created_at)}</span>
                       </div>
                       <p className="font-semibold text-gray-900">
                         {r.company_name ? `${r.company_name} · ${r.name}` : r.name}
+                        {r.gift_send && r.recipient_name && <span className="font-normal text-gray-500"> → {r.recipient_name}</span>}
                       </p>
                       <p className="text-sm text-gray-600">
                         {getGiftTypeName(r.gift_type || r.purpose)} · {r.budget || r.budget_per_unit || '-'} · {r.quantity || '-'}
@@ -461,13 +476,18 @@ export default function AdminDashboard() {
                     {rows.map((r) => (
                       <tr key={r.id} onClick={() => setSelected(r)} className="hover:bg-gray-50 cursor-pointer">
                         <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{formatDate(r.created_at)}</td>
-                        <td className="px-4 py-3"><TypeBadge type={r.type} /></td>
+                        <td className="px-4 py-3"><TypeBadge type={r.type} gift={r.gift_send} /></td>
                         <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
                         <td className="px-4 py-3 text-sm font-medium text-gray-900">
                           {r.company_name ? (
                             <div>
                               <div>{r.company_name}</div>
                               <div className="text-xs text-gray-500">{r.name}</div>
+                            </div>
+                          ) : r.gift_send ? (
+                            <div>
+                              <div>{r.name}</div>
+                              <div className="text-xs text-pink-700">→ {r.recipient_name}</div>
                             </div>
                           ) : r.name}
                         </td>
@@ -607,6 +627,75 @@ export default function AdminDashboard() {
   );
 }
 
+function GiftPanel({ inquiry }: { inquiry: InquiryData }) {
+  const [copied, setCopied] = useState(false);
+  const sms = giftSmsText({
+    recipientName: inquiry.recipient_name,
+    senderLabel: inquiry.sender_label,
+    buyerName: inquiry.name,
+  });
+  const digits = (inquiry.recipient_phone ?? '').replace(/[^\d+]/g, '');
+  // "?&body=" 형태가 아이폰·안드로이드 모두에서 본문을 채운다
+  const smsHref = `sms:${digits}?&body=${encodeURIComponent(sms)}`;
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(sms);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  return (
+    <div className="bg-pink-50 border border-pink-200 rounded-lg p-3 space-y-2 text-sm">
+      <p className="font-bold text-pink-800">🎁 받는 분</p>
+      <dl className="grid grid-cols-3 gap-x-3 gap-y-1">
+        <dt className="text-gray-500">성함</dt>
+        <dd className="col-span-2 text-gray-900">{inquiry.recipient_name}</dd>
+        <dt className="text-gray-500">연락처</dt>
+        <dd className="col-span-2">
+          <a href={`tel:${digits}`} className="inline-flex items-center gap-1 text-red-600 font-semibold">
+            <Phone size={14} /> {inquiry.recipient_phone}
+          </a>
+        </dd>
+        <dt className="text-gray-500">주소</dt>
+        <dd className="col-span-2 text-gray-900 break-words">
+          {inquiry.recipient_address || <span className="text-pink-700">모름 → 문자로 문의</span>}
+        </dd>
+        <dt className="text-gray-500">안내할 이름</dt>
+        <dd className="col-span-2 text-gray-900">{inquiry.sender_label || inquiry.name}</dd>
+      </dl>
+      {inquiry.card_message && (
+        <div>
+          <p className="text-gray-500 mb-1">💌 카드 메시지</p>
+          <p className="whitespace-pre-wrap bg-white rounded p-2 text-gray-900">{inquiry.card_message}</p>
+        </div>
+      )}
+      {inquiry.recipient_address ? (
+        <p className="text-xs text-gray-600">📦 보내는 분이 주소를 입력함 → 결제 확인 후 바로 발송 (받는 분께 따로 연락 불필요)</p>
+      ) : (
+        <>
+          <div>
+            <p className="text-gray-500 mb-1">결제 확인 후 받는 분께 보낼 문자</p>
+            <p className="whitespace-pre-wrap bg-white rounded p-2 text-gray-800 text-xs">{sms}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <a href={smsHref} className="py-2 rounded-lg bg-pink-600 hover:bg-pink-700 text-white text-center font-semibold">
+              📱 문자 보내기
+            </a>
+            <button type="button" onClick={copy} className="py-2 rounded-lg bg-white border border-pink-300 text-pink-800 font-semibold">
+              {copied ? '복사됨 ✓' : '문구 복사'}
+            </button>
+          </div>
+          <p className="text-xs text-gray-500">⏰ 7일 내 회신 없으면 보내는 분께 연락 (환불 또는 다른 주소 발송)</p>
+        </>
+      )}
+    </div>
+  );
+}
+
 function InquiryDetail({
   inquiry,
   onClose,
@@ -643,11 +732,13 @@ function InquiryDetail({
 
   const fields: [string, React.ReactNode][] = [
     ['접수일시', formatDate(inquiry.created_at, true)],
-    ['구분', inquiry.type === 'personal' ? '개인' : `기업${inquiry.org_type ? ` · ${inquiry.org_type}` : ''}`],
+    ['구분', inquiry.type === 'personal'
+      ? (inquiry.gift_send ? '개인 · 🎁 선물 보내기' : '개인')
+      : `기업${inquiry.org_type ? ` · ${inquiry.org_type}` : ''}`],
     ['접수 이력', <HistoryBadge key="h" r={inquiry} />],
     ['기관·회사명', inquiry.company_name],
     ['부서', inquiry.department],
-    [inquiry.type === 'business' ? '담당자' : '이름', [inquiry.name, inquiry.job_title].filter(Boolean).join(' ')],
+    [inquiry.type === 'business' ? '담당자' : inquiry.gift_send ? '보내는 분' : '이름', [inquiry.name, inquiry.job_title].filter(Boolean).join(' ')],
     ['연락처', inquiry.phone ? (
       <a href={`tel:${inquiry.phone.replace(/[^\d+]/g, '')}`} className="inline-flex items-center gap-1 text-red-600 font-semibold">
         <Phone size={14} /> {inquiry.phone}
@@ -693,6 +784,8 @@ function InquiryDetail({
                 </React.Fragment>
               ))}
           </dl>
+
+          {inquiry.gift_send && <GiftPanel inquiry={inquiry} />}
 
           {inquiry.type === 'business' && (
             <ul className="text-xs text-gray-700 bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-1">

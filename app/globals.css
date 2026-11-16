@@ -267,6 +267,18 @@ body { background: #fff; color: var(--ink); }
 .form-submit { min-height: 58px; display: flex; align-items: center; justify-content: center; gap: 9px; background: var(--kgc-red); color: #fff; font-size: 15px; font-weight: 800; transition: .2s; }
 .form-submit:hover { background: #971018; }.form-submit:disabled { background: #d4d0ca; color: #8e8982; cursor: not-allowed; }
 .form-footnote { margin-top: -22px; color: #9a938a; text-align: center; font-size: 11px; }
+.choice-grid.two { grid-template-columns: 1fr 1fr; }
+.choice-grid.two button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 64px; font-size: 14px; }
+.choice-grid.two button span { display: inline-flex; align-items: center; gap: 5px; }
+.choice-grid.two button.selected small { color: #d8d2c9; }
+.gift-box { display: grid; gap: 18px; padding: 20px; background: #fdf6f6; border: 1px solid #efd3d4; }
+.gift-box-title { display: flex; align-items: center; gap: 6px; color: var(--kgc-red); font-size: 15px; font-weight: 800; }
+.gift-box-desc { margin-top: -10px; color: #5e5851; font-size: 13px; line-height: 1.7; }
+.gift-box .form-hint { margin-top: -6px; }
+.address-fields { display: grid; gap: 8px; margin-top: -8px; }
+.address-fields input { margin-top: 0 !important; }
+.address-search { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.address-search button { display: inline-flex; align-items: center; gap: 5px; padding: 0 16px; background: #211f1c; color: #fff; font-size: 13px; font-weight: 700; white-space: nowrap; }
 .form-hint { margin-top: -12px; color: #8a8379; font-size: 12px; }.form-hint.error { color: var(--kgc-red); }
 .form-notice { padding: 14px 16px; background: #f8f6f2; border: 1px solid #e5e0d8; color: #5e5851; font-size: 12px; line-height: 1.7; }.form-notice strong { color: #2b2824; }
 .consult-aside { position: sticky; top: 100px; display: grid; gap: 14px; }

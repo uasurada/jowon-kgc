@@ -69,11 +69,20 @@ export function buildPersonalTelegramMessageSafe(params: {
   phone?: string;
   message?: string | null;
   history?: string | null;
+  gift?: {
+    recipientName?: string | null;
+    recipientPhone?: string | null;
+    senderLabel?: string | null;
+    cardMessage?: string | null;
+    address?: string | null;   // 구매자가 입력한 주소 (없으면 매장이 받는 분께 문의)
+    sms: string;
+  } | null;
 }) {
   const phone = params.phone ?? "";
+  const gift = params.gift;
 
   let html = "";
-  html += sectionTitle("📦 개인 상담 접수");
+  html += sectionTitle(gift ? "🎁 개인 선물 보내기 접수" : "📦 개인 상담 접수");
   if (isNonEmpty(params.history)) html += `${escapeHtml(params.history)}\n`;
   html += line(`<b>선물</b>`, params.giftTitle);
   html += line(`<b>예산</b>`, params.budget);
@@ -82,7 +91,7 @@ export function buildPersonalTelegramMessageSafe(params: {
 
   html += divider();
 
-  html += sectionTitle("👤 고객 정보");
+  html += sectionTitle(gift ? "👤 보내는 분 (구매자)" : "👤 고객 정보");
   html += line(`<b>이름</b>`, params.name);
 
   if (isNonEmpty(phone)) {
@@ -90,8 +99,31 @@ export function buildPersonalTelegramMessageSafe(params: {
     html += linkLine(`<b>전화</b>`, `tel:${digits}`, phone);
   }
 
+  if (gift) {
+    html += divider();
+    html += sectionTitle("🎁 받는 분");
+    html += line(`<b>성함</b>`, gift.recipientName);
+    if (isNonEmpty(gift.recipientPhone)) {
+      const digits = String(gift.recipientPhone).replace(/[^\d+]/g, "");
+      html += linkLine(`<b>전화</b>`, `tel:${digits}`, gift.recipientPhone);
+    }
+    html += line(`<b>주소</b>`, gift.address || "모름 → 매장이 문자로 문의");
+    html += line(`<b>안내할 보낸 분</b>`, gift.senderLabel || params.name);
+    if (isNonEmpty(gift.cardMessage)) {
+      html += `<b>💌 카드 메시지</b>\n${escapeHtml(gift.cardMessage)}\n`;
+    }
+  }
+
   if (isNonEmpty(params.message)) {
     html += `\n<b>📝 요청사항</b>\n${escapeHtml(params.message)}\n`;
+  }
+
+  if (gift?.address) {
+    html += `\n📦 주소 입력됨 → 결제 확인 후 바로 발송 (받는 분께 따로 연락 불필요)\n`;
+  } else if (gift) {
+    // <pre> 블록은 텔레그램에서 복사 버튼이 붙는다
+    html += `\n<b>📱 결제 확인 후 받는 분께 보낼 문자</b>\n<pre>${escapeHtml(gift.sms)}</pre>\n`;
+    html += `\n⏰ 7일 내 회신 없으면 보내는 분께 연락 (환불 또는 다른 주소 발송)\n`;
   }
 
   return html.trim();

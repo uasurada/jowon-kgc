@@ -44,7 +44,8 @@ export async function GET(request: NextRequest) {
 
     const header = [
       '번호', '접수일시', '구분', '상태', '접수 이력', '이름/담당자', '직책', '기관 구분', '기관·회사명', '부서',
-      '연락처', '이메일', '이메일 판정', '유형/목적', '예산', '수량', '배송', '희망일', '요청사항', '메모',
+      '연락처', '이메일', '이메일 판정', '유형/목적', '예산', '수량', '배송', '희망일',
+      '선물 보내기', '받는 분', '받는 분 연락처', '받는 분 주소', '안내할 보낸 분', '카드 메시지', '요청사항', '메모',
     ];
 
     const lines = rows.map((r) =>
@@ -67,6 +68,12 @@ export async function GET(request: NextRequest) {
         r.quantity,
         r.delivery_type ? mapDeliveryType(r.delivery_type) : '',
         r.desired_date,
+        r.gift_send ? 'Y' : '',
+        r.recipient_name,
+        r.recipient_phone,
+        r.recipient_address,
+        r.sender_label,
+        r.card_message,
         r.message,
         r.memo,
       ].map(csvCell).join(',')
