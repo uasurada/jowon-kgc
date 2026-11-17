@@ -5,6 +5,7 @@ import { errorMessage } from '@/lib/db';
 import { mapPersonalGiftType, mapBusinessPurpose, mapDeliveryType } from '@/lib/formLabels';
 import { emailVerdict, historyLabel } from '@/lib/emailCheck';
 import { placeLabel, TRUST_LABEL, type TrustLevel } from '@/lib/traffic';
+import { requireAdmin } from '@/lib/adminGuard';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,6 +36,8 @@ function giftAddressLabel(r: Record<string, unknown>) {
 }
 
 export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
   const sp = request.nextUrl.searchParams;
 
   try {

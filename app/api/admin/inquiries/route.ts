@@ -2,12 +2,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { listInquiries } from '@/lib/inquiries';
 import { errorMessage } from '@/lib/db';
+import { requireAdmin } from '@/lib/adminGuard';
 
 export const dynamic = 'force-dynamic';
 
 const PAGE_SIZE = 30;
 
 export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
   const sp = request.nextUrl.searchParams;
   const page = Math.max(Number(sp.get('page')) || 1, 1);
 

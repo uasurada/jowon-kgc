@@ -124,6 +124,13 @@ export async function POST(request: NextRequest) {
     if (suspiciousPhone(inquiryData.phone)) flags.push('연락처 형식 이상');
     if (reqMeta.ipHash) {
       const recent = await countRecentByIp(reqMeta.ipHash).catch(() => 0);
+      // 같은 IP에서 하루 10건 넘게 들어오면 도배로 보고 받지 않는다
+      if (recent >= 10) {
+        return NextResponse.json(
+          { error: '접수가 너무 많습니다. 잠시 후 다시 시도하시거나 031-268-0304로 전화 주세요.' },
+          { status: 429 }
+        );
+      }
       if (recent >= 2) flags.push(`같은 IP에서 24시간 내 ${recent + 1}번째 접수`);
     }
     if (trust !== 'bot' && flags.length) trust = 'warn';
@@ -246,14 +253,12 @@ export async function POST(request: NextRequest) {
       channel: saved ? 'database' : 'telegram',
     });
 
-  } catch (error: any) {
+  } catch (error) {
+    // 내부 오류 내용은 서버 로그에만 남기고 화면에는 보내지 않는다
     console.error('❌ API error:', error);
 
     return NextResponse.json(
-      {
-        error: '문의 접수 중 오류가 발생했습니다.',
-        details: error.message,
-      },
+      { error: '문의 접수 중 오류가 발생했습니다.' },
       { status: 500 }
     );
   }

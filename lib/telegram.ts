@@ -147,17 +147,20 @@ export function buildGiftReplyTelegramMessage(params: {
   recipientName?: string | null;
   recipientPhone?: string | null;
   address?: string | null;
+  previousAddress?: string | null;
 }) {
   let html = "";
+  const changed = isNonEmpty(params.previousAddress) && params.previousAddress !== params.address;
   if (params.kind === "address") {
-    html += sectionTitle("📦 받는 분 주소 입력 완료");
+    html += sectionTitle(changed ? "✏️ 받는 분 주소 변경됨 (발송 전 확인)" : "📦 받는 분 주소 입력 완료");
     html += line(`<b>ID</b>`, params.id);
     html += line(`<b>받는 분</b>`, params.recipientName);
     if (isNonEmpty(params.recipientPhone)) {
       const digits = String(params.recipientPhone).replace(/[^\d+]/g, "");
       html += linkLine(`<b>전화</b>`, `tel:${digits}`, params.recipientPhone);
     }
-    html += line(`<b>주소</b>`, params.address);
+    html += line(`<b>${changed ? "새 주소" : "주소"}</b>`, params.address);
+    if (changed) html += line(`<b>이전 주소</b>`, params.previousAddress);
     html += line(`<b>보내는 분</b>`, params.buyerName);
     html += `\n🚚 송장: 보내는 분 주소는 매장, 성함·연락처는 보내는 분 정보로\n`;
   } else {

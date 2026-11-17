@@ -79,3 +79,14 @@ export function checkBasicHeader(header: string | null) {
   if (sep < 0) return false;
   return checkCredentials(decoded.slice(0, sep), decoded.slice(sep + 1));
 }
+
+/** 로그인 쿠키 또는 Basic 헤더가 유효한지 (proxy와 각 관리자 API에서 같이 사용) */
+export async function isAdminRequest(req: {
+  cookies: { get(name: string): { value: string } | undefined };
+  headers: Headers;
+}) {
+  return (
+    (await verifySessionToken(req.cookies.get(ADMIN_COOKIE)?.value)) ||
+    checkBasicHeader(req.headers.get('authorization'))
+  );
+}

@@ -278,7 +278,8 @@ export interface GiftView {
 }
 
 // 링크가 살아 있는 조건: 미완료·미취소 + 접수 후 GIFT_LINK_DAYS일 이내
-const GIFT_OPEN_SQL = `status NOT IN ('completed', 'canceled') AND created_at > now() - make_interval(days => ${GIFT_LINK_DAYS})`;
+const giftOpenSql = (t = '') =>
+  `${t}status NOT IN ('completed', 'canceled') AND ${t}created_at > now() - make_interval(days => ${GIFT_LINK_DAYS})`;
 
 export function isGiftToken(token: string) {
   return /^[A-Za-z0-9_-]{24}$/.test(token);
@@ -289,7 +290,7 @@ export async function getGiftView(token: string): Promise<GiftView | null> {
   if (!isGiftToken(token)) return null;
   const db = requireDb();
   const rows = await db.query(
-    `SELECT recipient_name, sender_label, name, gift_address_by, gift_declined_at, (${GIFT_OPEN_SQL}) AS open
+    `SELECT recipient_name, sender_label, name, gift_address_by, gift_declined_at, (${giftOpenSql()}) AS open
      FROM inquiries WHERE gift_token = $1`,
     [token]
   );
@@ -310,12 +311,16 @@ export async function getGiftView(token: string): Promise<GiftView | null> {
 export async function submitGiftAddress(token: string, address: string) {
   if (!isGiftToken(token)) return null;
   const db = requireDb();
+  // 이미 입력된 주소가 바뀌면 알림에 이전 주소를 함께 보여주려고 같이 돌려받는다
   const rows = await db.query(
-    `UPDATE inquiries SET
+    `WITH prev AS (SELECT id, recipient_address FROM inquiries WHERE gift_token = $1)
+     UPDATE inquiries i SET
        recipient_address = $2, gift_address_by = 'recipient', gift_address_at = now(),
        gift_declined_at = NULL, updated_at = now()
-     WHERE gift_token = $1 AND ${GIFT_OPEN_SQL}
-     RETURNING id, name, recipient_name, recipient_phone, sender_label, recipient_address`,
+     FROM prev
+     WHERE i.id = prev.id AND ${giftOpenSql('i.')}
+     RETURNING i.id, i.name, i.recipient_name, i.recipient_phone, i.sender_label, i.recipient_address,
+               prev.recipient_address AS prev_address`,
     [token, address]
   );
   return rows[0] ?? null;
@@ -327,7 +332,7 @@ export async function declineGift(token: string) {
   const db = requireDb();
   const rows = await db.query(
     `UPDATE inquiries SET gift_declined_at = now(), updated_at = now()
-     WHERE gift_token = $1 AND ${GIFT_OPEN_SQL}
+     WHERE gift_token = $1 AND ${giftOpenSql()}
      RETURNING id, name, phone, recipient_name, recipient_phone`,
     [token]
   );

@@ -3,8 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { updateInquiry } from '@/lib/inquiries';
 import { errorMessage } from '@/lib/db';
 import { formatAddress } from '@/lib/gift';
+import { requireAdmin } from '@/lib/adminGuard';
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
   const { id } = await params;
   if (!/^\d+$/.test(id)) {
     return NextResponse.json({ error: '잘못된 id' }, { status: 400 });

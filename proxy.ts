@@ -1,7 +1,7 @@
 // proxy.ts (Next.js 16: 프로젝트 루트에 있어야 적용됨. app/ 아래에 두면 무시됨)
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { ADMIN_COOKIE, verifySessionToken, checkBasicHeader } from '@/lib/adminSession';
+import { isAdminRequest } from '@/lib/adminSession';
 
 const LOGIN_PATH = '/admin/login';
 
@@ -11,11 +11,8 @@ export async function proxy(req: NextRequest) {
   // 로그인 화면은 누구나 접근
   if (pathname === LOGIN_PATH) return NextResponse.next();
 
-  const authed =
-    (await verifySessionToken(req.cookies.get(ADMIN_COOKIE)?.value)) ||
-    checkBasicHeader(req.headers.get('authorization'));
-
-  if (authed) return NextResponse.next();
+  // 관리자 API는 각 라우트에서도 다시 확인한다 (lib/adminGuard.ts)
+  if (await isAdminRequest(req)) return NextResponse.next();
 
   // API는 401, 화면은 로그인 페이지로 이동
   if (pathname.startsWith('/api/')) {

@@ -78,3 +78,12 @@ CREATE TABLE IF NOT EXISTS page_views (
   visitor     TEXT
 );
 CREATE INDEX IF NOT EXISTS page_views_created_at_idx ON page_views (created_at);
+
+-- 관리자 로그인 시도 기록 (무차별 대입 차단, 30일 지나면 정리)
+CREATE TABLE IF NOT EXISTS login_attempts (
+  id         BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  ip_hash    TEXT,
+  ok         BOOLEAN NOT NULL
+);
+CREATE INDEX IF NOT EXISTS login_attempts_created_at_idx ON login_attempts (created_at);

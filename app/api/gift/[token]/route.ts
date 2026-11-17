@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { submitGiftAddress, declineGift, isGiftToken } from '@/lib/inquiries';
 import { formatAddress } from '@/lib/gift';
 import { sendTelegramHtml, buildGiftReplyTelegramMessage } from '@/lib/telegram';
-import { errorMessage } from '@/lib/db';
 
 const CLOSED = '이미 처리되었거나 기간이 지난 링크입니다. 정관장 조원점(031-268-0304)으로 연락해 주세요.';
 
@@ -37,6 +36,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     await sendTelegramHtml(buildGiftReplyTelegramMessage({
       id: row.id, kind: 'address',
+      previousAddress: row.prev_address,
       buyerName: row.sender_label || row.name,
       recipientName: row.recipient_name, recipientPhone: row.recipient_phone,
       address: row.recipient_address,
@@ -45,6 +45,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Gift reply failed:', error);
-    return NextResponse.json({ error: errorMessage(error) || '처리 중 오류가 발생했습니다.' }, { status: 503 });
+    return NextResponse.json({ error: '처리 중 오류가 발생했습니다. 031-268-0304로 연락해 주세요.' }, { status: 503 });
   }
 }

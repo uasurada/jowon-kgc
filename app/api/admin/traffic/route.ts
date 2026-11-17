@@ -2,10 +2,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getTrafficStats } from '@/lib/trafficStats';
 import { errorMessage } from '@/lib/db';
+import { requireAdmin } from '@/lib/adminGuard';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
   const days = Number(request.nextUrl.searchParams.get('days'));
   const range = [1, 7, 30, 90].includes(days) ? days : 7;
   try {

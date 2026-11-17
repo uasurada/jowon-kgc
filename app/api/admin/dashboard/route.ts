@@ -1,11 +1,15 @@
 // app/api/admin/dashboard/route.ts
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { sql, errorMessage } from '@/lib/db';
 import { getDashboardStats } from '@/lib/inquiries';
+import { requireAdmin } from '@/lib/adminGuard';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request);
+  if (denied) return denied;
+
   if (!sql) {
     return NextResponse.json(
       { error: 'DB(DATABASE_URL)가 설정되지 않았습니다. 상담 접수는 텔레그램으로만 전달되고 있습니다.' },
