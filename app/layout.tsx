@@ -110,7 +110,11 @@ export const metadata: Metadata = {
       ? { google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION }
       : {}),
     other: {
-      'naver-site-verification': '8156acdfc5e377be3d7cce27e313460757452b89',
+      // 네이버 서치어드바이저: jowon-kgc.com(기존) · www.jowon-kgc.com(2026-11 추가)
+      'naver-site-verification': [
+        '8156acdfc5e377be3d7cce27e313460757452b89',
+        'd124e099b1e6b38c8973d973e3b4a3bbf56a4360',
+      ],
     },
   },
 
