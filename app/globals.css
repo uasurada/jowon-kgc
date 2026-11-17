@@ -298,7 +298,7 @@ body { background: #fff; color: var(--ink); }
 
 @media (max-width: 767px) {
   body { padding-bottom: 66px; }
-  body:has(.consult-page), body:has(.consult-success) { padding-bottom: 0; }
+  body:has(.consult-page), body:has(.consult-success), body:has(.gift-reply-page) { padding-bottom: 0; }
   .notice-bar { justify-content: flex-start; padding-left: 18px; }
   .header-inner { height: 65px; padding: 0 17px; }
   .brand { gap: 8px; }.brand-mark { width: 108px; height: 34px; }.brand-mark img { width: 108px; }
@@ -358,7 +358,7 @@ body { background: #fff; color: var(--ink); }
 
 /* 선물 받는 분 배송지 입력 (/gift/[token]) */
 .gift-reply-card { text-align: left; min-width: 0; }
-.consult-success:has(.gift-reply-card) { grid-template-columns: minmax(0, 520px); justify-content: center; }
+
 .gift-reply-card .address-search { grid-template-columns: minmax(0, 1fr) auto; }
 .gift-reply-card .success-icon, .gift-reply-card .eyebrow { margin-left: auto; margin-right: auto; text-align: center; }
 .gift-reply-card h1, .gift-reply-card > p { text-align: center; }
@@ -372,3 +372,18 @@ body { background: #fff; color: var(--ink); }
 .gift-reply-consent a, .gift-reply-small a { color: var(--kgc-red); text-decoration: underline; }
 .gift-reply-small { margin-top: 12px; color: #8a8379; font-size: 12px; line-height: 1.8; text-align: center; }
 .gift-reply-decline { margin-top: 6px; color: #9a938a; font-size: 12px; text-decoration: underline; }
+.gift-reply-page { min-height: 100vh; padding: 28px 16px 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; background: #f3efe8; }
+.gift-reply-page .success-card { width: min(100%, 520px); }
+.gift-reply-brand { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.gift-reply-brand img { width: 150px; height: auto; }
+.gift-reply-brand strong { margin-top: 4px; font-size: 17px; letter-spacing: -.03em; color: #211f1c; }
+.gift-reply-brand span { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border: 1px solid #e0d6c9; border-radius: 999px; background: #fff; color: #6f675d; font-size: 11px; font-weight: 700; }
+.gift-reply-brand span svg { color: var(--kgc-red); }
+.gift-reply-store { width: min(100%, 520px); display: grid; gap: 6px; padding: 20px 22px; background: #fff; border: 1px solid #e0dad1; color: #6f675d; font-size: 12px; line-height: 1.6; }
+.gift-reply-store strong { color: #211f1c; font-size: 14px; }
+.gift-reply-store p { display: flex; align-items: flex-start; gap: 6px; }
+.gift-reply-store p svg { flex-shrink: 0; margin-top: 3px; color: var(--kgc-red); }
+.gift-reply-store a { color: #211f1c; font-weight: 700; }
+.gift-reply-store small { color: #9a938a; font-size: 11px; }
+.gift-reply-store small a { font-weight: 500; color: #9a938a; text-decoration: underline; }
+.gift-reply-safe { margin-bottom: 6px; padding: 8px 10px; background: #f8f6f2; color: #5e5851; font-weight: 600; }

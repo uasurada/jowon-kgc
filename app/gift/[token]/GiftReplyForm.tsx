@@ -92,7 +92,7 @@ export default function GiftReplyForm({ token, gift }: { token: string; gift: Gi
     <div className="success-card gift-reply-card">
       <span className="success-icon gift"><Gift /></span>
       <p className="eyebrow">A GIFT FOR YOU</p>
-      <h1>{gift.recipientName ? `${gift.recipientName}님,` : '안녕하세요,'}<br />선물이 도착했어요.</h1>
+      <h1>{gift.recipientName ? `${gift.recipientName}님께` : '소중한 분께'}<br />정관장 선물이 준비되었어요.</h1>
       <p><strong>{gift.senderLabel}</strong>님께서 정관장 선물을 보내셨습니다.<br />받으실 주소를 알려주시면 정성껏 포장해 보내드립니다.</p>
 
       <div className="modern-form">
