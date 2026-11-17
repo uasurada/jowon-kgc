@@ -14,6 +14,7 @@ const notoSansKR = Noto_Sans_KR({
 
 const SITE_URL = 'https://www.jowon-kgc.com';
 const NAVER_PLACE_URL = 'https://map.naver.com/p/entry/place/20945563';
+const GOOGLE_MAPS_URL = 'https://maps.google.com/?cid=10608350700964587932';
 
 export const metadata: Metadata = {
   // 대표 주소는 www (jowon-kgc.com은 Vercel에서 www로 넘어간다)
@@ -140,7 +141,7 @@ const structuredData = [
     geo: { '@type': 'GeoCoordinates', latitude: 37.3021818, longitude: 127.007767 },
     hasMap: NAVER_PLACE_URL,
     // 검색엔진·AI가 지도/채널의 같은 매장으로 연결하도록
-    sameAs: [NAVER_PLACE_URL, 'https://pf.kakao.com/_IrSRX'],
+    sameAs: [NAVER_PLACE_URL, GOOGLE_MAPS_URL, 'https://pf.kakao.com/_IrSRX'],
     brand: { '@type': 'Brand', name: '정관장' },
     openingHoursSpecification: [
       {
