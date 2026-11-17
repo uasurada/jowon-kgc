@@ -1,6 +1,13 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ExternalLink, Phone, MessageCircle, BookOpen } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "정관장 선물 카탈로그 | 홍삼 선물 구성·가격대",
+  description: "정관장 조원점 선물 카탈로그. 명절·부모님·기업 선물용 홍삼 제품 구성과 가격대를 확인하고 매장에 상담하세요.",
+  alternates: { canonical: "/catalog" },
+};
 
 export default function CatalogPage() {
   const catalogUrl = "https://heyzine.com/flip-book/26Chuseok_standard";

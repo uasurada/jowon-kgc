@@ -12,8 +12,12 @@ const notoSansKR = Noto_Sans_KR({
   preload: false,
 });
 
+const SITE_URL = 'https://www.jowon-kgc.com';
+const NAVER_PLACE_URL = 'https://map.naver.com/p/entry/place/20945563';
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://jowon-kgc.com'),
+  // 대표 주소는 www (jowon-kgc.com은 Vercel에서 www로 넘어간다)
+  metadataBase: new URL(SITE_URL),
 
   title: {
     default:
@@ -65,7 +69,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'ko_KR',
-    url: 'https://jowon-kgc.com',
+    url: SITE_URL,
     siteName: '정관장 조원점',
     title: '정관장 조원점 | 수원 장안구·북수원 홍삼 선물·상담 전문',
     description:
@@ -109,10 +113,6 @@ export const metadata: Metadata = {
     },
   },
 
-  alternates: {
-    canonical: 'https://jowon-kgc.com',
-  },
-
   category: 'business',
 };
 
@@ -120,22 +120,28 @@ const structuredData = [
   {
     '@context': 'https://schema.org',
     '@type': 'Store',
-    '@id': 'https://jowon-kgc.com/#store',
+    '@id': `${SITE_URL}/#store`,
     name: '정관장 조원점',
     alternateName: 'KGC 조원점',
     description:
       '정관장 공식 가맹점. 홍삼 선물, 부모님 건강 상담, 기업 단체 주문 및 전국 배송.',
-    url: 'https://jowon-kgc.com',
+    url: SITE_URL,
     telephone: '+82-31-268-0304',
     email: 'info@jowon-kgc.com',
-    image: `https://jowon-kgc.com${storeWide.src}`,
+    image: `${SITE_URL}${storeWide.src}`,
     address: {
       '@type': 'PostalAddress',
       streetAddress: '경수대로 935 동양파라곤 1층 105호',
-      addressLocality: '수원시',
+      addressLocality: '수원시 장안구',
       addressRegion: '경기도',
       addressCountry: 'KR',
     },
+    // 네이버 지도 기준 좌표 (송죽동 499-3)
+    geo: { '@type': 'GeoCoordinates', latitude: 37.3021818, longitude: 127.007767 },
+    hasMap: NAVER_PLACE_URL,
+    // 검색엔진·AI가 지도/채널의 같은 매장으로 연결하도록
+    sameAs: [NAVER_PLACE_URL, 'https://pf.kakao.com/_IrSRX'],
+    brand: { '@type': 'Brand', name: '정관장' },
     openingHoursSpecification: [
       {
         '@type': 'OpeningHoursSpecification',
@@ -156,8 +162,8 @@ const structuredData = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    '@id': 'https://jowon-kgc.com/#website',
-    url: 'https://jowon-kgc.com',
+    '@id': `${SITE_URL}/#website`,
+    url: SITE_URL,
     name: '정관장 조원점',
     inLanguage: 'ko-KR',
   },
