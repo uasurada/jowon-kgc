@@ -26,6 +26,13 @@ function kst(ts: string | Date) {
   return new Date(ts).toLocaleString('sv-SE', { timeZone: 'Asia/Seoul' }).slice(0, 16);
 }
 
+/** 선물 배송지 진행 상태 */
+function giftAddressLabel(r: Record<string, unknown>) {
+  const by: Record<string, string> = { buyer: '보내는 분 입력', recipient: '받는 분 직접 입력', store: '매장 입력' };
+  if (r.recipient_address) return by[String(r.gift_address_by)] ?? '입력됨';
+  return r.gift_declined_at ? '받는 분 사양' : '대기';
+}
+
 export async function GET(request: NextRequest) {
   const sp = request.nextUrl.searchParams;
 
@@ -45,7 +52,7 @@ export async function GET(request: NextRequest) {
     const header = [
       '번호', '접수일시', '구분', '상태', '접수 이력', '이름/담당자', '직책', '기관 구분', '기관·회사명', '부서',
       '연락처', '이메일', '이메일 판정', '유형/목적', '예산', '수량', '배송', '희망일',
-      '선물 보내기', '받는 분', '받는 분 연락처', '받는 분 주소', '안내할 보낸 분', '요청사항', '메모',
+      '선물 보내기', '받는 분', '받는 분 연락처', '받는 분 주소', '주소 입력', '안내할 보낸 분', '요청사항', '메모',
     ];
 
     const lines = rows.map((r) =>
@@ -72,6 +79,7 @@ export async function GET(request: NextRequest) {
         r.recipient_name,
         r.recipient_phone,
         r.recipient_address,
+        r.gift_send ? giftAddressLabel(r) : '',
         r.sender_label,
         r.message,
         r.memo,

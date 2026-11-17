@@ -42,3 +42,9 @@ ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS recipient_address TEXT;  -- 구�
 
 -- 같은 번호 재접수 조회 (하이픈 차이 무시)
 CREATE INDEX IF NOT EXISTS inquiries_phone_digits_idx ON inquiries (regexp_replace(phone, '\D', '', 'g'));
+
+-- 받는 분 주소 직접 입력 링크 (/gift/[token]) — 문자로 링크를 보내고, 나중에 알림톡으로 교체 (2026-11)
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS gift_token       TEXT UNIQUE;  -- 추측 불가한 무작위 값
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS gift_address_by  TEXT;         -- buyer(구매자) / recipient(받는 분) / store(매장 직접 입력)
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS gift_address_at  TIMESTAMPTZ;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS gift_declined_at TIMESTAMPTZ;  -- 받는 분이 선물을 사양한 시각

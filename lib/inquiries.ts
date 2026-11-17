@@ -1,5 +1,6 @@
 import { sql } from './db';
 import type { PhoneHistory } from './emailCheck';
+import { GIFT_LINK_DAYS } from './gift';
 
 /* ======================
    타입 정의
@@ -64,6 +65,12 @@ function requireDb() {
    DB 저장 함수
 ====================== */
 
+/** 받는 분 링크용 무작위 토큰 (144비트, URL 안전) */
+function newGiftToken() {
+  const bytes = crypto.getRandomValues(new Uint8Array(18));
+  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_');
+}
+
 export async function saveInquiry(inquiry: Inquiry) {
   const db = requireDb();
   // 개인/기업 필드를 한 번에 다루기 위해 type을 제외한 필드를 합친 형태로 본다
@@ -71,13 +78,17 @@ export async function saveInquiry(inquiry: Inquiry) {
     Omit<PersonalInquiry, 'type'> & Omit<BusinessInquiry, 'type'>
   >;
 
+  // 주소를 모르는 선물만 받는 분 입력 링크를 만든다
+  const token = i.gift_send && !i.recipient_address ? newGiftToken() : null;
+
   const rows = await db`
     INSERT INTO inquiries (
       type, name, phone, email, company_name, org_type, department, job_title,
       gift_type, purpose,
       budget, budget_per_unit, quantity, delivery_type, desired_date,
       message, privacy_consent, privacy_consent_at,
-      gift_send, recipient_name, recipient_phone, sender_label, recipient_address
+      gift_send, recipient_name, recipient_phone, sender_label, recipient_address,
+      gift_token, gift_address_by, gift_address_at
     ) VALUES (
       ${i.type}, ${i.name ?? null}, ${i.phone ?? null}, ${i.email ?? null},
       ${i.company_name ?? null}, ${i.org_type ?? null}, ${i.department ?? null}, ${i.job_title ?? null},
@@ -86,12 +97,13 @@ export async function saveInquiry(inquiry: Inquiry) {
       ${i.delivery_type ?? null}, ${i.desired_date ?? null}, ${i.message ?? null},
       ${i.privacy_consent ?? false}, ${i.privacy_consent_at ?? null},
       ${i.gift_send ?? false}, ${i.recipient_name ?? null}, ${i.recipient_phone ?? null},
-      ${i.sender_label ?? null}, ${i.recipient_address ?? null}
+      ${i.sender_label ?? null}, ${i.recipient_address ?? null},
+      ${token}, ${i.recipient_address ? 'buyer' : null}, ${i.recipient_address ? new Date().toISOString() : null}
     )
-    RETURNING id
+    RETURNING id, gift_token
   `;
 
-  return rows[0] as { id: string };
+  return rows[0] as { id: string; gift_token: string | null };
 }
 
 /** 같은 전화번호(숫자만 비교)로 들어온 기존 접수 수. excludeId는 방금 저장한 건 */
@@ -188,22 +200,106 @@ export async function listInquiries(f: InquiryFilter, limit = 30, offset = 0) {
   return { rows, total: (countRows[0]?.n as number) ?? 0 };
 }
 
-export async function updateInquiry(id: string, patch: { status?: string; memo?: string | null }) {
+export async function updateInquiry(
+  id: string,
+  patch: { status?: string; memo?: string | null; recipient_address?: string | null }
+) {
   const db = requireDb();
 
   if (patch.status !== undefined && !(INQUIRY_STATUSES as readonly string[]).includes(patch.status)) {
     throw new Error('invalid status');
   }
 
+  // 매장이 전화·문자로 받은 주소를 직접 입력하는 경우
+  const setAddress = patch.recipient_address !== undefined;
+
   const rows = await db`
     UPDATE inquiries SET
       status = COALESCE(${patch.status ?? null}::text, status),
       memo = CASE WHEN ${patch.memo !== undefined}::boolean THEN ${patch.memo ?? null}::text ELSE memo END,
+      recipient_address = CASE WHEN ${setAddress}::boolean THEN ${patch.recipient_address ?? null}::text ELSE recipient_address END,
+      gift_address_by = CASE WHEN ${setAddress}::boolean
+        THEN (CASE WHEN ${patch.recipient_address ?? null}::text IS NULL THEN NULL ELSE 'store' END)
+        ELSE gift_address_by END,
+      gift_address_at = CASE WHEN ${setAddress}::boolean
+        THEN (CASE WHEN ${patch.recipient_address ?? null}::text IS NULL THEN NULL ELSE now() END)
+        ELSE gift_address_at END,
+      -- 사양했던 분이 나중에 전화로 주소를 준 경우
+      gift_declined_at = CASE WHEN ${Boolean(patch.recipient_address)}::boolean THEN NULL ELSE gift_declined_at END,
       updated_at = now()
     WHERE id = ${id}
     RETURNING *
   `;
 
+  return rows[0] ?? null;
+}
+
+/* ======================
+   받는 분 주소 입력 (/gift/[token], 로그인 없음)
+====================== */
+
+export type GiftState = 'open' | 'done' | 'declined' | 'closed';
+
+export interface GiftView {
+  state: GiftState;
+  recipientName: string | null;
+  senderLabel: string;
+}
+
+// 링크가 살아 있는 조건: 미완료·미취소 + 접수 후 GIFT_LINK_DAYS일 이내
+const GIFT_OPEN_SQL = `status NOT IN ('completed', 'canceled') AND created_at > now() - make_interval(days => ${GIFT_LINK_DAYS})`;
+
+export function isGiftToken(token: string) {
+  return /^[A-Za-z0-9_-]{24}$/.test(token);
+}
+
+/** 받는 분 화면용. 주소·연락처 등은 돌려주지 않는다 */
+export async function getGiftView(token: string): Promise<GiftView | null> {
+  if (!isGiftToken(token)) return null;
+  const db = requireDb();
+  const rows = await db.query(
+    `SELECT recipient_name, sender_label, name, gift_address_by, gift_declined_at, (${GIFT_OPEN_SQL}) AS open
+     FROM inquiries WHERE gift_token = $1`,
+    [token]
+  );
+  const r = rows[0];
+  if (!r) return null;
+  const state: GiftState = !r.open ? 'closed'
+    : r.gift_declined_at ? 'declined'
+    : r.gift_address_by ? 'done'
+    : 'open';
+  return {
+    state,
+    recipientName: r.recipient_name ?? null,
+    senderLabel: r.sender_label?.trim() || r.name?.trim() || '지인',
+  };
+}
+
+/** 받는 분이 주소 입력(또는 수정). 링크가 닫혔으면 null */
+export async function submitGiftAddress(token: string, address: string) {
+  if (!isGiftToken(token)) return null;
+  const db = requireDb();
+  const rows = await db.query(
+    `UPDATE inquiries SET
+       recipient_address = $2, gift_address_by = 'recipient', gift_address_at = now(),
+       gift_declined_at = NULL, updated_at = now()
+     WHERE gift_token = $1 AND ${GIFT_OPEN_SQL}
+     RETURNING id, name, recipient_name, recipient_phone, sender_label, recipient_address`,
+    [token, address]
+  );
+  return rows[0] ?? null;
+}
+
+/** 받는 분이 선물을 사양. 링크가 닫혔으면 null */
+export async function declineGift(token: string) {
+  if (!isGiftToken(token)) return null;
+  const db = requireDb();
+  const rows = await db.query(
+    `UPDATE inquiries SET gift_declined_at = now(), updated_at = now()
+     WHERE gift_token = $1 AND ${GIFT_OPEN_SQL}
+     RETURNING id, name, phone, recipient_name, recipient_phone`,
+    [token]
+  );
   return rows[0] ?? null;
 }
 

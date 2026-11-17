@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { saveInquiry, getPhoneHistory } from '@/lib/inquiries';
 import { ORG_TYPES, isValidEmail, emailVerdict, historyLabel, type PhoneHistory } from '@/lib/emailCheck';
-import { giftSmsText } from '@/lib/gift';
+import { giftSmsText, formatAddress } from '@/lib/gift';
 
 import {
   sendTelegramHtml,
@@ -34,11 +34,7 @@ export async function POST(request: NextRequest) {
       const knowsAddress = isGift && formData.addressKnown === 'yes';
       // "(12345) 도로명주소 상세주소" 한 줄로 저장
       const recipientAddress = knowsAddress
-        ? [
-            String(formData.zipcode ?? '').trim() && `(${String(formData.zipcode).trim()})`,
-            String(formData.address1 ?? '').trim(),
-            String(formData.address2 ?? '').trim(),
-          ].filter(Boolean).join(' ').slice(0, 300)
+        ? formatAddress(formData.zipcode, formData.address1, formData.address2)
         : null;
       if (isGift) {
         const missing = [
@@ -109,7 +105,7 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    let saved: { id?: string | number } | null = null;
+    let saved: { id?: string | number; gift_token?: string | null } | null = null;
     let databaseError: unknown = null;
 
     // Supabase가 일시 중단되어도 상담 접수 자체가 막히지 않도록 한다.
@@ -153,6 +149,7 @@ export async function POST(request: NextRequest) {
                   recipientName: inquiryData.recipient_name,
                   senderLabel: inquiryData.sender_label,
                   buyerName: inquiryData.name,
+                  token: saved?.gift_token,
                 }),
               }
             : null,

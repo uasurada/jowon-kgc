@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { emailVerdict, historyLabel, type RiskLevel } from '@/lib/emailCheck';
 import { giftSmsText } from '@/lib/gift';
+import { openAddressSearch } from '@/lib/postcode';
 
 interface Stats {
   today: number;
@@ -45,6 +46,10 @@ interface InquiryData {
   recipient_phone?: string | null;
   sender_label?: string | null;
   recipient_address?: string | null;
+  gift_token?: string | null;
+  gift_address_by?: string | null;
+  gift_address_at?: string | null;
+  gift_declined_at?: string | null;
   // 같은 번호로 이 건보다 먼저 들어온 접수
   prev?: number;
   completed?: number;
@@ -446,7 +451,7 @@ export default function AdminDashboard() {
                       </div>
                       <p className="font-semibold text-gray-900">
                         {r.company_name ? `${r.company_name} · ${r.name}` : r.name}
-                        {r.gift_send && r.recipient_name && <span className="font-normal text-gray-500"> → {r.recipient_name}</span>}
+                        {r.gift_send && r.recipient_name && <span className="font-normal text-gray-500"> → {r.recipient_name} <GiftAddressTag r={r} /></span>}
                       </p>
                       <p className="text-sm text-gray-600">
                         {getGiftTypeName(r.gift_type || r.purpose)} · {r.budget || r.budget_per_unit || '-'} · {r.quantity || '-'}
@@ -486,7 +491,7 @@ export default function AdminDashboard() {
                           ) : r.gift_send ? (
                             <div>
                               <div>{r.name}</div>
-                              <div className="text-xs text-pink-700">→ {r.recipient_name}</div>
+                              <div className="text-xs text-pink-700">→ {r.recipient_name} <GiftAddressTag r={r} /></div>
                             </div>
                           ) : r.name}
                         </td>
@@ -626,12 +631,29 @@ export default function AdminDashboard() {
   );
 }
 
-function GiftPanel({ inquiry }: { inquiry: InquiryData }) {
+/** 선물 배송지 진행 상태 (목록용) */
+function GiftAddressTag({ r }: { r: InquiryData }) {
+  if (r.recipient_address) return <span className="text-green-700">· 📦 주소 완료</span>;
+  if (r.gift_declined_at) return <span className="text-gray-500">· 🙏 사양</span>;
+  return <span className="text-amber-700">· ⏳ 주소 대기</span>;
+}
+
+const ADDRESS_BY: Record<string, string> = {
+  buyer: '보내는 분이 입력',
+  recipient: '받는 분이 링크로 직접 입력',
+  store: '매장이 직접 입력',
+};
+
+function GiftPanel({ inquiry, onUpdated }: { inquiry: InquiryData; onUpdated: (row: InquiryData) => void }) {
   const [copied, setCopied] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [addr, setAddr] = useState({ zipcode: '', address1: '', address2: '' });
+  const [saving, setSaving] = useState(false);
   const sms = giftSmsText({
     recipientName: inquiry.recipient_name,
     senderLabel: inquiry.sender_label,
     buyerName: inquiry.name,
+    token: inquiry.gift_token,
   });
   const digits = (inquiry.recipient_phone ?? '').replace(/[^\d+]/g, '');
   // "?&body=" 형태가 아이폰·안드로이드 모두에서 본문을 채운다
@@ -644,6 +666,24 @@ function GiftPanel({ inquiry }: { inquiry: InquiryData }) {
       setTimeout(() => setCopied(false), 2000);
     } catch {
       setCopied(false);
+    }
+  };
+
+  // 전화·문자로 받은 주소를 매장이 직접 입력
+  const saveAddress = async () => {
+    setSaving(true);
+    try {
+      const json = await fetchJson(`/api/admin/inquiries/${inquiry.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipient_address: addr }),
+      });
+      onUpdated(json.row);
+      setEditing(false);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '저장 실패');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -661,18 +701,31 @@ function GiftPanel({ inquiry }: { inquiry: InquiryData }) {
         </dd>
         <dt className="text-gray-500">주소</dt>
         <dd className="col-span-2 text-gray-900 break-words">
-          {inquiry.recipient_address || <span className="text-pink-700">모름 → 문자로 문의</span>}
+          {inquiry.recipient_address ? (
+            <>
+              {inquiry.recipient_address}
+              <span className="block text-xs text-gray-500">
+                {ADDRESS_BY[inquiry.gift_address_by ?? ''] ?? ''}
+                {inquiry.gift_address_at ? ` · ${formatDate(inquiry.gift_address_at)}` : ''}
+              </span>
+            </>
+          ) : inquiry.gift_declined_at ? (
+            <span className="text-gray-700 font-semibold">🙏 받는 분이 사양함 ({formatDate(inquiry.gift_declined_at)}) → 보내는 분께 연락</span>
+          ) : (
+            <span className="text-pink-700">아직 없음 → 결제 확인 후 링크 문자 발송</span>
+          )}
         </dd>
         <dt className="text-gray-500">안내할 이름</dt>
         <dd className="col-span-2 text-gray-900">{inquiry.sender_label || inquiry.name}</dd>
       </dl>
-      {inquiry.recipient_address ? (
+
+      {inquiry.gift_address_by === 'buyer' ? (
         <p className="text-xs text-gray-600">📦 보내는 분이 주소를 입력함 → 결제 확인 후 바로 발송 (받는 분께 따로 연락 불필요)</p>
-      ) : (
+      ) : !inquiry.recipient_address && !inquiry.gift_declined_at ? (
         <>
           <div>
             <p className="text-gray-500 mb-1">결제 확인 후 받는 분께 보낼 문자</p>
-            <p className="whitespace-pre-wrap bg-white rounded p-2 text-gray-800 text-xs">{sms}</p>
+            <p className="whitespace-pre-wrap break-all bg-white rounded p-2 text-gray-800 text-xs">{sms}</p>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <a href={smsHref} className="py-2 rounded-lg bg-pink-600 hover:bg-pink-700 text-white text-center font-semibold">
@@ -682,8 +735,43 @@ function GiftPanel({ inquiry }: { inquiry: InquiryData }) {
               {copied ? '복사됨 ✓' : '문구 복사'}
             </button>
           </div>
-          <p className="text-xs text-gray-500">⏰ 7일 내 회신 없으면 보내는 분께 연락 (환불 또는 다른 주소 발송)</p>
+          <p className="text-xs text-gray-500">
+            받는 분이 링크로 입력하면 텔레그램 알림이 옵니다. 어르신 등 입력이 어려우면 전화·문자로 주소를 받아 아래에 직접 입력하세요.
+            <br />⏰ 7일 내 입력 없으면 보내는 분께 연락 (환불 또는 다른 주소 발송)
+          </p>
         </>
+      ) : null}
+
+      {editing ? (
+        <div className="space-y-2 pt-1">
+          <div className="flex gap-2">
+            <input value={addr.zipcode} onChange={(e) => setAddr({ ...addr, zipcode: e.target.value })} placeholder="우편번호" inputMode="numeric" className="w-28 border border-gray-300 rounded-lg px-2 py-2 bg-white" />
+            <button
+              type="button"
+              onClick={() => openAddressSearch((zipcode, address1) => setAddr((p) => ({ ...p, zipcode, address1 })))}
+              className="px-3 rounded-lg bg-gray-800 text-white text-xs font-semibold"
+            >
+              주소 검색
+            </button>
+          </div>
+          <input value={addr.address1} onChange={(e) => setAddr({ ...addr, address1: e.target.value })} placeholder="주소" className="w-full border border-gray-300 rounded-lg px-2 py-2 bg-white" />
+          <input value={addr.address2} onChange={(e) => setAddr({ ...addr, address2: e.target.value })} placeholder="상세주소 (동·호수)" className="w-full border border-gray-300 rounded-lg px-2 py-2 bg-white" />
+          <div className="grid grid-cols-2 gap-2">
+            <button type="button" onClick={() => setEditing(false)} className="py-2 rounded-lg bg-white border border-gray-300 font-semibold">취소</button>
+            <button
+              type="button"
+              onClick={saveAddress}
+              disabled={saving || !addr.address1.trim()}
+              className="py-2 rounded-lg bg-pink-600 text-white font-semibold disabled:opacity-40"
+            >
+              {saving ? '저장 중...' : '주소 저장'}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button type="button" onClick={() => setEditing(true)} className="w-full py-2 rounded-lg bg-white border border-pink-300 text-pink-800 font-semibold">
+          ✍️ {inquiry.recipient_address ? '주소 수정 (매장 직접 입력)' : '주소 직접 입력 (전화·문자로 받은 경우)'}
+        </button>
       )}
     </div>
   );
@@ -778,7 +866,7 @@ function InquiryDetail({
               ))}
           </dl>
 
-          {inquiry.gift_send && <GiftPanel inquiry={inquiry} />}
+          {inquiry.gift_send && <GiftPanel inquiry={inquiry} onUpdated={onUpdated} />}
 
           {inquiry.type === 'business' && (
             <ul className="text-xs text-gray-700 bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-1">

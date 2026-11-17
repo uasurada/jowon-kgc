@@ -355,3 +355,20 @@ body { background: #fff; color: var(--ink); }
   .consult-aside { position: static; }.aside-list { display: grid; grid-template-columns: 1fr 1fr; }.location-card { display: none; }
   .success-card { padding: 45px 23px; }.success-card h1 { font-size: 33px; }.success-actions { flex-direction: column; }
 }
+
+/* 선물 받는 분 배송지 입력 (/gift/[token]) */
+.gift-reply-card { text-align: left; min-width: 0; }
+.consult-success:has(.gift-reply-card) { grid-template-columns: minmax(0, 520px); justify-content: center; }
+.gift-reply-card .address-search { grid-template-columns: minmax(0, 1fr) auto; }
+.gift-reply-card .success-icon, .gift-reply-card .eyebrow { margin-left: auto; margin-right: auto; text-align: center; }
+.gift-reply-card h1, .gift-reply-card > p { text-align: center; }
+.success-icon.gift { background: #fdf0f0; color: var(--kgc-red); }
+.gift-reply-card .modern-form { padding: 32px 0 0; gap: 22px; }
+.gift-reply-label { display: block; color: #2b2824; font-size: 14px; font-weight: 700; margin-bottom: 18px; }
+.gift-reply-card .address-fields { margin-top: 0; }
+.gift-reply-card .privacy-box label { gap: 10px; font-weight: 500; font-size: 13px; line-height: 1.6; }
+.gift-reply-card .privacy-box b { color: var(--kgc-red); }
+.gift-reply-consent { display: block; margin-top: 4px; line-height: 1.6; }
+.gift-reply-consent a, .gift-reply-small a { color: var(--kgc-red); text-decoration: underline; }
+.gift-reply-small { margin-top: 12px; color: #8a8379; font-size: 12px; line-height: 1.8; text-align: center; }
+.gift-reply-decline { margin-top: 6px; color: #9a938a; font-size: 12px; text-decoration: underline; }

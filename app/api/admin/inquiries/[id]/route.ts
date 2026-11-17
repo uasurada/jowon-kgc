@@ -1,7 +1,8 @@
-// app/api/admin/inquiries/[id]/route.ts — 처리 상태/메모 수정
+// app/api/admin/inquiries/[id]/route.ts — 처리 상태/메모/선물 배송지(매장 직접 입력) 수정
 import { NextRequest, NextResponse } from 'next/server';
 import { updateInquiry } from '@/lib/inquiries';
 import { errorMessage } from '@/lib/db';
+import { formatAddress } from '@/lib/gift';
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -10,9 +11,16 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   }
 
   const body = await request.json().catch(() => ({}));
-  const patch: { status?: string; memo?: string | null } = {};
+  const patch: { status?: string; memo?: string | null; recipient_address?: string | null } = {};
   if (typeof body.status === 'string') patch.status = body.status;
   if (typeof body.memo === 'string') patch.memo = body.memo.slice(0, 2000);
+  if (body.recipient_address && typeof body.recipient_address === 'object') {
+    const a = body.recipient_address;
+    if (!String(a.address1 ?? '').trim()) {
+      return NextResponse.json({ error: '주소를 입력해 주세요.' }, { status: 400 });
+    }
+    patch.recipient_address = formatAddress(a.zipcode, a.address1, a.address2);
+  }
 
   try {
     const row = await updateInquiry(id, patch);

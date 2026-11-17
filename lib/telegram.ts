@@ -118,10 +118,46 @@ export function buildPersonalTelegramMessageSafe(params: {
     html += `\n📦 주소 입력됨 → 결제 확인 후 바로 발송 (받는 분께 따로 연락 불필요)\n`;
   } else if (gift) {
     // <pre> 블록은 텔레그램에서 복사 버튼이 붙는다
-    html += `\n<b>📱 결제 확인 후 받는 분께 보낼 문자</b>\n<pre>${escapeHtml(gift.sms)}</pre>\n`;
+    html += `\n<b>📱 결제 확인 후 받는 분께 보낼 문자</b> (주소 입력 링크 포함 · 관리자 화면 [문자 보내기]로도 가능)\n<pre>${escapeHtml(gift.sms)}</pre>\n`;
     html += `\n⏰ 7일 내 회신 없으면 보내는 분께 연락 (환불 또는 다른 주소 발송)\n`;
   }
 
+  return html.trim();
+}
+
+/** 받는 분이 링크로 주소를 입력했거나 선물을 사양했을 때 */
+export function buildGiftReplyTelegramMessage(params: {
+  id: string | number;
+  kind: "address" | "declined";
+  buyerName?: string | null;
+  buyerPhone?: string | null;
+  recipientName?: string | null;
+  recipientPhone?: string | null;
+  address?: string | null;
+}) {
+  let html = "";
+  if (params.kind === "address") {
+    html += sectionTitle("📦 받는 분 주소 입력 완료");
+    html += line(`<b>ID</b>`, params.id);
+    html += line(`<b>받는 분</b>`, params.recipientName);
+    if (isNonEmpty(params.recipientPhone)) {
+      const digits = String(params.recipientPhone).replace(/[^\d+]/g, "");
+      html += linkLine(`<b>전화</b>`, `tel:${digits}`, params.recipientPhone);
+    }
+    html += line(`<b>주소</b>`, params.address);
+    html += line(`<b>보내는 분</b>`, params.buyerName);
+    html += `\n🚚 송장: 보내는 분 주소는 매장, 성함·연락처는 보내는 분 정보로\n`;
+  } else {
+    html += sectionTitle("🙏 받는 분이 선물을 사양함");
+    html += line(`<b>ID</b>`, params.id);
+    html += line(`<b>받는 분</b>`, params.recipientName);
+    html += line(`<b>보내는 분</b>`, params.buyerName);
+    if (isNonEmpty(params.buyerPhone)) {
+      const digits = String(params.buyerPhone).replace(/[^\d+]/g, "");
+      html += linkLine(`<b>보내는 분 전화</b>`, `tel:${digits}`, params.buyerPhone);
+    }
+    html += `\n☎️ 보내는 분께 연락해 환불 또는 다른 분께 발송 안내\n`;
+  }
   return html.trim();
 }
 

@@ -6,29 +6,12 @@ import Link from 'next/link';
 import { ArrowRight, Check, Gift, MapPin, MessageCircle, Phone, ShieldCheck, Sparkles } from 'lucide-react';
 import PrivacyConsent from '@/components/PrivacyConsent';
 import ConsultationHeader from '@/components/ConsultationHeader';
+import { openAddressSearch } from '@/lib/postcode';
 import storePhoto from '../../img/KakaoTalk_20260928_162936624_04.jpg';
 
 const GIFT_TYPES = ['부모님', '직장 상사', '병문안', '상견례', '나를 위한', '출산·산모', '기타'];
 const BUDGETS = ['5만원대', '10만원대', '20만원대', '30만원 이상'];
 const QUANTITIES = ['1개', '2개', '3개', '4~5개', '6개 이상'];
-
-// 카카오(다음) 우편번호 서비스 — 무료, 키 없음. 주소를 아는 선물일 때만 불러온다
-type DaumPostcodeData = { zonecode: string; roadAddress: string; jibunAddress: string };
-declare global {
-  interface Window {
-    daum?: { Postcode: new (o: { oncomplete: (d: DaumPostcodeData) => void }) => { open: () => void } };
-  }
-}
-function loadDaumPostcode() {
-  if (window.daum?.Postcode) return Promise.resolve();
-  return new Promise<void>((resolve, reject) => {
-    const s = document.createElement('script');
-    s.src = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error('postcode load failed'));
-    document.head.appendChild(s);
-  });
-}
 
 export default function PersonalGiftConsultation() {
   const [formData, setFormData] = useState({
@@ -49,16 +32,8 @@ export default function PersonalGiftConsultation() {
     (!knowsAddress || formData.address1.trim())
   );
 
-  const searchAddress = async () => {
-    try {
-      await loadDaumPostcode();
-      new window.daum!.Postcode({
-        oncomplete: (d) => setFormData((prev) => ({ ...prev, zipcode: d.zonecode, address1: d.roadAddress || d.jibunAddress })),
-      }).open();
-    } catch {
-      alert('주소 검색을 불러오지 못했습니다. 주소를 직접 입력해 주세요.');
-    }
-  };
+  const searchAddress = () =>
+    openAddressSearch((zipcode, address1) => setFormData((prev) => ({ ...prev, zipcode, address1 })));
   const valid = formData.name && formData.phone && formData.budget && giftValid && privacyConsent;
 
   const handleSubmit = async () => {
@@ -87,7 +62,7 @@ export default function PersonalGiftConsultation() {
             {knowsAddress
               ? '먼저 보내시는 분께 연락드려 제품과 결제를 안내해 드립니다. 결제 확인 후 입력하신 주소로 정성껏 포장해 보내드립니다.'
               : isGift
-                ? '먼저 보내시는 분께 연락드려 제품과 결제를 안내해 드립니다. 결제 확인 후 받는 분께 연락드려 배송지를 여쭙겠습니다.'
+                ? '먼저 보내시는 분께 연락드려 제품과 결제를 안내해 드립니다. 결제 확인 후 받는 분께 주소 입력 링크를 문자로 보내드립니다.'
                 : '남겨주신 내용을 확인한 뒤 매장에서 직접 연락드리겠습니다.'}
           </p>
           <div className="success-actions">
@@ -127,7 +102,7 @@ export default function PersonalGiftConsultation() {
             {isGift && (
               <div className="gift-box">
                 <p className="gift-box-title"><Gift size={16} /> 전화번호만으로 선물하기</p>
-                <p className="gift-box-desc">상사, 은사님, 사돈처럼 주소를 여쭙기 어려운 분께도 부담 없이 보내세요. 주소를 모르시면 결제 확인 후 정관장 조원점이 받는 분께 문자로 연락드려 배송지를 받아 정성껏 포장해 보내드립니다.</p>
+                <p className="gift-box-desc">상사, 은사님, 사돈처럼 주소를 여쭙기 어려운 분께도 부담 없이 보내세요. 주소를 모르시면 결제 확인 후 정관장 조원점이 받는 분께 주소 입력 링크를 문자로 보내드리고, 받는 분이 직접 입력하신 주소로 정성껏 포장해 보내드립니다.</p>
                 <div className="input-grid">
                   <label>받는 분 성함 <em>필수</em><input value={formData.recipientName} onChange={(e) => update('recipientName', e.target.value)} placeholder="예: 김영희" /></label>
                   <label>받는 분 연락처 <em>필수</em><input type="tel" value={formData.recipientPhone} onChange={(e) => update('recipientPhone', e.target.value)} placeholder="010-0000-0000" /></label>
@@ -135,7 +110,7 @@ export default function PersonalGiftConsultation() {
                 <fieldset>
                   <legend>받는 분 주소 <em>필수</em></legend>
                   <div className="choice-grid two">
-                    <button type="button" className={!knowsAddress ? 'selected' : ''} onClick={() => update('addressKnown', 'no')}>주소를 몰라요<small>매장이 받는 분께 문자로 여쭤요</small></button>
+                    <button type="button" className={!knowsAddress ? 'selected' : ''} onClick={() => update('addressKnown', 'no')}>주소를 몰라요<small>받는 분이 링크로 직접 입력해요</small></button>
                     <button type="button" className={knowsAddress ? 'selected' : ''} onClick={() => update('addressKnown', 'yes')}>주소를 알아요<small>직접 입력 · 바로 발송</small></button>
                   </div>
                 </fieldset>
@@ -150,7 +125,7 @@ export default function PersonalGiftConsultation() {
                   </div>
                 )}
                 <label className="single-input">받는 분께 안내할 보내는 분 이름 <small>선택</small><input value={formData.senderLabel} onChange={(e) => update('senderLabel', e.target.value)} placeholder="예: 막내아들 민수 (비우면 신청자 성함)" /></label>
-                {!knowsAddress && <p className="form-hint">받는 분이 7일 안에 회신하지 않으시면 보내시는 분께 연락드려 환불 또는 다른 주소 발송을 안내해 드립니다.</p>}
+                {!knowsAddress && <p className="form-hint">받는 분이 7일 안에 주소를 입력하지 않으시면 보내시는 분께 연락드려 환불 또는 다른 주소 발송을 안내해 드립니다.</p>}
               </div>
             )}
             <fieldset>
