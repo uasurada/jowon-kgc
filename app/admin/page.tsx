@@ -19,6 +19,7 @@ interface Stats {
   month: number;
   total: number;
   pending: number;
+  anonymized?: number;
 }
 
 interface InquiryData {
@@ -62,6 +63,7 @@ interface InquiryData {
   elapsed_sec?: number | null;
   risk_level?: string | null;
   risk_flags?: string | null;
+  anonymized_at?: string | null;
   // 같은 번호로 이 건보다 먼저 들어온 접수
   prev?: number;
   completed?: number;
@@ -159,6 +161,9 @@ function TypeBadge({ type, gift }: { type: string; gift?: boolean }) {
     </span>
   );
 }
+
+/** 보유 기간이 지나 개인정보를 지운 건 */
+const shownName = (r: InquiryData) => r.name ?? (r.anonymized_at ? '🗑 개인정보 파기됨' : '-');
 
 function HistoryBadge({ r }: { r: InquiryData }) {
   const color = !r.prev
@@ -394,6 +399,10 @@ export default function AdminDashboard() {
           ))}
         </div>
 
+        {!!stats.anonymized && (
+          <p className="text-xs text-gray-500 -mt-3 mb-4">🗑 개인정보 자동 파기 누적 {stats.anonymized}건 · 마지막 상담·주문일로부터 1년 지난 건 (통계용 정보만 익명 보관)</p>
+        )}
+
         <TrafficStats />
 
         {/* 검색/필터 */}
@@ -489,7 +498,7 @@ export default function AdminDashboard() {
                         <span className="ml-auto text-xs text-gray-500">{formatDate(r.created_at)}</span>
                       </div>
                       <p className="font-semibold text-gray-900">
-                        {r.company_name ? `${r.company_name} · ${r.name}` : r.name}
+                        {r.company_name ? `${r.company_name} · ${shownName(r)}` : shownName(r)}
                         {r.gift_send && r.recipient_name && <span className="font-normal text-gray-500"> → {r.recipient_name} <GiftAddressTag r={r} /></span>}
                       </p>
                       <p className="text-sm text-gray-600">
@@ -527,14 +536,14 @@ export default function AdminDashboard() {
                           {r.company_name ? (
                             <div>
                               <div>{r.company_name}</div>
-                              <div className="text-xs text-gray-500">{r.name}</div>
+                              <div className="text-xs text-gray-500">{shownName(r)}</div>
                             </div>
                           ) : r.gift_send ? (
                             <div>
-                              <div>{r.name}</div>
+                              <div>{shownName(r)}</div>
                               <div className="text-xs text-pink-700">→ {r.recipient_name} <GiftAddressTag r={r} /></div>
                             </div>
-                          ) : r.name}
+                          ) : shownName(r)}
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{r.phone}</td>
                         <td className="px-4 py-3">

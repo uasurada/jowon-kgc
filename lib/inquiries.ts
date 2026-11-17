@@ -350,7 +350,8 @@ export async function getDashboardStats() {
       count(i.id) FILTER (WHERE i.created_at >= (date_trunc('week',  k.t) AT TIME ZONE 'Asia/Seoul'))::int AS week,
       count(i.id) FILTER (WHERE i.created_at >= (date_trunc('month', k.t) AT TIME ZONE 'Asia/Seoul'))::int AS month,
       count(i.id)::int AS total,
-      count(i.id) FILTER (WHERE i.status = 'pending')::int AS pending
+      count(i.id) FILTER (WHERE i.status = 'pending')::int AS pending,
+      count(i.id) FILTER (WHERE i.anonymized_at IS NOT NULL)::int AS anonymized
     FROM k LEFT JOIN inquiries i ON true
   `;
 

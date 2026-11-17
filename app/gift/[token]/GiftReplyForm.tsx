@@ -113,7 +113,7 @@ export default function GiftReplyForm({ token, gift }: { token: string; gift: Gi
             <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
             <span>
               <b>[필수]</b> 선물 배송을 위한 개인정보 수집·이용에 동의합니다.
-              <small className="gift-reply-consent">수집 항목: 주소 · 목적: 선물 배송(택배사 전달) · 보유: 1년 후 파기. 동의하지 않으시면 배송이 어렵습니다. <a href="/privacy" target="_blank" rel="noopener noreferrer">개인정보처리방침</a></small>
+              <small className="gift-reply-consent">수집 항목: 주소 · 목적: 선물 배송(택배사 전달) · 보유: 마지막 이용일로부터 1년 후 파기. 동의하지 않으시면 배송이 어렵습니다. <a href="/privacy" target="_blank" rel="noopener noreferrer">개인정보처리방침</a></small>
             </span>
           </label>
         </div>

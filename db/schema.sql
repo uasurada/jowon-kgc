@@ -87,3 +87,6 @@ CREATE TABLE IF NOT EXISTS login_attempts (
   ok         BOOLEAN NOT NULL
 );
 CREATE INDEX IF NOT EXISTS login_attempts_created_at_idx ON login_attempts (created_at);
+
+-- 개인정보 자동 파기: 같은 번호의 마지막 상담·주문 후 1년 지나면 개인정보만 지우고 통계용 정보는 남긴다 (2026-11)
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS anonymized_at TIMESTAMPTZ;
