@@ -36,6 +36,16 @@ function divider() {
   return `\n<b>—</b>\n\n`;
 }
 
+/** 유입 경로·지역·기기 한 줄 + 진위 판정 한 줄 */
+function traceLines(trace?: string | null, trust?: string | null) {
+  let s = "";
+  if (isNonEmpty(trace)) s += `${escapeHtml(trace)}
+`;
+  if (isNonEmpty(trust)) s += `${escapeHtml(trust)}
+`;
+  return s;
+}
+
 export async function sendTelegramHtml(html: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
@@ -69,6 +79,8 @@ export function buildPersonalTelegramMessageSafe(params: {
   phone?: string;
   message?: string | null;
   history?: string | null;
+  trace?: string | null;
+  trust?: string | null;
   gift?: {
     recipientName?: string | null;
     recipientPhone?: string | null;
@@ -83,6 +95,7 @@ export function buildPersonalTelegramMessageSafe(params: {
   let html = "";
   html += sectionTitle(gift ? "🎁 개인 선물 보내기 접수" : "📦 개인 상담 접수");
   if (isNonEmpty(params.history)) html += `${escapeHtml(params.history)}\n`;
+  html += traceLines(params.trace, params.trust);
   html += line(`<b>선물</b>`, params.giftTitle);
   html += line(`<b>예산</b>`, params.budget);
   html += line(`<b>수량</b>`, params.quantity);
@@ -178,6 +191,8 @@ export function buildBusinessTelegramMessageSafe(params: {
   email?: string | null;
   emailCheck?: string | null;
   history?: string | null;
+  trace?: string | null;
+  trust?: string | null;
 
   message?: string | null;
 }) {
@@ -188,6 +203,7 @@ export function buildBusinessTelegramMessageSafe(params: {
   html += sectionTitle("🏢 기업 견적 문의 접수");
   if (isNonEmpty(params.history)) html += `${escapeHtml(params.history)}\n`;
   if (isNonEmpty(params.emailCheck)) html += `<b>${escapeHtml(params.emailCheck)}</b>\n`;
+  html += traceLines(params.trace, params.trust);
   html += "\n";
   html += line(`<b>용도</b>`, params.purposeTitle);
   html += line(`<b>수량</b>`, params.quantity);

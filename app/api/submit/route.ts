@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { saveInquiry, getPhoneHistory } from '@/lib/inquiries';
+import { saveInquiry, getPhoneHistory, countRecentByIp } from '@/lib/inquiries';
+import { getRequestMeta } from '@/lib/requestMeta';
+import { classifySource, isBotUa, placeLabel, refHost, suspiciousPhone, TRUST_LABEL, type TrustLevel } from '@/lib/traffic';
 import { ORG_TYPES, isValidEmail, emailVerdict, historyLabel, type PhoneHistory } from '@/lib/emailCheck';
 import { giftSmsText, formatAddress } from '@/lib/gift';
 
@@ -105,6 +107,49 @@ export async function POST(request: NextRequest) {
       };
     }
 
+    // 출처·지역·진위 판별 (판별 실패해도 접수는 계속)
+    const reqMeta = await getRequestMeta(request);
+    const attr = body.meta && typeof body.meta === 'object' ? body.meta : null;
+    const elapsed = Number.isFinite(attr?.elapsedSec) ? Math.max(0, Math.round(attr.elapsedSec)) : null;
+    const flags: string[] = [];
+    let trust: TrustLevel = 'ok';
+    // website는 화면에 보이지 않는 칸이라 사람은 채우지 않는다
+    if (String(formData.website ?? '').trim() || isBotUa(reqMeta.ua)) {
+      trust = 'bot';
+      flags.push('자동 프로그램 의심');
+    }
+    if (!attr) flags.push('브라우저 정보 없음');
+    if (elapsed !== null && elapsed < 5) flags.push(`작성 ${elapsed}초`);
+    if (reqMeta.country && reqMeta.country !== 'KR') flags.push(`해외 접속(${reqMeta.country})`);
+    if (suspiciousPhone(inquiryData.phone)) flags.push('연락처 형식 이상');
+    if (reqMeta.ipHash) {
+      const recent = await countRecentByIp(reqMeta.ipHash).catch(() => 0);
+      if (recent >= 2) flags.push(`같은 IP에서 24시간 내 ${recent + 1}번째 접수`);
+    }
+    if (trust !== 'bot' && flags.length) trust = 'warn';
+
+    Object.assign(inquiryData, {
+      source: classifySource({ src: attr?.src, ref: attr?.ref, ua: reqMeta.ua }),
+      referrer: refHost(attr?.ref),
+      landing: typeof attr?.landing === 'string' ? attr.landing.slice(0, 200) : null,
+      device: reqMeta.device,
+      geo_country: reqMeta.country,
+      geo_region: reqMeta.region,
+      geo_city: reqMeta.city,
+      ip_hash: reqMeta.ipHash,
+      visitor: typeof attr?.visitor === 'string' ? attr.visitor.slice(0, 40) : null,
+      elapsed_sec: elapsed,
+      risk_level: trust,
+      risk_flags: flags.join(' · ') || null,
+    });
+    const place = placeLabel(inquiryData);
+    const trace = [
+      `🔎 ${inquiryData.source}`,
+      place && `📍 ${place}`,
+      reqMeta.device && `📱 ${reqMeta.device}`,
+    ].filter(Boolean).join(' · ');
+    const trustLine = `${TRUST_LABEL[trust]}${flags.length ? ` — ${flags.join(', ')}` : ''}`;
+
     let saved: { id?: string | number; gift_token?: string | null } | null = null;
     let databaseError: unknown = null;
 
@@ -129,8 +174,12 @@ export async function POST(request: NextRequest) {
 
     // DB 저장 여부와 관계없이 텔레그램으로 상담 내용을 전달한다.
     try {
-      if (formType === 'personal') {
+      if (trust === 'bot' && saved) {
+        // 자동 접수로 보이면 알림을 보내지 않는다 (관리자 화면에는 남김)
+      } else if (formType === 'personal') {
         const html = buildPersonalTelegramMessageSafe({
+          trace,
+          trust: trustLine,
           id: saved?.id,
           giftTitle: mapPersonalGiftType(inquiryData.gift_type), // ✅ 한글 타이틀
           budget: inquiryData.budget,
@@ -158,6 +207,8 @@ export async function POST(request: NextRequest) {
         await sendTelegramHtml(html);
       } else {
         const html = buildBusinessTelegramMessageSafe({
+          trace,
+          trust: trustLine,
           id: saved?.id,
           purposeTitle: mapBusinessPurpose(inquiryData.purpose), // ✅ 한글 타이틀
           quantity: inquiryData.quantity, // ✅ 수량 포함

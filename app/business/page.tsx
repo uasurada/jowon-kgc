@@ -7,6 +7,7 @@ import { ArrowRight, BookOpen, Building2, Check, FileText, MessageCircle, Phone,
 import PrivacyConsent from '@/components/PrivacyConsent';
 import ConsultationHeader from '@/components/ConsultationHeader';
 import { ORG_TYPES, isValidEmail } from '@/lib/emailCheck';
+import { getAttribution } from '@/lib/attribution';
 import storePhoto from '../../img/KakaoTalk_20260928_162936624_08.jpg';
 
 const PURPOSES = ['직원 선물', '거래처 선물', '행사 답례품', '기타'];
@@ -14,7 +15,7 @@ const QUANTITIES = ['30~49세트', '50~99세트', '100~199세트', '200세트 �
 const BUDGETS = ['3~5만원대', '5~10만원대', '10~20만원대', '20만원 이상'];
 
 export default function BusinessOrderConsultation() {
-  const [formData, setFormData] = useState({ orgType: '', companyName: '', department: '', contactName: '', jobTitle: '', phone: '', email: '', purpose: '', quantity: '', budgetPerUnit: '', message: '' });
+  const [formData, setFormData] = useState({ orgType: '', companyName: '', department: '', contactName: '', jobTitle: '', phone: '', email: '', purpose: '', quantity: '', budgetPerUnit: '', message: '', website: '' });
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -29,7 +30,7 @@ export default function BusinessOrderConsultation() {
     try {
       const res = await fetch('/api/submit', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formType: 'business', formData }),
+        body: JSON.stringify({ formType: 'business', formData, meta: getAttribution() }),
       });
       const result = await res.json();
       if (result.success) setSubmitted(true);
@@ -76,6 +77,7 @@ export default function BusinessOrderConsultation() {
         <div className="consult-form-wrap">
           <div className="form-intro"><span>기업 견적 문의</span><h2>필요한 주문 정보를 알려주세요.</h2><p>확인 후 매장에서 구성과 견적을 안내해 드립니다.</p></div>
           <div className="modern-form">
+            <input className="hp-field" tabIndex={-1} autoComplete="off" aria-hidden="true" value={formData.website} onChange={(e) => update('website', e.target.value)} />
             <fieldset><legend>기관 구분 <em>필수</em></legend><div className="choice-row">{ORG_TYPES.map((item) => <button key={item} type="button" className={formData.orgType === item ? 'selected' : ''} onClick={() => update('orgType', item)}>{item}</button>)}</div></fieldset>
             <div className="input-grid">
               <label>회사·기관명 <em>필수</em><input value={formData.companyName} onChange={(e) => update('companyName', e.target.value)} placeholder="회사 또는 기관·단체명" autoComplete="organization" /></label>

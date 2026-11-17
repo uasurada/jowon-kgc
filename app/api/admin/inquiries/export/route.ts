@@ -4,6 +4,7 @@ import { listInquiries } from '@/lib/inquiries';
 import { errorMessage } from '@/lib/db';
 import { mapPersonalGiftType, mapBusinessPurpose, mapDeliveryType } from '@/lib/formLabels';
 import { emailVerdict, historyLabel } from '@/lib/emailCheck';
+import { placeLabel, TRUST_LABEL, type TrustLevel } from '@/lib/traffic';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,6 +54,7 @@ export async function GET(request: NextRequest) {
       '번호', '접수일시', '구분', '상태', '접수 이력', '이름/담당자', '직책', '기관 구분', '기관·회사명', '부서',
       '연락처', '이메일', '이메일 판정', '유형/목적', '예산', '수량', '배송', '희망일',
       '선물 보내기', '받는 분', '받는 분 연락처', '받는 분 주소', '주소 입력', '안내할 보낸 분', '요청사항', '메모',
+      '진위 판정', '판정 사유', '유입 경로', '첫 페이지', '접속 지역(IP 추정)', '기기', '작성 시간(초)',
     ];
 
     const lines = rows.map((r) =>
@@ -83,6 +85,13 @@ export async function GET(request: NextRequest) {
         r.sender_label,
         r.message,
         r.memo,
+        r.risk_level ? TRUST_LABEL[r.risk_level as TrustLevel] ?? r.risk_level : '',
+        r.risk_flags,
+        r.source,
+        r.landing,
+        placeLabel(r),
+        r.device,
+        r.elapsed_sec,
       ].map(csvCell).join(',')
     );
 

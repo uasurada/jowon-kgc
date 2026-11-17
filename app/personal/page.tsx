@@ -7,6 +7,7 @@ import { ArrowRight, Check, Gift, MapPin, MessageCircle, Phone, ShieldCheck, Spa
 import PrivacyConsent from '@/components/PrivacyConsent';
 import ConsultationHeader from '@/components/ConsultationHeader';
 import { openAddressSearch } from '@/lib/postcode';
+import { getAttribution } from '@/lib/attribution';
 import storePhoto from '../../img/KakaoTalk_20260928_162936624_04.jpg';
 
 const GIFT_TYPES = ['부모님', '직장 상사', '병문안', '상견례', '나를 위한', '출산·산모', '기타'];
@@ -17,7 +18,7 @@ export default function PersonalGiftConsultation() {
   const [formData, setFormData] = useState({
     name: '', phone: '', giftType: '', budget: '', quantity: '1개', message: '',
     delivery: 'self', recipientName: '', recipientPhone: '', senderLabel: '',
-    addressKnown: 'no', zipcode: '', address1: '', address2: '',
+    addressKnown: 'no', zipcode: '', address1: '', address2: '', website: '',
   });
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,7 +43,7 @@ export default function PersonalGiftConsultation() {
     try {
       const res = await fetch('/api/submit', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formType: 'personal', formData }),
+        body: JSON.stringify({ formType: 'personal', formData, meta: getAttribution() }),
       });
       const result = await res.json();
       if (result.success) setSubmitted(true);
@@ -92,6 +93,7 @@ export default function PersonalGiftConsultation() {
         <div className="consult-form-wrap">
           <div className="form-intro"><span>간편 상담 신청</span><h2>어떤 선물을 찾으세요?</h2><p>필수 항목만 입력하면 상담 신청이 완료됩니다.</p></div>
           <div className="modern-form">
+            <input className="hp-field" tabIndex={-1} autoComplete="off" aria-hidden="true" value={formData.website} onChange={(e) => update('website', e.target.value)} />
             <fieldset>
               <legend>받는 방법 <em>필수</em></legend>
               <div className="choice-grid two">

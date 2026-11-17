@@ -48,3 +48,33 @@ ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS gift_token       TEXT UNIQUE;  --
 ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS gift_address_by  TEXT;         -- buyer(구매자) / recipient(받는 분) / store(매장 직접 입력)
 ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS gift_address_at  TIMESTAMPTZ;
 ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS gift_declined_at TIMESTAMPTZ;  -- 받는 분이 선물을 사양한 시각
+
+-- 접수 출처·진위 판별 (2026-11)
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS source      TEXT;  -- 유입 경로 (네이버 검색, QR·쇼핑백 등)
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS referrer    TEXT;  -- 처음 들어온 외부 주소의 도메인
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS landing     TEXT;  -- 처음 들어온 페이지
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS device      TEXT;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS geo_country TEXT;  -- IP 기반 추정 (통신사 사정상 실제와 다를 수 있음)
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS geo_region  TEXT;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS geo_city    TEXT;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS ip_hash     TEXT;  -- IP 원문은 저장하지 않는다
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS visitor     TEXT;  -- 브라우저별 무작위 방문자 id
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS elapsed_sec INT;   -- 페이지를 연 뒤 접수까지 걸린 시간
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS risk_level  TEXT;  -- ok / warn / bot
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS risk_flags  TEXT;
+CREATE INDEX IF NOT EXISTS inquiries_ip_hash_idx ON inquiries (ip_hash, created_at);
+
+-- 홈페이지 접속 통계 (관리자 화면용, 쿠키 없이 브라우저 저장소의 무작위 id만 사용)
+CREATE TABLE IF NOT EXISTS page_views (
+  id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  path        TEXT NOT NULL,
+  entry       BOOLEAN NOT NULL DEFAULT false,  -- 방문(세션)의 첫 페이지
+  source      TEXT,
+  device      TEXT,
+  geo_country TEXT,
+  geo_region  TEXT,
+  geo_city    TEXT,
+  visitor     TEXT
+);
+CREATE INDEX IF NOT EXISTS page_views_created_at_idx ON page_views (created_at);

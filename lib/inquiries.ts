@@ -43,7 +43,23 @@ export interface BusinessInquiry {
   privacy_consent_at?: string;
 }
 
-export type Inquiry = PersonalInquiry | BusinessInquiry;
+/** 접수 출처·진위 (개인·기업 공통, 서버에서 채운다) */
+export interface TrackFields {
+  source?: string | null;
+  referrer?: string | null;
+  landing?: string | null;
+  device?: string | null;
+  geo_country?: string | null;
+  geo_region?: string | null;
+  geo_city?: string | null;
+  ip_hash?: string | null;
+  visitor?: string | null;
+  elapsed_sec?: number | null;
+  risk_level?: string | null;
+  risk_flags?: string | null;
+}
+
+export type Inquiry = (PersonalInquiry | BusinessInquiry) & TrackFields;
 
 export const INQUIRY_STATUSES = ['pending', 'contacted', 'completed', 'canceled'] as const;
 export type InquiryStatus = (typeof INQUIRY_STATUSES)[number];
@@ -74,7 +90,7 @@ function newGiftToken() {
 export async function saveInquiry(inquiry: Inquiry) {
   const db = requireDb();
   // 개인/기업 필드를 한 번에 다루기 위해 type을 제외한 필드를 합친 형태로 본다
-  const i = inquiry as { type: Inquiry['type'] } & Partial<
+  const i = inquiry as { type: Inquiry['type'] } & TrackFields & Partial<
     Omit<PersonalInquiry, 'type'> & Omit<BusinessInquiry, 'type'>
   >;
 
@@ -88,7 +104,9 @@ export async function saveInquiry(inquiry: Inquiry) {
       budget, budget_per_unit, quantity, delivery_type, desired_date,
       message, privacy_consent, privacy_consent_at,
       gift_send, recipient_name, recipient_phone, sender_label, recipient_address,
-      gift_token, gift_address_by, gift_address_at
+      gift_token, gift_address_by, gift_address_at,
+      source, referrer, landing, device, geo_country, geo_region, geo_city,
+      ip_hash, visitor, elapsed_sec, risk_level, risk_flags
     ) VALUES (
       ${i.type}, ${i.name ?? null}, ${i.phone ?? null}, ${i.email ?? null},
       ${i.company_name ?? null}, ${i.org_type ?? null}, ${i.department ?? null}, ${i.job_title ?? null},
@@ -98,12 +116,25 @@ export async function saveInquiry(inquiry: Inquiry) {
       ${i.privacy_consent ?? false}, ${i.privacy_consent_at ?? null},
       ${i.gift_send ?? false}, ${i.recipient_name ?? null}, ${i.recipient_phone ?? null},
       ${i.sender_label ?? null}, ${i.recipient_address ?? null},
-      ${token}, ${i.recipient_address ? 'buyer' : null}, ${i.recipient_address ? new Date().toISOString() : null}
+      ${token}, ${i.recipient_address ? 'buyer' : null}, ${i.recipient_address ? new Date().toISOString() : null},
+      ${i.source ?? null}, ${i.referrer ?? null}, ${i.landing ?? null}, ${i.device ?? null},
+      ${i.geo_country ?? null}, ${i.geo_region ?? null}, ${i.geo_city ?? null},
+      ${i.ip_hash ?? null}, ${i.visitor ?? null}, ${i.elapsed_sec ?? null}, ${i.risk_level ?? null}, ${i.risk_flags ?? null}
     )
     RETURNING id, gift_token
   `;
 
   return rows[0] as { id: string; gift_token: string | null };
+}
+
+/** 같은 IP(해시)로 최근 24시간 동안 들어온 접수 수 */
+export async function countRecentByIp(ipHash: string) {
+  const db = requireDb();
+  const [row] = await db`
+    SELECT count(*)::int AS n FROM inquiries
+    WHERE ip_hash = ${ipHash} AND created_at > now() - interval '24 hours'
+  `;
+  return (row?.n as number) ?? 0;
 }
 
 /** 같은 전화번호(숫자만 비교)로 들어온 기존 접수 수. excludeId는 방금 저장한 건 */

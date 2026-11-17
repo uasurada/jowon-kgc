@@ -387,3 +387,6 @@ body { background: #fff; color: var(--ink); }
 .gift-reply-store small { color: #9a938a; font-size: 11px; }
 .gift-reply-store small a { font-weight: 500; color: #9a938a; text-decoration: underline; }
 .gift-reply-safe { margin-bottom: 6px; padding: 8px 10px; background: #f8f6f2; color: #5e5851; font-weight: 600; }
+
+/* 자동 접수 차단용 숨은 칸 (사람에게는 보이지 않음) */
+.modern-form .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }

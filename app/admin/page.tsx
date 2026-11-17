@@ -10,6 +10,8 @@ import {
 import { emailVerdict, historyLabel, type RiskLevel } from '@/lib/emailCheck';
 import { giftSmsText } from '@/lib/gift';
 import { openAddressSearch } from '@/lib/postcode';
+import { placeLabel, TRUST_LABEL, type TrustLevel } from '@/lib/traffic';
+import TrafficStats from '@/components/admin/TrafficStats';
 
 interface Stats {
   today: number;
@@ -50,6 +52,16 @@ interface InquiryData {
   gift_address_by?: string | null;
   gift_address_at?: string | null;
   gift_declined_at?: string | null;
+  source?: string | null;
+  referrer?: string | null;
+  landing?: string | null;
+  device?: string | null;
+  geo_country?: string | null;
+  geo_region?: string | null;
+  geo_city?: string | null;
+  elapsed_sec?: number | null;
+  risk_level?: string | null;
+  risk_flags?: string | null;
   // 같은 번호로 이 건보다 먼저 들어온 접수
   prev?: number;
   completed?: number;
@@ -159,6 +171,31 @@ function HistoryBadge({ r }: { r: InquiryData }) {
       {historyLabel(r)}
     </span>
   );
+}
+
+const TRUST_COLOR: Record<TrustLevel, string> = {
+  ok: 'bg-green-50 text-green-700',
+  warn: 'bg-orange-100 text-orange-800',
+  bot: 'bg-gray-800 text-white',
+};
+
+/** 진위 판정 (출처 기록이 생기기 전 접수는 표시 안 함) */
+function TrustBadge({ r, short }: { r: InquiryData; short?: boolean }) {
+  const level = r.risk_level as TrustLevel | undefined;
+  if (!level || !TRUST_COLOR[level]) return null;
+  const text = short ? TRUST_LABEL[level].split(' ').slice(0, 2).join(' ') : TRUST_LABEL[level];
+  return (
+    <span title={r.risk_flags ?? ''} className={`px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${TRUST_COLOR[level]}`}>
+      {text}
+    </span>
+  );
+}
+
+/** 유입 경로 · 지역 한 줄 */
+function TraceLine({ r }: { r: InquiryData }) {
+  const parts = [r.source, placeLabel(r), r.device].filter(Boolean);
+  if (!parts.length) return null;
+  return <span className="text-xs text-gray-500">🔎 {parts.join(' · ')}</span>;
 }
 
 const RISK_COLOR: Record<RiskLevel, string> = {
@@ -357,6 +394,8 @@ export default function AdminDashboard() {
           ))}
         </div>
 
+        <TrafficStats />
+
         {/* 검색/필터 */}
         <form
           onSubmit={onSubmitSearch}
@@ -458,8 +497,10 @@ export default function AdminDashboard() {
                       </p>
                       <div className="flex flex-wrap gap-1 mt-1">
                         <HistoryBadge r={r} />
+                        <TrustBadge r={r} short />
                         <EmailBadge r={r} short />
                       </div>
+                      <TraceLine r={r} />
                       {r.memo && <p className="text-xs text-gray-500 mt-1 truncate">📝 {r.memo}</p>}
                     </button>
                   </li>
@@ -499,7 +540,9 @@ export default function AdminDashboard() {
                         <td className="px-4 py-3">
                           <div className="flex flex-col items-start gap-1">
                             <HistoryBadge r={r} />
+                            <TrustBadge r={r} short />
                             <EmailBadge r={r} short />
+                            <TraceLine r={r} />
                           </div>
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-600">{getGiftTypeName(r.gift_type || r.purpose)}</td>
@@ -836,6 +879,16 @@ function InquiryDetail({
     ['수량', inquiry.quantity],
     ['배송', inquiry.delivery_type ? DELIVERY_NAMES[inquiry.delivery_type] || inquiry.delivery_type : null],
     ['희망일', inquiry.desired_date],
+    ['진위 판정', inquiry.risk_level ? (
+      <div className="space-y-1">
+        <TrustBadge key="t" r={inquiry} />
+        {inquiry.risk_flags && <p className="text-xs text-gray-600">{inquiry.risk_flags}</p>}
+      </div>
+    ) : null],
+    ['유입 경로', [inquiry.source, inquiry.landing && `첫 페이지 ${inquiry.landing}`].filter(Boolean).join(' · ')],
+    ['접속 지역', placeLabel(inquiry) ? `${placeLabel(inquiry)} (IP 추정)` : null],
+    ['기기', inquiry.device],
+    ['작성 시간', inquiry.elapsed_sec != null ? `페이지 연 뒤 ${inquiry.elapsed_sec >= 60 ? `${Math.floor(inquiry.elapsed_sec / 60)}분 ` : ''}${inquiry.elapsed_sec % 60}초` : null],
   ];
 
   return (
