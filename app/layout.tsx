@@ -21,13 +21,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 
   title: {
-    default:
-      '정관장 조원점 | 수원 장안구·북수원 홍삼 선물·상담 전문 | jowon-kgc.com',
+    default: '정관장 조원점 | 수원 장안구·북수원 홍삼 선물 전문',
     template: '%s | 정관장 조원점',
   },
 
+  // 네이버 서치어드바이저 기준: 제목 40자, 설명 80자 이내
   description:
-    '정관장 공식 가맹점. 부모님 선물, 기업 단체 주문, 전국 배송. 수원시 장안구 위치. 홍삼이 처음이거나 어떤 제품이 맞는지 고민될 때 1:1 상담 환영.',
+    '정관장 공식 가맹점. 수원 장안구 위치. 부모님 선물·기업 단체 주문·전국 배송, 홍삼 제품 선택 1:1 상담 환영.',
 
   keywords: [
     '정관장',
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     locale: 'ko_KR',
     url: SITE_URL,
     siteName: '정관장 조원점',
-    title: '정관장 조원점 | 수원 장안구·북수원 홍삼 선물·상담 전문',
+    title: '정관장 조원점 | 수원 장안구·북수원 홍삼 선물 전문',
     description:
       '정관장 공식 가맹점. 부모님 선물·기업 단체 주문·전국 배송 가능. 홍삼이 처음이거나 제품 선택이 고민될 때 1:1 상담 환영.',
     // 검색·공유 미리보기용. 원본 사진(8MB)은 너무 커서 네이버 등이 썸네일로 쓰지 않는다
@@ -89,7 +89,7 @@ export const metadata: Metadata = {
 
   twitter: {
     card: 'summary_large_image',
-    title: '정관장 조원점 | 수원 장안구·북수원 홍삼 선물·상담 전문',
+    title: '정관장 조원점 | 수원 장안구·북수원 홍삼 선물 전문',
     description:
       '정관장 공식 가맹점. 부모님 선물·기업 단체 주문·전국 배송. 홍삼 선택 1:1 상담 환영.',
     images: [OG_IMAGE],
