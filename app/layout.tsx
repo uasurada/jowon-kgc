@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Noto_Sans_KR } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
-import storeWide from '../img/KakaoTalk_20260928_162936624_10.jpg';
 import InteractionGuard from '../components/InteractionGuard';
 import Tracker from '../components/Tracker';
 
@@ -13,6 +12,7 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 const SITE_URL = 'https://www.jowon-kgc.com';
+const OG_IMAGE = '/og-store.jpg';
 const NAVER_PLACE_URL = 'https://map.naver.com/p/entry/place/20945563';
 const GOOGLE_MAPS_URL = 'https://maps.google.com/?cid=10608350700964587932';
 
@@ -75,11 +75,13 @@ export const metadata: Metadata = {
     title: '정관장 조원점 | 수원 장안구·북수원 홍삼 선물·상담 전문',
     description:
       '정관장 공식 가맹점. 부모님 선물·기업 단체 주문·전국 배송 가능. 홍삼이 처음이거나 제품 선택이 고민될 때 1:1 상담 환영.',
+    // 검색·공유 미리보기용. 원본 사진(8MB)은 너무 커서 네이버 등이 썸네일로 쓰지 않는다
     images: [
       {
-        url: storeWide.src,
-        width: storeWide.width,
-        height: storeWide.height,
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        type: 'image/jpeg',
         alt: '새롭게 단장한 정관장 조원점 실제 매장 내부',
       },
     ],
@@ -90,7 +92,7 @@ export const metadata: Metadata = {
     title: '정관장 조원점 | 수원 장안구·북수원 홍삼 선물·상담 전문',
     description:
       '정관장 공식 가맹점. 부모님 선물·기업 단체 주문·전국 배송. 홍삼 선택 1:1 상담 환영.',
-    images: [storeWide.src],
+    images: [OG_IMAGE],
   },
 
   robots: {
@@ -133,7 +135,7 @@ const structuredData = [
     url: SITE_URL,
     telephone: '+82-31-268-0304',
     email: 'info@jowon-kgc.com',
-    image: `${SITE_URL}${storeWide.src}`,
+    image: `${SITE_URL}${OG_IMAGE}`,
     address: {
       '@type': 'PostalAddress',
       streetAddress: '경수대로 935 동양파라곤 1층 105호',
