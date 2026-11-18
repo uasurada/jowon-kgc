@@ -1,6 +1,7 @@
 // app/api/admin-auth/login/route.ts — 관리자 로그인 (proxy 인증 경로 밖)
 import { NextRequest, NextResponse } from 'next/server';
 import { ADMIN_COOKIE, SESSION_MAX_AGE, checkCredentials, createSessionToken } from '@/lib/adminSession';
+import { markAdmin } from '@/lib/adminMarks';
 import { getRequestMeta } from '@/lib/requestMeta';
 import { sql } from '@/lib/db';
 
@@ -50,6 +51,8 @@ export async function POST(request: NextRequest) {
   }
 
   await record(ipHash, true).catch((e) => console.error('login record failed:', e));
+  // 이 IP의 홈페이지 방문은 접속 통계에서 뺀다
+  await markAdmin(null, ipHash).catch((e) => console.error('admin mark failed:', e));
   const res = NextResponse.json({ success: true });
   res.cookies.set(ADMIN_COOKIE, await createSessionToken(), {
     httpOnly: true,

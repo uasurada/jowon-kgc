@@ -7,6 +7,7 @@ interface Item { k: string; n: number }
 interface Traffic {
   days: number;
   visitors: number;
+  adminViews: number;
   views: number;
   visits: number;
   orders: number;
@@ -164,7 +165,10 @@ export default function TrafficStats() {
 
           <ul className="text-[11px] text-gray-500 mt-4 leading-relaxed list-disc pl-4">
             <li>지역은 IP로 추정한 값이라 휴대폰 데이터(LTE·5G)는 실제 위치와 다를 수 있습니다.</li>
-            <li>관리자 화면에 로그인했던 브라우저의 방문은 통계에서 빠집니다.</li>
+            <li>
+              관리자로 로그인한 브라우저와, 관리자가 접속한 IP(앞뒤 7일)의 방문은 통계에서 빠집니다
+              {data.adminViews > 0 && <> (이 기간 {data.adminViews}회 제외)</>}.
+            </li>
             <li>QR·전단에는 주소 뒤에 <code className="bg-gray-100 px-1 rounded">?src=qr-bag</code>처럼 꼬리표를 붙이면 따로 집계됩니다.</li>
           </ul>
         </>

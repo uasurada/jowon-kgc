@@ -5,6 +5,7 @@ const VISITOR_KEY = 'kgc_vid';    // 무작위 방문자 id
 const ADMIN_KEY = 'kgc_admin';    // 관리자 브라우저는 통계에서 뺀다
 const SESSION_KEY = 'kgc_session';
 const PAGE_AT_KEY = 'kgc_pv_at';  // 현재 페이지를 연 시각
+const ADMIN_MARK_KEY = 'kgc_admin_mark'; // 관리자 표시를 보낸 날짜 (하루 한 번)
 
 export interface Attribution {
   src: string | null;
@@ -31,12 +32,33 @@ function externalRef() {
   }
 }
 
+function visitorId(ls: Storage | null) {
+  let visitor = ls?.getItem(VISITOR_KEY) ?? null;
+  if (!visitor && ls) {
+    visitor = crypto.getRandomValues(new Uint32Array(2)).join('-');
+    ls.setItem(VISITOR_KEY, visitor);
+  }
+  return visitor;
+}
+
+function send(body: string) {
+  if (!navigator.sendBeacon?.('/api/track', new Blob([body], { type: 'application/json' }))) {
+    fetch('/api/track', { method: 'POST', body, keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(() => {});
+  }
+}
+
 /** 페이지가 바뀔 때마다 호출. 방문 통계 전송 + 처음 경로 기억 */
 export function recordPageView(pathname: string) {
   const ls = store('local');
   const ss = store('session');
   if (pathname.startsWith('/admin')) {
     ls?.setItem(ADMIN_KEY, '1');
+    // 로그인된 관리자면 서버가 이 브라우저와 IP를 관리자로 표시한다 (이전 방문까지 통계에서 빠짐)
+    const today = new Date().toDateString();
+    if (pathname !== '/admin/login' && ss?.getItem(ADMIN_MARK_KEY) !== today) {
+      ss?.setItem(ADMIN_MARK_KEY, today);
+      send(JSON.stringify({ path: pathname, visitor: visitorId(ls) }));
+    }
     return;
   }
   ss?.setItem(PAGE_AT_KEY, String(Date.now()));
@@ -55,20 +77,13 @@ export function recordPageView(pathname: string) {
     }
   } catch { /* 저장소를 못 쓰면 이번 접수만 출처 없이 */ }
 
-  let visitor = ls?.getItem(VISITOR_KEY) ?? null;
-  if (!visitor && ls) {
-    visitor = crypto.getRandomValues(new Uint32Array(2)).join('-');
-    ls.setItem(VISITOR_KEY, visitor);
-  }
+  const visitor = visitorId(ls);
   ss?.setItem(SESSION_KEY, '1');
 
   if (ls?.getItem(ADMIN_KEY)) return;
   // 받는 분 링크의 토큰은 통계에 남기지 않는다
   const path = pathname.startsWith('/gift/') ? '/gift' : pathname;
-  const body = JSON.stringify({ path, entry, src, ref, visitor });
-  if (!navigator.sendBeacon?.('/api/track', new Blob([body], { type: 'application/json' }))) {
-    fetch('/api/track', { method: 'POST', body, keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(() => {});
-  }
+  send(JSON.stringify({ path, entry, src, ref, visitor }));
 }
 
 /** 접수할 때 함께 보낼 출처 정보 */

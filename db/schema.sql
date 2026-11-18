@@ -90,3 +90,14 @@ CREATE INDEX IF NOT EXISTS login_attempts_created_at_idx ON login_attempts (crea
 
 -- 개인정보 자동 파기: 같은 번호의 마지막 상담·주문 후 1년 지나면 개인정보만 지우고 통계용 정보는 남긴다 (2026-11)
 ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS anonymized_at TIMESTAMPTZ;
+
+-- 관리자 본인 방문은 통계에서 뺀다 (2026-11)
+-- visitor: 관리자로 로그인한 브라우저의 방문자 id (이전 방문까지 모두 제외)
+-- ip: 관리자로 접속한 IP(해시)와 날짜. 휴대폰 IP는 여러 사람이 나눠 쓰므로 앞뒤 7일만 제외
+ALTER TABLE page_views ADD COLUMN IF NOT EXISTS ip_hash TEXT;
+CREATE TABLE IF NOT EXISTS admin_marks (
+  kind  TEXT NOT NULL,  -- visitor / ip
+  value TEXT NOT NULL,
+  day   DATE NOT NULL,
+  PRIMARY KEY (kind, value, day)
+);
