@@ -12,7 +12,7 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 const SITE_URL = 'https://www.jowon-kgc.com';
-const OG_IMAGE = '/og-store.jpg';
+const OG_IMAGE = '/og-jowon.jpg';
 const NAVER_PLACE_URL = 'https://map.naver.com/p/entry/place/20945563';
 const GOOGLE_MAPS_URL = 'https://maps.google.com/?cid=10608350700964587932';
 
@@ -82,7 +82,7 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         type: 'image/jpeg',
-        alt: '새롭게 단장한 정관장 조원점 실제 매장 내부',
+        alt: '정관장 조원점 매장 — JUNG KWAN JANG 간판과 상담 카운터',
       },
     ],
   },
