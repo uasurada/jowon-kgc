@@ -9,6 +9,7 @@ export const SRC_LABELS: Record<string, string> = {
   'kakao-channel': '카카오톡 채널',
   'karrot': '당근',
   'flyer': '전단·안내문',
+  'naver-blog': '네이버 블로그',
 };
 
 const REF_RULES: [RegExp, string][] = [
