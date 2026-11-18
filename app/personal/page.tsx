@@ -85,7 +85,7 @@ export default function PersonalGiftConsultation() {
           <p className="eyebrow light">PERSONAL GIFT</p>
           <h1>마음을 전하는 선물,<br />고르는 일부터 도와드립니다.</h1>
           <p>받는 분과 예산만 알려주세요. 실제 매장에서 제품을 비교해 가장 알맞은 구성을 제안합니다.</p>
-          <div className="consult-proof"><span><ShieldCheck /> KGC 공식 가맹점</span><span><Sparkles /> 1:1 맞춤 추천</span><span><Gift /> 주소 몰라도 선물 가능</span></div>
+          <div className="consult-proof"><span><ShieldCheck /> KGC 공식 가맹점</span><span><Sparkles /> 예산·용도별 맞춤 추천</span><span><Gift /> 주소 몰라도 선물 가능</span></div>
         </div>
       </section>
 
