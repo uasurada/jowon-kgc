@@ -90,7 +90,7 @@ export default function Recommender({ products, settings, store = false, initial
         <div className="rc-panel">
           <div className="rc-progress">
             {history.length > 0
-              ? <button type="button" onClick={back} className="rc-back"><ArrowLeft size={16} />이전</button>
+              ? <button type="button" onClick={back} className="rc-btn"><ArrowLeft size={16} />이전</button>
               : <span />}
             <span>{stepNo} / {steps.length}</span>
           </div>
@@ -139,8 +139,8 @@ export default function Recommender({ products, settings, store = false, initial
               <p className="rc-summary">{summary}</p>
             </div>
             <div className="rc-result-actions">
-              <button type="button" onClick={back} className="rc-ghost"><ArrowLeft size={16} />이전</button>
-              <button type="button" onClick={reset} className="rc-ghost"><RotateCcw size={16} />처음부터</button>
+              <button type="button" onClick={back} className="rc-btn"><ArrowLeft size={16} />이전</button>
+              <button type="button" onClick={reset} className="rc-btn rc-btn-dark"><RotateCcw size={16} />처음부터</button>
             </div>
           </div>
 
