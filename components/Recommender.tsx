@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Children, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -104,7 +104,7 @@ export default function Recommender({ products, settings, store = false, initial
       {store && step === 'target' && (
         <div className="rc-store-intro">
           <p className="eyebrow light">JOWON STORE · 맞춤 추천</p>
-          <h1>드시는 분께 꼭 맞는<br />정관장을 찾아보세요</h1>
+          <h1>드시는 분께 꼭 맞는 정관장을 찾아보세요</h1>
           <p>몇 가지만 누르면 어울리는 제품을 보여 드려요. 마음에 드는 제품은 직원에게 보여 주세요.</p>
         </div>
       )}
@@ -161,7 +161,7 @@ export default function Recommender({ products, settings, store = false, initial
             <div>
               <p className="eyebrow"><Sparkles size={14} /> 맞춤 추천</p>
               <h2>{results.length ? '이런 제품을 추천드려요' : '조건에 딱 맞는 제품이 없어요'}</h2>
-              <p className="rc-summary">{summary}</p>
+              <p className="rc-summary">{summary}{store && <span className="rc-store-tip"> · 제품을 누르면 자세히 볼 수 있어요</span>}</p>
             </div>
             <div className="rc-result-actions">
               <button type="button" onClick={back} className="rc-btn"><ArrowLeft size={16} />이전</button>
@@ -188,7 +188,7 @@ export default function Recommender({ products, settings, store = false, initial
           )}
 
           {store ? (
-            <p className="rc-store-note">제품을 누르면 자세히 볼 수 있어요. 마음에 드는 제품이 있으면 직원에게 화면을 보여 주세요.</p>
+            <p className="rc-store-note">마음에 드는 제품이 있으면 직원에게 화면을 보여 주세요. 정가 기준이며 행사 할인은 직원이 안내해 드려요.</p>
           ) : (
             <div className="rc-help">
               <p><strong>고르기 어려우세요?</strong> 드시는 분의 연령·섭취 경험을 알려주시면 매장에서 직접 골라 드립니다.</p>
@@ -198,7 +198,7 @@ export default function Recommender({ products, settings, store = false, initial
               </div>
             </div>
           )}
-          {settings.priceMode !== 'hidden' && (
+          {!store && settings.priceMode !== 'hidden' && (
             <p className="pd-price-note">가격은 정관장 공식 정가 기준입니다. 명절·행사 할인은 매장으로 문의해 주세요.</p>
           )}
         </div>
@@ -248,7 +248,8 @@ function Question({ title, desc, children }: { title: string; desc: string; chil
     <div className="rc-question">
       <h2>{title}</h2>
       <p>{desc}</p>
-      <div className="rc-options">{children}</div>
+      {/* 선택지 수에 따라 태블릿에서 칸 수를 바꿔 한 화면에 들어오게 한다 */}
+      <div className={`rc-options n-${Children.count(children)}`}>{children}</div>
     </div>
   );
 }

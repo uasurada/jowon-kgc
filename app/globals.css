@@ -669,3 +669,40 @@ a.pd-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(36,2
   .rc-store .rc-question h2 { font-size: 24px; }
   .rc-store .rc-options button { min-height: 92px; font-size: 16px; }
 }
+
+/* ───────── 매장 태블릿: 한 화면(높이 약 760px)에 스크롤 없이 ───────── */
+@media (min-width: 768px) {
+  .rc-store-page .rc-store-header { height: 68px; }
+  .rc-store-page .rc-wrap { padding-top: 18px; padding-bottom: 14px; }
+  .rc-store-intro { margin-bottom: 16px; }
+  .rc-store-intro h1 { margin-top: 6px; font-size: 36px; line-height: 1.2; }
+  .rc-store-intro p:last-child { margin-top: 8px; font-size: 17px; }
+  .rc-store .rc-panel { padding: 22px 30px 28px; }
+  .rc-store .rc-steps { margin-bottom: 12px; }
+  .rc-store .rc-btn { min-height: 50px; }
+  .rc-store .rc-question h2 { margin-top: 4px; font-size: 32px; }
+  .rc-store .rc-question > p { margin-top: 4px; font-size: 16px; }
+  .rc-store .rc-options { margin-top: 16px; gap: 10px; }
+  .rc-store .rc-options button { min-height: 100px; gap: 6px; }
+  .rc-store .rc-options button .rc-option-icon { width: 28px; height: 28px; }
+  /* 선택지가 7~8개면 4칸(2줄), 4개면 4칸(1줄), 2개면 2칸 */
+  .rc-store .rc-options.n-7, .rc-store .rc-options.n-8, .rc-store .rc-options.n-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .rc-store .rc-options.n-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rc-store .rc-options.n-2 button, .rc-store .rc-options.n-3 button, .rc-store .rc-options.n-4 button { min-height: 140px; }
+
+  /* 결과: 4칸 × 2줄, 카드는 사진을 낮게 */
+  .rc-store .rc-result-head { margin-bottom: 14px; align-items: center; }
+  .rc-store .rc-result-head h2 { margin-top: 4px; font-size: 30px; }
+  .rc-store .rc-summary { margin-top: 4px; font-size: 15px; }
+  .rc-store .rc-store-tip { color: #f4c6c4; }
+  .rc-store .pd-promo { margin-bottom: 12px; padding: 10px 16px; font-size: 15px; }
+  .rc-store .pd-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .rc-store .pd-card-image { aspect-ratio: auto; height: 122px; }
+  .rc-store .pd-card-image img { padding: 2px; }
+  .rc-store .pd-card-body { padding: 10px 14px 12px; gap: 4px; }
+  .rc-store .pd-card h3 { font-size: 17px; }
+  .rc-store .pd-card-who { font-size: 13.5px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  .rc-store .pd-reasons { display: none; }
+  .rc-store .pd-card-price { padding-top: 2px; font-size: 15px; }
+  .rc-store .rc-store-note { margin-top: 10px; padding: 9px 12px; font-size: 15px; font-weight: 600; }
+}
