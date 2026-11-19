@@ -4,12 +4,13 @@ import { Star } from 'lucide-react';
 import { priceLines, type PriceMode, type PriceOption, type Product } from '@/lib/productInfo';
 
 /** 제품 목록·추천 결과에 쓰는 카드 */
-export default function ProductCard({ product: p, priceMode, option, reasons, href }: {
+export default function ProductCard({ product: p, priceMode, option, reasons, href, onSelect }: {
   product: Product;
   priceMode: PriceMode;
   option?: PriceOption | null;   // 예산에 맞는 구성 (추천 결과)
   reasons?: string[];
   href?: string | null;          // null이면 링크 없음 (매장 태블릿)
+  onSelect?: () => void;         // 링크 대신 눌렀을 때 (매장 태블릿: 화면 위에 상세 보기)
 }) {
   const prices = option && priceMode !== 'hidden' ? priceLines({ opts: [option] }, priceMode) : priceLines(p, priceMode);
   const body = (
@@ -31,7 +32,10 @@ export default function ProductCard({ product: p, priceMode, option, reasons, hr
       </div>
     </>
   );
-  return href === null
-    ? <div className="pd-card">{body}</div>
-    : <Link href={href ?? `/products/${p.id}`} className="pd-card">{body}</Link>;
+  if (href === null) {
+    return onSelect
+      ? <button type="button" className="pd-card pd-card-button" onClick={onSelect}>{body}</button>
+      : <div className="pd-card">{body}</div>;
+  }
+  return <Link href={href ?? `/products/${p.id}`} className="pd-card">{body}</Link>;
 }

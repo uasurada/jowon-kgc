@@ -526,3 +526,23 @@ a.pd-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(36,2
 }
 .product-links { margin-top: 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; }
 .product-links .text-link { margin-top: 0; }
+
+/* 매장 태블릿: 제품 상세 크게 보기 */
+.pd-card-button { width: 100%; text-align: left; cursor: pointer; }
+.pd-card-button:active { transform: scale(.99); }
+.rc-detail { position: fixed; inset: 0; z-index: 100; background: rgba(20,17,14,.6); display: grid; place-items: center; padding: 24px; }
+.rc-detail-card { position: relative; width: min(100%, 1040px); max-height: calc(100vh - 48px); overflow-y: auto; background: #fff; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; padding: 36px 36px 100px; }
+.rc-detail-image { position: relative; aspect-ratio: 1 / 1; }
+.rc-detail-image img { object-fit: contain; }
+.rc-detail-body h2 { margin-top: 8px; font-size: 32px; line-height: 1.25; letter-spacing: -.05em; word-break: keep-all; }
+.rc-detail-body .pd-detail-who { font-size: 17px; }
+.rc-detail-body .pd-price-box p { font-size: 16px; }
+.rc-detail-body .pd-spec { font-size: 15px; }
+.rc-detail-desc { margin-top: 18px; color: #4b4640; font-size: 15px; line-height: 1.8; word-break: keep-all; }
+.rc-detail-note { display: block; margin-top: 12px; color: #9a938a; font-size: 12px; }
+.rc-detail-close { position: absolute; left: 36px; right: 36px; bottom: 24px; min-height: 60px; display: flex; align-items: center; justify-content: center; gap: 8px; background: #211f1c; color: #fff; font-size: 19px; font-weight: 800; }
+@media (max-width: 767px) {
+  .rc-detail { padding: 0; align-items: end; }
+  .rc-detail-card { grid-template-columns: 1fr; gap: 16px; padding: 20px 18px 96px; max-height: 92vh; }
+  .rc-detail-close { left: 18px; right: 18px; bottom: 18px; }
+}

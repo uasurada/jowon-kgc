@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, MessageCircle, Phone, RotateCcw, Sparkles } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Phone, RotateCcw, Sparkles, Star, X } from 'lucide-react';
 import ProductCard from './ProductCard';
 import {
-  BUDGETS, FORM_PREFS, KID_AGES, TARGETS, recommend,
+  BUDGETS, FORM_PREFS, KID_AGES, TARGETS, priceLines, recommend, won,
   type Answers, type Choice, type Product, type SiteSettings,
 } from '@/lib/productInfo';
 
@@ -22,9 +23,10 @@ export default function Recommender({ products, settings, store = false }: {
   const [step, setStep] = useState<Step>('target');
   const [answers, setAnswers] = useState<Partial<Answers>>({});
   const [history, setHistory] = useState<Step[]>([]);
+  const [detail, setDetail] = useState<Product | null>(null);  // 매장 태블릿: 화면 위에 띄운 제품 상세
   const topRef = useRef<HTMLDivElement>(null);
 
-  const reset = () => { setStep('target'); setAnswers({}); setHistory([]); };
+  const reset = () => { setStep('target'); setAnswers({}); setHistory([]); setDetail(null); };
 
   // 매장 태블릿: 방문 통계에서 빼고, 한동안 손대지 않으면 처음으로
   useEffect(() => {
@@ -132,7 +134,7 @@ export default function Recommender({ products, settings, store = false }: {
               {results.map(({ product, option, reasons }) => (
                 <div key={product.id} className="rc-item">
                   <ProductCard product={product} priceMode={settings.priceMode} option={option} reasons={reasons}
-                    href={store ? null : `/products/${product.id}`} />
+                    href={store ? null : `/products/${product.id}`} onSelect={store ? () => setDetail(product) : undefined} />
                   {!store && (
                     <Link href={consultHref(product.name, option?.[0])} className="rc-consult">이 제품으로 상담 신청</Link>
                   )}
@@ -144,7 +146,7 @@ export default function Recommender({ products, settings, store = false }: {
           )}
 
           {store ? (
-            <p className="rc-store-note">마음에 드는 제품이 있으면 직원에게 화면을 보여 주세요.</p>
+            <p className="rc-store-note">제품을 누르면 자세히 볼 수 있어요. 마음에 드는 제품이 있으면 직원에게 화면을 보여 주세요.</p>
           ) : (
             <div className="rc-help">
               <p><strong>고르기 어려우세요?</strong> 드시는 분의 연령·섭취 경험을 알려주시면 매장에서 직접 골라 드립니다.</p>
@@ -159,6 +161,42 @@ export default function Recommender({ products, settings, store = false }: {
           )}
         </div>
       )}
+      {detail && <StoreDetail product={detail} priceMode={settings.priceMode} onClose={() => setDetail(null)} />}
+    </div>
+  );
+}
+
+/** 매장 태블릿: 페이지를 벗어나지 않고 제품 상세를 크게 보여 준다 */
+function StoreDetail({ product: p, priceMode, onClose }: { product: Product; priceMode: SiteSettings['priceMode']; onClose: () => void }) {
+  return (
+    <div className="rc-detail" role="dialog" aria-modal="true" aria-label={p.name} onClick={onClose}>
+      <div className="rc-detail-card" onClick={(e) => e.stopPropagation()}>
+        <div className="rc-detail-image">
+          {p.imageUrl && <Image src={p.imageUrl} alt={p.name} fill sizes="560px" unoptimized />}
+        </div>
+        <div className="rc-detail-body">
+          <p className="pd-card-cat">{p.cat}{p.badge && <b>{p.badge}</b>}</p>
+          <h2>{p.name}</h2>
+          {p.featured && <p className="pd-featured inline"><Star size={13} fill="currentColor" />조원점 추천 제품</p>}
+          {p.who && <p className="pd-detail-who"><strong>이런 분께 추천해요</strong>{p.who}</p>}
+          {priceMode === 'list' && p.opts.length > 0 && (
+            <div className="pd-price-box">
+              {p.opts.map(([label, v]) => <p key={label}><span>{label}</span><strong>{won(v)}</strong></p>)}
+              <small>정관장 공식 정가 기준 · 행사 할인은 직원에게 문의해 주세요</small>
+            </div>
+          )}
+          {priceMode === 'band' && p.opts.length > 0 && (
+            <div className="pd-price-box"><p><span>가격대</span><strong>{priceLines(p, 'band').join(', ')}</strong></p></div>
+          )}
+          <dl className="pd-spec">
+            {p.form && <><dt>형태</dt><dd>{p.form}</dd></>}
+            {p.spec && <><dt>구성</dt><dd>{p.spec}</dd></>}
+          </dl>
+          {p.descr && <p className="rc-detail-desc">{p.descr}</p>}
+          {p.kind?.includes('건강기능식품') && <small className="rc-detail-note">건강기능식품은 질병의 예방 및 치료를 위한 의약품이 아닙니다.</small>}
+        </div>
+        <button type="button" className="rc-detail-close" onClick={onClose}><X size={22} />닫기</button>
+      </div>
     </div>
   );
 }
