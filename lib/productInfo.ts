@@ -108,8 +108,8 @@ export const TARGETS: (Choice & { tags: string[]; also?: string[]; not?: string[
   { key: 'women', label: '아내·여성', tags: ['women'], also: ['worker', 'family', 'couple'], not: ['men'] },
   { key: 'men', label: '남편·남성', tags: ['men'], also: ['worker', 'family', 'couple'], not: ['women'] },
   { key: 'worker', label: '직장인·나를 위해', tags: ['worker'] },
-  { key: 'student', label: '수험생·청소년', tags: ['student'], ages: ['11-13', '14-19'] },
-  { key: 'kids', label: '어린이', tags: ['kids'], ages: ['3-6', '7-10', '11-13'] },
+  { key: 'student', label: '수험생·청소년', tags: ['student'], ages: ['11-13', '14-19', 'all'] },
+  { key: 'kids', label: '어린이', tags: ['kids'], ages: ['3-6', '7-10', '11-13', 'all'] },
   { key: 'family', label: '온가족', tags: ['family', 'couple'] },
   { key: 'business', label: '거래처·단체 선물', tags: ['business'] },
 ];
@@ -119,6 +119,7 @@ export const KID_AGES: (Choice & { min: number; max: number })[] = [
   { key: '7-10', label: '7~10세', min: 7, max: 10 },
   { key: '11-13', label: '초등 고학년', min: 11, max: 13 },
   { key: '14-19', label: '중·고등학생', min: 14, max: 19 },
+  { key: 'all', label: '전체 연령', hint: '나이가 애매하면 모두 보기', min: 0, max: 99 },
 ];
 
 /** 대상에 맞는 나이 선택지 */
@@ -176,7 +177,7 @@ export function recommend(all: Product[], a: Partial<Answers>, limit = RESULT_LI
     const reasons: string[] = [];
     let score = 0;
     if (pref.forms.length && p.form) reasons.push(`${p.form} 형태`);
-    if (kid && p.ageMin != null && p.ageMax != null) {
+    if (kid && kid.key !== 'all' && p.ageMin != null && p.ageMax != null) {
       // 고른 나이대에 딱 맞는 제품일수록 위로
       score += p.ageMin >= kid.min - 1 && p.ageMax <= kid.max + 1 ? 3 : 1.5;
       reasons.push('나이에 맞춘 제품');

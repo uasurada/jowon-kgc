@@ -162,6 +162,7 @@ function refreshProductPages(id?: string) {
   try {
     revalidatePath('/products');
     revalidatePath('/recommend');
+    revalidatePath('/recommend/store');
     if (id) revalidatePath(`/products/${id}`);
     revalidatePath('/sitemap.xml');
   } catch { /* 스크립트 등 요청 밖에서 호출되면 무시 */ }

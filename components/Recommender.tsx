@@ -143,10 +143,10 @@ export default function Recommender({ products, settings, store = false, initial
             </Question>
           )}
           {step === 'kidAge' && (
-            <Question title="나이가 어떻게 되나요?" desc="나이에 맞춘 제품이 따로 있어요.">
+            <Question title="나이가 어떻게 되나요?" desc="나이에 맞춘 제품이 따로 있어요. 애매하면 '전체 연령'을 눌러 주세요.">
               {agesFor(answers.target).filter((k) => can({ kidAge: k.key })).map((k) => (
                 <button type="button" key={k.key} className={answers.kidAge === k.key ? 'selected' : ''}
-                  onClick={() => pick('kidAge', k.key, 'budget')}>{k.label}</button>
+                  onClick={() => pick('kidAge', k.key, 'budget')}><strong>{k.label}</strong>{k.hint && <small>{k.hint}</small>}</button>
               ))}
             </Question>
           )}
