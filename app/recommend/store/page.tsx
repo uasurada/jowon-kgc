@@ -23,7 +23,7 @@ export default async function StoreRecommendPage() {
       </div>
       <header className="rc-store-header">
         <div className="rc-store-brand">
-          <Image src="/logos/jungkwanjang-wordmark-white-v2.png" alt="JUNG KWAN JANG" width={562} height={99} priority unoptimized />
+          <Image src="/logos/jungkwanjang-wordmark-white-alpha.png" alt="JUNG KWAN JANG" width={600} height={137} priority unoptimized />
           <span>정관장 조원점</span>
         </div>
         <div className="rc-store-badges">

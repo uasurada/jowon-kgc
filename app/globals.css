@@ -600,45 +600,72 @@ a.pd-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(36,2
 .rc-options button.selected .rc-option-icon { color: #fff; }
 .rc-options button strong { font-weight: 700; }
 
-/* ───────── 매장 태블릿: 매장 사진 배경 ───────── */
+/* ───────── 매장 태블릿: 매장 사진 배경 + 반투명 유리 느낌 ───────── */
 .rc-store-page { position: relative; min-height: 100vh; background: #14110e; color: #fff; }
 .rc-store-bg { position: fixed; inset: 0; z-index: 0; }
-.rc-store-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(16,13,11,.72) 0%, rgba(16,13,11,.84) 40%, rgba(16,13,11,.93) 100%); }
-.rc-store-page .rc-store-header { position: relative; z-index: 2; height: 84px; padding: 0 44px; display: flex; justify-content: space-between; align-items: center; gap: 20px; background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(8px); }
-.rc-store-brand { display: flex; align-items: center; gap: 14px; }
+.rc-store-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(16,13,11,.7) 0%, rgba(16,13,11,.82) 35%, rgba(16,13,11,.92) 100%); }
+.rc-store-page .rc-store-header { position: relative; z-index: 2; height: 84px; padding: 0 44px; display: flex; justify-content: space-between; align-items: center; gap: 20px; background: transparent; border-bottom: 1px solid rgba(255,255,255,.12); }
+.rc-store-brand { display: flex; align-items: center; gap: 16px; }
 .rc-store-brand img { width: 150px; height: auto; }
-.rc-store-brand span { padding-left: 14px; border-left: 1px solid rgba(255,255,255,.3); font-size: 19px; font-weight: 700; letter-spacing: -.03em; }
-.rc-store-badges { display: flex; gap: 24px; color: rgba(255,255,255,.75); font-size: 15px; }
+.rc-store-brand span { padding-left: 16px; border-left: 1px solid rgba(255,255,255,.28); font-size: 19px; font-weight: 700; letter-spacing: -.03em; }
+.rc-store-badges { display: flex; gap: 26px; color: rgba(255,255,255,.72); font-size: 15px; }
 .rc-store-badges span { display: inline-flex; align-items: center; gap: 7px; }
-.rc-store-badges svg { color: #e76569; }
+.rc-store-badges svg { color: #ef7a7f; }
 .rc-store-page .rc-wrap { position: relative; z-index: 1; max-width: 1180px; padding: 40px 44px 70px; }
 .rc-store-intro { margin-bottom: 26px; }
 .rc-store-intro h1 { margin-top: 12px; font-size: 46px; line-height: 1.25; letter-spacing: -.05em; font-weight: 700; }
-.rc-store-intro p:last-child { margin-top: 12px; color: rgba(255,255,255,.72); font-size: 19px; }
-.rc-store .rc-panel { background: #fff; color: #211f1c; border: 0; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
-.rc-store .rc-options button { min-height: 118px; gap: 8px; background: #fff; }
-.rc-store .rc-options button .rc-option-icon { width: 32px; height: 32px; }
-.rc-store .rc-options button:hover { border-color: var(--kgc-red); }
-/* 결과 화면 (어두운 배경 위) */
-.rc-store .rc-result-head h2 { color: #fff; }
-.rc-store .rc-result-head .eyebrow { color: #f4c6c4; }
-.rc-store .rc-summary { color: rgba(255,255,255,.7); font-size: 16px; }
-.rc-store .rc-result-actions .rc-btn { border-color: transparent; }
+.rc-store-intro p:last-child { margin-top: 12px; color: rgba(255,255,255,.7); font-size: 19px; }
+
+/* 질문 상자: 배경에 녹아드는 어두운 유리 */
+.rc-store .rc-panel { max-width: none; padding: 36px 40px 44px; background: rgba(20,17,14,.5); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); color: #fff; box-shadow: 0 30px 70px rgba(0,0,0,.3); }
+.rc-store .rc-steps span { background: rgba(255,255,255,.16); }
+.rc-store .rc-steps span.on { background: var(--kgc-red); }
+.rc-store .rc-progress { color: rgba(255,255,255,.55); font-size: 15px; }
+.rc-store .rc-question h2 { color: #fff; font-size: 36px; }
+.rc-store .rc-question > p { color: rgba(255,255,255,.65); font-size: 17px; }
+.rc-store .rc-options { gap: 12px; }
+.rc-store .rc-options button { min-height: 118px; gap: 8px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.18); color: #fff; font-size: 21px; transition: background .15s, border-color .15s, transform .15s; }
+.rc-store .rc-options button small { color: rgba(255,255,255,.58); font-size: 14px; }
+.rc-store .rc-options button .rc-option-icon { width: 32px; height: 32px; color: #ef7a7f; }
+.rc-store .rc-options button:active { transform: scale(.98); }
+.rc-store .rc-options button.selected { background: var(--kgc-red); border-color: var(--kgc-red); color: #fff; }
+.rc-store .rc-options button.selected small, .rc-store .rc-options button.selected .rc-option-icon { color: #fff; }
+@media (hover: hover) {
+  .rc-store .rc-options button:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.4); }
+  .rc-store .rc-options button.selected:hover { background: var(--kgc-red); }
+}
+
+/* 버튼: 이전은 흰 테두리, 처음부터는 빨강 */
+.rc-store .rc-btn { min-height: 58px; padding: 0 24px; font-size: 18px; background: transparent; border: 1px solid rgba(255,255,255,.45); color: #fff; }
 .rc-store .rc-btn-dark { background: var(--kgc-red); border-color: var(--kgc-red); }
-.rc-store .rc-btn-dark:hover { background: #971018; }
+@media (hover: hover) {
+  .rc-store .rc-btn:hover { border-color: #fff; background: rgba(255,255,255,.08); }
+  .rc-store .rc-btn-dark:hover { background: #971018; border-color: #971018; }
+}
+
+/* 결과 화면 */
+.rc-store .rc-result-head h2 { color: #fff; font-size: 34px; }
+.rc-store .rc-result-head .eyebrow { color: #f4c6c4; }
+.rc-store .rc-summary { color: rgba(255,255,255,.68); font-size: 16px; }
+.rc-store .pd-grid { gap: 14px; }
 .rc-store .pd-card, .rc-store-page .rc-detail-card { color: #211f1c; }
 .rc-store .pd-card { border: 0; }
-.rc-store .pd-empty { background: rgba(255,255,255,.95); }
-.rc-store .rc-store-note { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(6px); }
-.rc-store-page .pd-price-note { color: rgba(255,255,255,.6); }
+.rc-store .pd-empty { background: rgba(20,17,14,.5); border-color: rgba(255,255,255,.2); color: rgba(255,255,255,.8); }
+.rc-store .rc-store-note { margin-top: 26px; padding: 18px; background: rgba(20,17,14,.5); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(10px); color: #fff; text-align: center; font-size: 18px; font-weight: 700; }
+.rc-store .pd-promo { background: rgba(181,18,27,.85); border-color: transparent; color: #fff; }
+.rc-store-page .pd-price-note { color: rgba(255,255,255,.55); }
+
 @media (max-width: 1023px) {
   .rc-store-badges span:last-child { display: none; }
   .rc-store-intro h1 { font-size: 38px; }
 }
 @media (max-width: 767px) {
   .rc-store-page .rc-store-header { height: 64px; padding: 0 16px; }
+  .rc-store-brand img { width: 110px; }
   .rc-store-badges { display: none; }
   .rc-store-page .rc-wrap { padding: 24px 16px 60px; }
   .rc-store-intro h1 { font-size: 28px; }
-  .rc-store .rc-options button { min-height: 96px; }
+  .rc-store .rc-panel { padding: 22px 18px 26px; }
+  .rc-store .rc-question h2 { font-size: 24px; }
+  .rc-store .rc-options button { min-height: 92px; font-size: 16px; }
 }

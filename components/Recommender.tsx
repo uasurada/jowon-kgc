@@ -103,9 +103,9 @@ export default function Recommender({ products, settings, store = false, initial
     <div className={`rc ${store ? 'rc-store' : ''}`} ref={topRef}>
       {store && step === 'target' && (
         <div className="rc-store-intro">
-          <p className="eyebrow light">GIFT FINDER</p>
-          <h1>어떤 제품이 좋을지<br />30초 만에 골라 드릴게요</h1>
-          <p>드시는 분, 예산, 원하는 형태만 눌러 주세요.</p>
+          <p className="eyebrow light">JOWON STORE · 맞춤 추천</p>
+          <h1>드시는 분께 꼭 맞는<br />정관장을 찾아보세요</h1>
+          <p>몇 가지만 누르면 어울리는 제품을 보여 드려요. 마음에 드는 제품은 직원에게 보여 주세요.</p>
         </div>
       )}
       {step !== 'result' ? (
