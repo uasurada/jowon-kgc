@@ -78,7 +78,7 @@ export default function PersonalGiftConsultation() {
 
   return (
     <main className="consult-page">
-      <ConsultationHeader label="개인 선물 상담" />
+      <ConsultationHeader label="개인 선물 상담" active="/personal" />
       <section className="consult-hero personal-hero">
         <div className="consult-hero-image"><Image src={storePhoto} alt="정관장 조원점 선물 제품 진열" fill priority sizes="100vw" className="object-cover" /></div>
         <div className="consult-hero-shade" />

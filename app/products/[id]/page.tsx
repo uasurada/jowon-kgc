@@ -42,7 +42,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <main className="consult-page">
-      <ConsultationHeader label="제품 안내" />
+      <ConsultationHeader label="제품 안내" active="/products" />
       <div className="pd-wrap">
         <Suspense fallback={<p className="pd-crumb"><Link href="/products">제품 안내</Link> / {p.cat}</p>}>
           <BackToRecommend cat={p.cat} />

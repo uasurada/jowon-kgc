@@ -18,7 +18,7 @@ export default async function ProductsPage() {
   const [products, settings] = await Promise.all([getVisibleProducts(), getSettings()]);
   return (
     <main className="consult-page">
-      <ConsultationHeader label="제품 안내" />
+      <ConsultationHeader label="제품 안내" active="/products" />
       <section className="pd-hero">
         <div>
           <p className="eyebrow">PRODUCTS</p>

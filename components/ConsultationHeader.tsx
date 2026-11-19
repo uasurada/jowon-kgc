@@ -1,8 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Phone } from 'lucide-react';
+import MobileNav from './MobileNav';
 
-export default function ConsultationHeader({ label }: { label: string }) {
+export default function ConsultationHeader({ label, active }: { label: string; active?: string }) {
   return (
     <header className="consult-header">
       <div className="consult-header-inner">
@@ -16,6 +17,7 @@ export default function ConsultationHeader({ label }: { label: string }) {
         </Link>
         <a href="tel:031-268-0304" className="consult-call"><Phone size={17} /><span>031-268-0304</span></a>
       </div>
+      <MobileNav active={active} />
     </header>
   );
 }

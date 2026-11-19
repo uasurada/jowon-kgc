@@ -55,7 +55,7 @@ export default function BusinessOrderConsultation() {
 
   return (
     <main className="consult-page business-page">
-      <ConsultationHeader label="기업·단체 주문" />
+      <ConsultationHeader label="기업·단체 주문" active="/business" />
       <section className="consult-hero business-hero">
         <div className="consult-hero-image"><Image src={storePhoto} alt="정관장 조원점 단체 선물 제품 진열" fill priority sizes="100vw" className="object-cover" /></div>
         <div className="consult-hero-shade" />

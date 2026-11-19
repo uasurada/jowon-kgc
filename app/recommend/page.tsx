@@ -18,7 +18,7 @@ export default async function RecommendPage() {
   const [products, settings] = await Promise.all([getVisibleProducts(), getSettings()]);
   return (
     <main className="consult-page">
-      <ConsultationHeader label="맞춤 추천" />
+      <ConsultationHeader label="맞춤 추천" active="/recommend" />
       <div className="rc-wrap">
         <div className="rc-intro">
           <p className="eyebrow">GIFT FINDER</p>

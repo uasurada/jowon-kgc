@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import MobileNav from '@/components/MobileNav';
 import {
   ArrowRight, BookOpen, Building2, Check, ChevronDown, Clock3,
   CreditCard, MapPin, MessageCircle, Navigation, PackageCheck,
@@ -61,6 +62,7 @@ export default function LandingPage() {
           </nav>
           <a href="tel:031-268-0304" className="header-call"><Phone size={16} /><span>031-268-0304</span></a>
         </div>
+        <MobileNav />
       </header>
 
       <section className="hero">
