@@ -3,7 +3,11 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, MessageCircle, Phone, RotateCcw, Sparkles, Star, X } from 'lucide-react';
+import {
+  ArrowLeft, Baby, Briefcase, Building2, Coffee, Crown, CupSoda, FlaskConical, Flower2, Gift, GraduationCap,
+  HeartHandshake, House, MessageCircle, Phone, Pill, RotateCcw, Shuffle, Sparkles, Star, UserRound, X, Zap,
+  type LucideIcon,
+} from 'lucide-react';
 import ProductCard from './ProductCard';
 import {
   BUDGETS, FORM_PREFS, KID_AGES, TARGETS, agesFor, answersToQuery, hasResults, priceLines, recommend, won,
@@ -13,6 +17,17 @@ import {
 type Step = 'target' | 'kidAge' | 'budget' | 'form' | 'result';
 
 const IDLE_MS = 90_000; // 매장 태블릿: 손님이 떠나면 처음 화면으로
+
+// 선택지 아이콘 (홈페이지·태블릿 공통)
+const ICONS: Record<string, LucideIcon> = {
+  parents: HeartHandshake, vip: Crown, women: Flower2, men: UserRound, worker: Briefcase,
+  student: GraduationCap, kids: Baby, family: House, business: Building2,
+  any: Shuffle, stick: Zap, pouch: CupSoda, pill: Pill, jung: FlaskConical, set: Gift, light: Coffee,
+};
+const Icon = ({ k }: { k: string }) => {
+  const I = ICONS[k];
+  return I ? <I className="rc-option-icon" size={22} strokeWidth={1.7} aria-hidden="true" /> : null;
+};
 
 const needsAge = (a: Partial<Answers>) => agesFor(a.target).length > 0;
 const stepsFor = (a: Partial<Answers>): Step[] => (needsAge(a) ? ['target', 'kidAge', 'budget', 'form'] : ['target', 'budget', 'form']);
@@ -86,8 +101,18 @@ export default function Recommender({ products, settings, store = false, initial
 
   return (
     <div className={`rc ${store ? 'rc-store' : ''}`} ref={topRef}>
+      {store && step === 'target' && (
+        <div className="rc-store-intro">
+          <p className="eyebrow light">GIFT FINDER</p>
+          <h1>어떤 제품이 좋을지<br />30초 만에 골라 드릴게요</h1>
+          <p>드시는 분, 예산, 원하는 형태만 눌러 주세요.</p>
+        </div>
+      )}
       {step !== 'result' ? (
         <div className="rc-panel">
+          <div className="rc-steps" aria-hidden="true">
+            {steps.map((s, i) => <span key={s} className={i < stepNo ? 'on' : ''} />)}
+          </div>
           <div className="rc-progress">
             {history.length > 0
               ? <button type="button" onClick={back} className="rc-btn"><ArrowLeft size={16} />이전</button>
@@ -99,7 +124,7 @@ export default function Recommender({ products, settings, store = false, initial
             <Question title="누가 드시나요?" desc="선물이라면 받으시는 분을 골라 주세요.">
               {TARGETS.filter((t) => hasResults(products, { target: t.key })).map((t) => (
                 <button type="button" key={t.key} className={answers.target === t.key ? 'selected' : ''}
-                  onClick={() => pick('target', t.key, t.ages ? 'kidAge' : 'budget')}>{t.label}</button>
+                  onClick={() => pick('target', t.key, t.ages ? 'kidAge' : 'budget')}><Icon k={t.key} /><strong>{t.label}</strong></button>
               ))}
             </Question>
           )}
@@ -124,7 +149,7 @@ export default function Recommender({ products, settings, store = false, initial
               {FORM_PREFS.filter((f) => can({ form: f.key })).map((f) => (
                 <button type="button" key={f.key} className={answers.form === f.key ? 'selected' : ''}
                   onClick={() => pick('form', f.key, 'result')}>
-                  <strong>{f.label}</strong>{f.hint && <small>{f.hint}</small>}
+                  <Icon k={f.key} /><strong>{f.label}</strong>{f.hint && <small>{f.hint}</small>}
                 </button>
               ))}
             </Question>

@@ -591,3 +591,54 @@ a.pd-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(36,2
   .rc-result-actions .rc-btn { flex: 1; }
   .rc-consult { min-height: 42px; font-size: 12.5px; }
 }
+
+/* ───────── 맞춤 추천: 진행 막대·선택지 아이콘 (홈페이지·태블릿 공통) ───────── */
+.rc-steps { display: flex; gap: 6px; margin-bottom: 16px; }
+.rc-steps span { flex: 1; height: 4px; background: #ece7df; border-radius: 2px; transition: background .3s; }
+.rc-steps span.on { background: var(--kgc-red); }
+.rc-option-icon { color: var(--kgc-red); flex-shrink: 0; }
+.rc-options button.selected .rc-option-icon { color: #fff; }
+.rc-options button strong { font-weight: 700; }
+
+/* ───────── 매장 태블릿: 매장 사진 배경 ───────── */
+.rc-store-page { position: relative; min-height: 100vh; background: #14110e; color: #fff; }
+.rc-store-bg { position: fixed; inset: 0; z-index: 0; }
+.rc-store-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(16,13,11,.72) 0%, rgba(16,13,11,.84) 40%, rgba(16,13,11,.93) 100%); }
+.rc-store-page .rc-store-header { position: relative; z-index: 2; height: 84px; padding: 0 44px; display: flex; justify-content: space-between; align-items: center; gap: 20px; background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(8px); }
+.rc-store-brand { display: flex; align-items: center; gap: 14px; }
+.rc-store-brand img { width: 150px; height: auto; }
+.rc-store-brand span { padding-left: 14px; border-left: 1px solid rgba(255,255,255,.3); font-size: 19px; font-weight: 700; letter-spacing: -.03em; }
+.rc-store-badges { display: flex; gap: 24px; color: rgba(255,255,255,.75); font-size: 15px; }
+.rc-store-badges span { display: inline-flex; align-items: center; gap: 7px; }
+.rc-store-badges svg { color: #e76569; }
+.rc-store-page .rc-wrap { position: relative; z-index: 1; max-width: 1180px; padding: 40px 44px 70px; }
+.rc-store-intro { margin-bottom: 26px; }
+.rc-store-intro h1 { margin-top: 12px; font-size: 46px; line-height: 1.25; letter-spacing: -.05em; font-weight: 700; }
+.rc-store-intro p:last-child { margin-top: 12px; color: rgba(255,255,255,.72); font-size: 19px; }
+.rc-store .rc-panel { background: #fff; color: #211f1c; border: 0; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+.rc-store .rc-options button { min-height: 118px; gap: 8px; background: #fff; }
+.rc-store .rc-options button .rc-option-icon { width: 32px; height: 32px; }
+.rc-store .rc-options button:hover { border-color: var(--kgc-red); }
+/* 결과 화면 (어두운 배경 위) */
+.rc-store .rc-result-head h2 { color: #fff; }
+.rc-store .rc-result-head .eyebrow { color: #f4c6c4; }
+.rc-store .rc-summary { color: rgba(255,255,255,.7); font-size: 16px; }
+.rc-store .rc-result-actions .rc-btn { border-color: transparent; }
+.rc-store .rc-btn-dark { background: var(--kgc-red); border-color: var(--kgc-red); }
+.rc-store .rc-btn-dark:hover { background: #971018; }
+.rc-store .pd-card, .rc-store-page .rc-detail-card { color: #211f1c; }
+.rc-store .pd-card { border: 0; }
+.rc-store .pd-empty { background: rgba(255,255,255,.95); }
+.rc-store .rc-store-note { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(6px); }
+.rc-store-page .pd-price-note { color: rgba(255,255,255,.6); }
+@media (max-width: 1023px) {
+  .rc-store-badges span:last-child { display: none; }
+  .rc-store-intro h1 { font-size: 38px; }
+}
+@media (max-width: 767px) {
+  .rc-store-page .rc-store-header { height: 64px; padding: 0 16px; }
+  .rc-store-badges { display: none; }
+  .rc-store-page .rc-wrap { padding: 24px 16px 60px; }
+  .rc-store-intro h1 { font-size: 28px; }
+  .rc-store .rc-options button { min-height: 96px; }
+}
