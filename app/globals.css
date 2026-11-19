@@ -711,7 +711,7 @@ a.pd-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(36,2
 @media (min-width: 768px) {
   .rc-store .rc-options button small { font-size: 16px; }
   .rc-store .pd-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-  .rc-store .pd-card-image { height: 120px; }
+  .rc-store .pd-card-image { height: 180px; }
   .rc-store .pd-card-body { padding: 12px 18px 14px; gap: 5px; }
   .rc-store .pd-card-cat { display: none; }   /* 작은 분류 글자는 빼고 제품명·가격을 크게 */
   .rc-store .pd-card h3 { font-size: 23px; line-height: 1.25; }
@@ -737,3 +737,13 @@ a.pd-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(36,2
 .rc-store .rc-panel { background: rgba(20,17,14,.55); }
 .rc-store .rc-options button { background: rgba(255,255,255,.08); }
 .rc-store-intro h1, .rc-store .rc-result-head h2 { text-shadow: 0 2px 14px rgba(0,0,0,.45); }
+
+/* 추천 결과 넘기기 (태블릿) / 더 보기 (홈페이지) */
+.rc-more { width: 100%; min-height: 54px; margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; background: #fff; border: 1px solid #cfc8be; border-radius: 5px; color: #211f1c; font-size: 15px; font-weight: 800; }
+.rc-more span { color: #8a8379; font-weight: 600; }
+.rc-btn:disabled { opacity: .3; pointer-events: none; }
+
+
+.rc-store .rc-store-note strong { color: #f4c6c4; }
+.rc-store-foot { margin-top: 14px; display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 20px; background: rgba(20,17,14,.55); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(10px); }
+.rc-store-foot p { flex: 1; color: #fff; font-size: 17px; font-weight: 600; }

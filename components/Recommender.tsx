@@ -4,13 +4,13 @@ import { Children, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  ArrowLeft, Baby, Briefcase, Building2, Coffee, Crown, CupSoda, FlaskConical, Flower2, Gift, GraduationCap,
+  ArrowLeft, ArrowUp, Baby, Briefcase, Building2, Coffee, Crown, CupSoda, FlaskConical, Flower2, Gift, GraduationCap,
   HeartHandshake, House, MessageCircle, Phone, Pill, RotateCcw, Shuffle, Sparkles, Star, UserRound, X, Zap,
   type LucideIcon,
 } from 'lucide-react';
 import ProductCard from './ProductCard';
 import {
-  BUDGETS, FORM_PREFS, KID_AGES, TARGETS, agesFor, answersToQuery, hasResults, priceLines, recommend, won,
+  BUDGETS, FORM_PREFS, KID_AGES, RESULT_LIMIT, TARGETS, agesFor, answersToQuery, hasResults, priceLines, recommend, won,
   type Answers, type Choice, type Product, type SiteSettings,
 } from '@/lib/productInfo';
 
@@ -45,6 +45,7 @@ export default function Recommender({ products, settings, store = false, initial
   const [answers, setAnswers] = useState<Partial<Answers>>(restored ?? {});
   const [history, setHistory] = useState<Step[]>(restored ? stepsFor(restored) : []);
   const [detail, setDetail] = useState<Product | null>(null);  // 매장 태블릿: 화면 위에 띄운 제품 상세
+  const [page, setPage] = useState(0);  // 홈페이지 결과 '더 보기' 횟수
   const topRef = useRef<HTMLDivElement>(null);
 
   // 결과 화면이면 주소에 답변을 남겨, 제품 상세에 갔다가 뒤로 와도 결과가 그대로 보이게 한다
@@ -53,13 +54,13 @@ export default function Recommender({ products, settings, store = false, initial
     const q = a ? answersToQuery(a) : '';
     window.history.replaceState(window.history.state, '', q ? `/recommend?${q}` : '/recommend');
   };
-  const reset = () => { setStep('target'); setAnswers({}); setHistory([]); setDetail(null); syncUrl(null); };
+  const reset = () => { setStep('target'); setAnswers({}); setHistory([]); setDetail(null); setPage(0); syncUrl(null); };
 
   // 매장 태블릿: 방문 통계에서 빼고, 한동안 손대지 않으면 처음으로
   useEffect(() => {
     if (!store) return;
     try { localStorage.setItem('kgc_admin', '1'); } catch { /* 저장소 없음 */ }
-    const toStart = () => { setStep('target'); setAnswers({}); setHistory([]); setDetail(null); };
+    const toStart = () => { setStep('target'); setAnswers({}); setHistory([]); setDetail(null); setPage(0); };
     let timer = setTimeout(toStart, IDLE_MS);
     const bump = () => { clearTimeout(timer); timer = setTimeout(toStart, IDLE_MS); };
     const events = ['pointerdown', 'keydown', 'scroll'] as const;
@@ -77,11 +78,13 @@ export default function Recommender({ products, settings, store = false, initial
     if (!prev) return;
     setHistory((h) => h.slice(0, -1));
     setStep(prev);
+    setPage(0);
     if (step === 'result') syncUrl(null);
   };
   const pick = (key: keyof Answers, value: string, next: Step) => {
     const a = { ...answers, [key]: value };
     setAnswers(a);
+    setPage(0);
     if (next === 'result') syncUrl(a);
     go(next);
   };
@@ -91,7 +94,9 @@ export default function Recommender({ products, settings, store = false, initial
   const steps = stepsFor(answers);
   const stepNo = steps.indexOf(step) + 1;
 
-  const results = step === 'result' ? recommend(products, answers, store ? 6 : undefined) : []; // 태블릿은 큰 글씨로 6개
+  // 맞는 제품은 모두 보여 준다: 태블릿은 전부(손가락으로 위아래로), 홈페이지는 8개씩 더 보기
+  const all = step === 'result' ? recommend(products, answers, 999) : [];
+  const results = store ? all : all.slice(0, (page + 1) * RESULT_LIMIT);
   const label = (list: Choice[], key?: string) => list.find((c) => c.key === key)?.label;
   const summary = [label(TARGETS, answers.target), label(KID_AGES, answers.kidAge), label(BUDGETS, answers.budget), label(FORM_PREFS, answers.form)]
     .filter(Boolean).join(' · ');
@@ -161,7 +166,7 @@ export default function Recommender({ products, settings, store = false, initial
             <div>
               <p className="eyebrow"><Sparkles size={14} /> 맞춤 추천</p>
               <h2>{results.length ? '이런 제품을 추천드려요' : '조건에 딱 맞는 제품이 없어요'}</h2>
-              <p className="rc-summary">{summary}{store && <span className="rc-store-tip"> · 제품을 누르면 자세히 볼 수 있어요</span>}</p>
+              <p className="rc-summary">{summary}{store && <span className="rc-store-tip"> · 맞는 제품 {all.length}개 · 누르면 자세히 볼 수 있어요</span>}</p>
             </div>
             <div className="rc-result-actions">
               <button type="button" onClick={back} className="rc-btn"><ArrowLeft size={16} />이전</button>
@@ -187,8 +192,22 @@ export default function Recommender({ products, settings, store = false, initial
             <p className="pd-empty">예산이나 형태를 바꿔 보시거나, 매장에 바로 물어보세요. 드시는 분과 예산만 알려주시면 함께 골라 드려요.</p>
           )}
 
+          {!store && results.length < all.length && (
+            <button type="button" className="rc-more" onClick={() => setPage((n) => n + 1)}>
+              제품 더 보기 <span>({all.length - results.length}개 더)</span>
+            </button>
+          )}
+
           {store ? (
-            <p className="rc-store-note">마음에 드는 제품이 있으면 직원에게 화면을 보여 주세요. 정가 기준이며 행사 할인은 직원이 안내해 드려요.</p>
+            <div className="rc-store-foot">
+              <p>마음에 드는 제품은 직원에게 보여 주세요</p>
+              {all.length > 6 && (
+                <button type="button" className="rc-btn" onClick={() => topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+                  <ArrowUp size={18} />맨 위로
+                </button>
+              )}
+              <button type="button" className="rc-btn rc-btn-dark" onClick={() => { reset(); window.scrollTo({ top: 0 }); }}><RotateCcw size={18} />처음부터</button>
+            </div>
           ) : (
             <div className="rc-help">
               <p><strong>고르기 어려우세요?</strong> 드시는 분의 연령·섭취 경험을 알려주시면 매장에서 직접 골라 드립니다.</p>
