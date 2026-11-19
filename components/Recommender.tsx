@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, MessageCircle, Phone, RotateCcw, Sparkles, Star, X } from 'lucide-react';
 import ProductCard from './ProductCard';
 import {
-  BUDGETS, FORM_PREFS, KID_AGES, TARGETS, priceLines, recommend, won,
+  BUDGETS, FORM_PREFS, KID_AGES, TARGETS, agesFor, answersToQuery, hasResults, priceLines, recommend, won,
   type Answers, type Choice, type Product, type SiteSettings,
 } from '@/lib/productInfo';
 
@@ -14,26 +14,39 @@ type Step = 'target' | 'kidAge' | 'budget' | 'form' | 'result';
 
 const IDLE_MS = 90_000; // 매장 태블릿: 손님이 떠나면 처음 화면으로
 
+const needsAge = (a: Partial<Answers>) => agesFor(a.target).length > 0;
+const stepsFor = (a: Partial<Answers>): Step[] => (needsAge(a) ? ['target', 'kidAge', 'budget', 'form'] : ['target', 'budget', 'form']);
+const isComplete = (a: Partial<Answers>) => !!(a.target && a.budget && a.form && (!needsAge(a) || a.kidAge));
+
 /** 맞춤 추천: 몇 가지를 고르면 알맞은 제품을 보여 준다. store=매장 태블릿 모드 */
-export default function Recommender({ products, settings, store = false }: {
+export default function Recommender({ products, settings, store = false, initial }: {
   products: Product[];
   settings: SiteSettings;
   store?: boolean;
+  initial?: Partial<Answers>;   // 주소에 담긴 답변 (상세에서 돌아왔을 때 결과를 다시 보여 준다)
 }) {
-  const [step, setStep] = useState<Step>('target');
-  const [answers, setAnswers] = useState<Partial<Answers>>({});
-  const [history, setHistory] = useState<Step[]>([]);
+  const restored = initial && isComplete(initial) ? initial : null;
+  const [step, setStep] = useState<Step>(restored ? 'result' : 'target');
+  const [answers, setAnswers] = useState<Partial<Answers>>(restored ?? {});
+  const [history, setHistory] = useState<Step[]>(restored ? stepsFor(restored) : []);
   const [detail, setDetail] = useState<Product | null>(null);  // 매장 태블릿: 화면 위에 띄운 제품 상세
   const topRef = useRef<HTMLDivElement>(null);
 
-  const reset = () => { setStep('target'); setAnswers({}); setHistory([]); setDetail(null); };
+  // 결과 화면이면 주소에 답변을 남겨, 제품 상세에 갔다가 뒤로 와도 결과가 그대로 보이게 한다
+  const syncUrl = (a: Partial<Answers> | null) => {
+    if (store) return;
+    const q = a ? answersToQuery(a) : '';
+    window.history.replaceState(window.history.state, '', q ? `/recommend?${q}` : '/recommend');
+  };
+  const reset = () => { setStep('target'); setAnswers({}); setHistory([]); setDetail(null); syncUrl(null); };
 
   // 매장 태블릿: 방문 통계에서 빼고, 한동안 손대지 않으면 처음으로
   useEffect(() => {
     if (!store) return;
     try { localStorage.setItem('kgc_admin', '1'); } catch { /* 저장소 없음 */ }
-    let timer = setTimeout(reset, IDLE_MS);
-    const bump = () => { clearTimeout(timer); timer = setTimeout(reset, IDLE_MS); };
+    const toStart = () => { setStep('target'); setAnswers({}); setHistory([]); setDetail(null); };
+    let timer = setTimeout(toStart, IDLE_MS);
+    const bump = () => { clearTimeout(timer); timer = setTimeout(toStart, IDLE_MS); };
     const events = ['pointerdown', 'keydown', 'scroll'] as const;
     events.forEach((e) => window.addEventListener(e, bump, { passive: true }));
     return () => { clearTimeout(timer); events.forEach((e) => window.removeEventListener(e, bump)); };
@@ -49,17 +62,21 @@ export default function Recommender({ products, settings, store = false }: {
     if (!prev) return;
     setHistory((h) => h.slice(0, -1));
     setStep(prev);
+    if (step === 'result') syncUrl(null);
   };
   const pick = (key: keyof Answers, value: string, next: Step) => {
-    setAnswers((a) => ({ ...a, [key]: value }));
+    const a = { ...answers, [key]: value };
+    setAnswers(a);
+    if (next === 'result') syncUrl(a);
     go(next);
   };
+  // 고르면 나올 제품이 없는 선택지는 숨긴다
+  const can = (extra: Partial<Answers>) => hasResults(products, { ...answers, ...extra });
 
-  const steps: Step[] = answers.target === 'kids' || answers.target === 'student'
-    ? ['target', 'kidAge', 'budget', 'form'] : ['target', 'budget', 'form'];
+  const steps = stepsFor(answers);
   const stepNo = steps.indexOf(step) + 1;
 
-  const results = step === 'result' ? recommend(products, answers as Answers) : [];
+  const results = step === 'result' ? recommend(products, answers) : [];
   const label = (list: Choice[], key?: string) => list.find((c) => c.key === key)?.label;
   const summary = [label(TARGETS, answers.target), label(KID_AGES, answers.kidAge), label(BUDGETS, answers.budget), label(FORM_PREFS, answers.form)]
     .filter(Boolean).join(' · ');
@@ -80,15 +97,15 @@ export default function Recommender({ products, settings, store = false }: {
 
           {step === 'target' && (
             <Question title="누가 드시나요?" desc="선물이라면 받으시는 분을 골라 주세요.">
-              {TARGETS.map((t) => (
+              {TARGETS.filter((t) => hasResults(products, { target: t.key })).map((t) => (
                 <button type="button" key={t.key} className={answers.target === t.key ? 'selected' : ''}
-                  onClick={() => pick('target', t.key, t.key === 'kids' || t.key === 'student' ? 'kidAge' : 'budget')}>{t.label}</button>
+                  onClick={() => pick('target', t.key, t.ages ? 'kidAge' : 'budget')}>{t.label}</button>
               ))}
             </Question>
           )}
           {step === 'kidAge' && (
             <Question title="나이가 어떻게 되나요?" desc="나이에 맞춘 제품이 따로 있어요.">
-              {KID_AGES.map((k) => (
+              {agesFor(answers.target).filter((k) => can({ kidAge: k.key })).map((k) => (
                 <button type="button" key={k.key} className={answers.kidAge === k.key ? 'selected' : ''}
                   onClick={() => pick('kidAge', k.key, 'budget')}>{k.label}</button>
               ))}
@@ -96,7 +113,7 @@ export default function Recommender({ products, settings, store = false }: {
           )}
           {step === 'budget' && (
             <Question title="생각하시는 예산은요?" desc={settings.priceMode === 'list' ? '정관장 공식 정가 기준이에요.' : '대략적인 범위만 골라 주세요.'}>
-              {BUDGETS.map((b) => (
+              {BUDGETS.filter((b) => can({ budget: b.key })).map((b) => (
                 <button type="button" key={b.key} className={answers.budget === b.key ? 'selected' : ''}
                   onClick={() => pick('budget', b.key, 'form')}>{b.label}</button>
               ))}
@@ -104,7 +121,7 @@ export default function Recommender({ products, settings, store = false }: {
           )}
           {step === 'form' && (
             <Question title="어떤 형태가 편하세요?" desc="잘 모르시면 '상관없어요'를 눌러 주세요.">
-              {FORM_PREFS.map((f) => (
+              {FORM_PREFS.filter((f) => can({ form: f.key })).map((f) => (
                 <button type="button" key={f.key} className={answers.form === f.key ? 'selected' : ''}
                   onClick={() => pick('form', f.key, 'result')}>
                   <strong>{f.label}</strong>{f.hint && <small>{f.hint}</small>}
@@ -134,7 +151,7 @@ export default function Recommender({ products, settings, store = false }: {
               {results.map(({ product, option, reasons }) => (
                 <div key={product.id} className="rc-item">
                   <ProductCard product={product} priceMode={settings.priceMode} option={option} reasons={reasons}
-                    href={store ? null : `/products/${product.id}`} onSelect={store ? () => setDetail(product) : undefined} />
+                    href={store ? null : `/products/${product.id}?from=recommend`} onSelect={store ? () => setDetail(product) : undefined} />
                   {!store && (
                     <Link href={consultHref(product.name, option?.[0])} className="rc-consult">이 제품으로 상담 신청</Link>
                   )}

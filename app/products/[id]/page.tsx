@@ -4,6 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowRight, MessageCircle, Phone, Sparkles, Star } from 'lucide-react';
+import { Suspense } from 'react';
+import BackToRecommend from '@/components/BackToRecommend';
 import ConsultationHeader from '@/components/ConsultationHeader';
 import ProductCard from '@/components/ProductCard';
 import { getProduct, getSettings, getVisibleProducts } from '@/lib/products';
@@ -42,7 +44,9 @@ export default async function ProductPage({ params }: Props) {
     <main className="consult-page">
       <ConsultationHeader label="제품 안내" />
       <div className="pd-wrap">
-        <p className="pd-crumb"><Link href="/products">제품 안내</Link> / {p.cat}</p>
+        <Suspense fallback={<p className="pd-crumb"><Link href="/products">제품 안내</Link> / {p.cat}</p>}>
+          <BackToRecommend cat={p.cat} />
+        </Suspense>
         <article className="pd-detail">
           <div className="pd-detail-image">
             {p.imageUrl && <Image src={p.imageUrl} alt={p.name} fill sizes="(max-width: 767px) 100vw, 520px" priority unoptimized />}

@@ -1,7 +1,9 @@
 // app/recommend/page.tsx — 맞춤 추천 (매장 태블릿은 /recommend/store)
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import ConsultationHeader from '@/components/ConsultationHeader';
 import Recommender from '@/components/Recommender';
+import RecommenderFromUrl from '@/components/RecommenderFromUrl';
 import { getSettings, getVisibleProducts } from '@/lib/products';
 
 export const revalidate = 600;
@@ -22,7 +24,9 @@ export default async function RecommendPage() {
           <p className="eyebrow">GIFT FINDER</p>
           <h1>어떤 제품이 좋을지<br />같이 골라 드릴게요</h1>
         </div>
-        <Recommender products={products} settings={settings} />
+        <Suspense fallback={<Recommender products={products} settings={settings} />}>
+          <RecommenderFromUrl products={products} settings={settings} />
+        </Suspense>
       </div>
     </main>
   );

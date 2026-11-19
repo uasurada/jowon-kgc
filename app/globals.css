@@ -546,3 +546,4 @@ a.pd-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(36,2
   .rc-detail-card { grid-template-columns: 1fr; gap: 16px; padding: 20px 18px 96px; max-height: 92vh; }
   .rc-detail-close { left: 18px; right: 18px; bottom: 18px; }
 }
+.pd-back { margin-bottom: 16px; min-height: 44px; padding: 0 16px; display: inline-flex; align-items: center; gap: 7px; background: #211f1c; color: #fff; font-size: 14px; font-weight: 700; }
