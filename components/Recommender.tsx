@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import ProductCard from './ProductCard';
 import {
-  BUDGETS, FORM_PREFS, KID_AGES, RESULT_LIMIT, TARGETS, agesFor, answersToQuery, hasResults, priceLines, recommend, won,
+  BUDGETS, FORM_PREFS, RESULT_LIMIT, TARGETS, agesFor, answersToQuery, hasResults, priceLines, recommend, won,
   type Answers, type Choice, type Product, type SiteSettings,
 } from '@/lib/productInfo';
 
@@ -82,14 +82,23 @@ export default function Recommender({ products, settings, store = false, initial
     if (step === 'result') syncUrl(null);
   };
   const pick = (key: keyof Answers, value: string, next: Step) => {
-    const a = { ...answers, [key]: value };
+    // 이 질문 뒤의 답은 지운다 (돌아와서 대상을 바꾸면 예전 나이·예산·형태가 남지 않게)
+    const order: (keyof Answers)[] = ['target', 'kidAge', 'budget', 'form'];
+    const a: Partial<Answers> = { ...answers, [key]: value };
+    order.slice(order.indexOf(key) + 1).forEach((k) => delete a[k]);
     setAnswers(a);
     setPage(0);
     if (next === 'result') syncUrl(a);
     go(next);
   };
   // 고르면 나올 제품이 없는 선택지는 숨긴다
-  const can = (extra: Partial<Answers>) => hasResults(products, { ...answers, ...extra });
+  // 선택지 거르기는 '이 질문보다 앞의 답'만 기준으로 (뒤로 와도 예전 답에 걸리지 않게)
+  const can = (extra: Partial<Answers>) => {
+    const order: (keyof Answers)[] = ['target', 'kidAge', 'budget', 'form'];
+    const key = Object.keys(extra)[0] as keyof Answers;
+    const before = Object.fromEntries(order.slice(0, order.indexOf(key)).map((k) => [k, answers[k]]));
+    return hasResults(products, { ...before, ...extra });
+  };
 
   const steps = stepsFor(answers);
   const stepNo = steps.indexOf(step) + 1;
@@ -98,7 +107,7 @@ export default function Recommender({ products, settings, store = false, initial
   const all = step === 'result' ? recommend(products, answers, 999) : [];
   const results = store ? all : all.slice(0, (page + 1) * RESULT_LIMIT);
   const label = (list: Choice[], key?: string) => list.find((c) => c.key === key)?.label;
-  const summary = [label(TARGETS, answers.target), label(KID_AGES, answers.kidAge), label(BUDGETS, answers.budget), label(FORM_PREFS, answers.form)]
+  const summary = [label(TARGETS, answers.target), label(agesFor(answers.target), answers.kidAge), label(BUDGETS, answers.budget), label(FORM_PREFS, answers.form)]
     .filter(Boolean).join(' · ');
 
   const consultHref = (name: string, opt?: string) =>

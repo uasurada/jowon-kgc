@@ -203,9 +203,10 @@ export function hasResults(all: Product[], a: Partial<Answers>) {
 /** 주소(?t=parents&b=10&f=stick)에 담긴 답변 — 상세에서 돌아와도 결과가 남도록 */
 export function answersFromQuery(q: { get(key: string): string | null }): Partial<Answers> {
   const pick = <T extends Choice>(list: T[], v: string | null) => (v && list.some((c) => c.key === v) ? v : undefined);
+  const target = pick(TARGETS, q.get('t'));
   return {
-    target: pick(TARGETS, q.get('t')),
-    kidAge: pick(KID_AGES, q.get('a')),
+    target,
+    kidAge: pick(agesFor(target), q.get('a')),   // 대상에 맞는 나이만
     budget: pick(BUDGETS, q.get('b')),
     form: pick(FORM_PREFS, q.get('f')),
   };
