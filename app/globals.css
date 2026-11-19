@@ -706,3 +706,27 @@ a.pd-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(36,2
   .rc-store .pd-card-price { padding-top: 2px; font-size: 15px; }
   .rc-store .rc-store-note { margin-top: 10px; padding: 9px 12px; font-size: 15px; font-weight: 600; }
 }
+
+/* ───────── 매장 태블릿: 어르신도 잘 보이게 큰 글씨 (결과 6개 = 3칸 × 2줄) ───────── */
+@media (min-width: 768px) {
+  .rc-store .rc-options button small { font-size: 16px; }
+  .rc-store .pd-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .rc-store .pd-card-image { height: 120px; }
+  .rc-store .pd-card-body { padding: 12px 18px 14px; gap: 5px; }
+  .rc-store .pd-card-cat { display: none; }   /* 작은 분류 글자는 빼고 제품명·가격을 크게 */
+  .rc-store .pd-card h3 { font-size: 23px; line-height: 1.25; }
+  .rc-store .pd-card-who { font-size: 17px; color: #4b4640; }
+  .rc-store .pd-card-price { font-size: 20px; }
+  .rc-store .pd-featured { font-size: 14px; padding: 5px 10px; }
+  .rc-store .rc-store-note { font-size: 17px; }
+  /* 상세 팝업도 크게 */
+  .rc-store-page .rc-detail-body h2 { font-size: 36px; }
+  .rc-store-page .rc-detail-body .pd-detail-who { font-size: 20px; }
+  .rc-store-page .rc-detail-body .pd-detail-who strong { font-size: 15px; }
+  .rc-store-page .rc-detail-body .pd-price-box p { font-size: 19px; }
+  .rc-store-page .rc-detail-body .pd-price-box strong { font-size: 21px; }
+  .rc-store-page .rc-detail-body .pd-price-box small { font-size: 14px; }
+  .rc-store-page .rc-detail-body .pd-spec { font-size: 17px; }
+  .rc-store-page .rc-detail-desc { font-size: 17px; line-height: 1.75; }
+  .rc-store-page .rc-detail-note { font-size: 14px; }
+}

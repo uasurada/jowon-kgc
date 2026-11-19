@@ -91,7 +91,7 @@ export default function Recommender({ products, settings, store = false, initial
   const steps = stepsFor(answers);
   const stepNo = steps.indexOf(step) + 1;
 
-  const results = step === 'result' ? recommend(products, answers) : [];
+  const results = step === 'result' ? recommend(products, answers, store ? 6 : undefined) : []; // 태블릿은 큰 글씨로 6개
   const label = (list: Choice[], key?: string) => list.find((c) => c.key === key)?.label;
   const summary = [label(TARGETS, answers.target), label(KID_AGES, answers.kidAge), label(BUDGETS, answers.budget), label(FORM_PREFS, answers.form)]
     .filter(Boolean).join(' · ');
