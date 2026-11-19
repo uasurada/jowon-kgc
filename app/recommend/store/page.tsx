@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { MessageCircle, ShieldCheck } from 'lucide-react';
 import Recommender from '@/components/Recommender';
 import { getSettings, getVisibleProducts } from '@/lib/products';
-import storeWide from '../../../img/KakaoTalk_20260928_162936624_10.jpg';
+import storeShelf from '../../../img/KakaoTalk_20260928_162936624_08.jpg';
 
 export const revalidate = 600;
 
@@ -17,9 +17,9 @@ export default async function StoreRecommendPage() {
   const [products, settings] = await Promise.all([getVisibleProducts(), getSettings()]);
   return (
     <main className="rc-store-page">
-      {/* 매장 사진을 어둡게 깔고 그 위에 추천 화면 */}
+      {/* 제품 진열 사진을 흐리게 깔고 그 위에 추천 화면 */}
       <div className="rc-store-bg" aria-hidden="true">
-        <Image src={storeWide} alt="" fill priority sizes="100vw" className="object-cover" />
+        <Image src={storeShelf} alt="" fill priority sizes="100vw" className="object-cover" />
       </div>
       <header className="rc-store-header">
         <div className="rc-store-brand">

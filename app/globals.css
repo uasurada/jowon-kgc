@@ -730,3 +730,10 @@ a.pd-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(36,2
   .rc-store-page .rc-detail-desc { font-size: 17px; line-height: 1.75; }
   .rc-store-page .rc-detail-note { font-size: 14px; }
 }
+
+/* 매장 태블릿 배경: 제품 진열 사진을 살짝 흐리게, 어두운 막은 옅게 (글씨 대비는 유지) */
+.rc-store-bg img { filter: blur(3px) saturate(1.15); transform: scale(1.05); }
+.rc-store-bg::after { background: linear-gradient(180deg, rgba(18,14,12,.58) 0%, rgba(18,14,12,.7) 45%, rgba(18,14,12,.82) 100%); }
+.rc-store .rc-panel { background: rgba(20,17,14,.55); }
+.rc-store .rc-options button { background: rgba(255,255,255,.08); }
+.rc-store-intro h1, .rc-store .rc-result-head h2 { text-shadow: 0 2px 14px rgba(0,0,0,.45); }
