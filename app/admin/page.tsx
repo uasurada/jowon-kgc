@@ -348,6 +348,13 @@ export default function AdminDashboard() {
                 <span className="text-sm font-medium hidden sm:inline">새로고침</span>
               </button>
               <Link
+                href="/admin/products"
+                className="flex items-center gap-2 px-3 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors"
+              >
+                <Package size={16} />
+                <span className="text-sm font-medium">제품 관리</span>
+              </Link>
+              <Link
                 href="/"
                 className="flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
               >

@@ -101,3 +101,38 @@ CREATE TABLE IF NOT EXISTS admin_marks (
   day   DATE NOT NULL,
   PRIMARY KEY (kind, value, day)
 );
+
+-- 제품 안내·맞춤 추천 (2026-11). 처음 목록은 2026 추석 카탈로그에서 가져와 db/seed-products.mjs로 넣는다
+CREATE TABLE IF NOT EXISTS products (
+  id          TEXT PRIMARY KEY,               -- 주소에 쓰는 영문 id (예: everytime)
+  name        TEXT NOT NULL,
+  cat         TEXT NOT NULL,                  -- 카탈로그 분류
+  badge       TEXT,                           -- PREMIUM / BEST / NEW
+  kind        TEXT,                           -- 건강기능식품 / 일반식품
+  form        TEXT,                           -- 스틱 / 파우치 / 농축액(병) ...
+  opts        JSONB NOT NULL DEFAULT '[]',    -- [["30포", 107000], ...] 구성별 정가
+  spec        TEXT,
+  descr       TEXT,                           -- 본사 공식 설명
+  tags        TEXT[] NOT NULL DEFAULT '{}',   -- 추천 대상 (parents, worker ...)
+  who         TEXT,                           -- 고객에게 보이는 추천 한 줄
+  age_min     INT,
+  age_max     INT,
+  visible     BOOLEAN NOT NULL DEFAULT true,  -- 홈페이지 노출
+  featured    BOOLEAN NOT NULL DEFAULT false, -- 매장 추천 (추천 결과 위쪽, 배지 표시)
+  sort        INT NOT NULL DEFAULT 0,
+  image       TEXT,                           -- 기본 이미지 (public 경로)
+  image_data  BYTEA,                          -- 관리자가 올린 이미지가 있으면 이것을 쓴다
+  image_type  TEXT,
+  image_ver   INT NOT NULL DEFAULT 0,
+  src         TEXT,                           -- 추천 대상 근거: catalog / kgcshop / draft / store
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS products_sort_idx ON products (sort);
+
+-- 홈페이지 설정 (가격 표시 방식, 행사 안내 등)
+CREATE TABLE IF NOT EXISTS site_settings (
+  key        TEXT PRIMARY KEY,
+  value      JSONB NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

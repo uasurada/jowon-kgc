@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function CatalogPage() {
   const catalogUrl = "https://heyzine.com/flip-book/26Chuseok_standard";
-  const title = "2026 추석 선물 카탈로그";
+  const title = "정관장 선물 카탈로그";
 
   return (
     <div className="min-h-screen bg-gray-50">

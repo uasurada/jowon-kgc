@@ -1,0 +1,174 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { ArrowLeft, MessageCircle, Phone, RotateCcw, Sparkles } from 'lucide-react';
+import ProductCard from './ProductCard';
+import {
+  BUDGETS, FORM_PREFS, KID_AGES, TARGETS, recommend,
+  type Answers, type Choice, type Product, type SiteSettings,
+} from '@/lib/productInfo';
+
+type Step = 'target' | 'kidAge' | 'budget' | 'form' | 'result';
+
+const IDLE_MS = 90_000; // 매장 태블릿: 손님이 떠나면 처음 화면으로
+
+/** 맞춤 추천: 몇 가지를 고르면 알맞은 제품을 보여 준다. store=매장 태블릿 모드 */
+export default function Recommender({ products, settings, store = false }: {
+  products: Product[];
+  settings: SiteSettings;
+  store?: boolean;
+}) {
+  const [step, setStep] = useState<Step>('target');
+  const [answers, setAnswers] = useState<Partial<Answers>>({});
+  const [history, setHistory] = useState<Step[]>([]);
+  const topRef = useRef<HTMLDivElement>(null);
+
+  const reset = () => { setStep('target'); setAnswers({}); setHistory([]); };
+
+  // 매장 태블릿: 방문 통계에서 빼고, 한동안 손대지 않으면 처음으로
+  useEffect(() => {
+    if (!store) return;
+    try { localStorage.setItem('kgc_admin', '1'); } catch { /* 저장소 없음 */ }
+    let timer = setTimeout(reset, IDLE_MS);
+    const bump = () => { clearTimeout(timer); timer = setTimeout(reset, IDLE_MS); };
+    const events = ['pointerdown', 'keydown', 'scroll'] as const;
+    events.forEach((e) => window.addEventListener(e, bump, { passive: true }));
+    return () => { clearTimeout(timer); events.forEach((e) => window.removeEventListener(e, bump)); };
+  }, [store]);
+
+  const go = (next: Step) => {
+    setHistory((h) => [...h, step]);
+    setStep(next);
+    topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  const back = () => {
+    const prev = history[history.length - 1];
+    if (!prev) return;
+    setHistory((h) => h.slice(0, -1));
+    setStep(prev);
+  };
+  const pick = (key: keyof Answers, value: string, next: Step) => {
+    setAnswers((a) => ({ ...a, [key]: value }));
+    go(next);
+  };
+
+  const steps: Step[] = answers.target === 'kids' || answers.target === 'student'
+    ? ['target', 'kidAge', 'budget', 'form'] : ['target', 'budget', 'form'];
+  const stepNo = steps.indexOf(step) + 1;
+
+  const results = step === 'result' ? recommend(products, answers as Answers) : [];
+  const label = (list: Choice[], key?: string) => list.find((c) => c.key === key)?.label;
+  const summary = [label(TARGETS, answers.target), label(KID_AGES, answers.kidAge), label(BUDGETS, answers.budget), label(FORM_PREFS, answers.form)]
+    .filter(Boolean).join(' · ');
+
+  const consultHref = (name: string, opt?: string) =>
+    `/personal?product=${encodeURIComponent(opt ? `${name} (${opt})` : name)}`;
+
+  return (
+    <div className={`rc ${store ? 'rc-store' : ''}`} ref={topRef}>
+      {step !== 'result' ? (
+        <div className="rc-panel">
+          <div className="rc-progress">
+            {history.length > 0
+              ? <button type="button" onClick={back} className="rc-back"><ArrowLeft size={16} />이전</button>
+              : <span />}
+            <span>{stepNo} / {steps.length}</span>
+          </div>
+
+          {step === 'target' && (
+            <Question title="누가 드시나요?" desc="선물이라면 받으시는 분을 골라 주세요.">
+              {TARGETS.map((t) => (
+                <button type="button" key={t.key} className={answers.target === t.key ? 'selected' : ''}
+                  onClick={() => pick('target', t.key, t.key === 'kids' || t.key === 'student' ? 'kidAge' : 'budget')}>{t.label}</button>
+              ))}
+            </Question>
+          )}
+          {step === 'kidAge' && (
+            <Question title="나이가 어떻게 되나요?" desc="나이에 맞춘 제품이 따로 있어요.">
+              {KID_AGES.map((k) => (
+                <button type="button" key={k.key} className={answers.kidAge === k.key ? 'selected' : ''}
+                  onClick={() => pick('kidAge', k.key, 'budget')}>{k.label}</button>
+              ))}
+            </Question>
+          )}
+          {step === 'budget' && (
+            <Question title="생각하시는 예산은요?" desc={settings.priceMode === 'list' ? '정관장 공식 정가 기준이에요.' : '대략적인 범위만 골라 주세요.'}>
+              {BUDGETS.map((b) => (
+                <button type="button" key={b.key} className={answers.budget === b.key ? 'selected' : ''}
+                  onClick={() => pick('budget', b.key, 'form')}>{b.label}</button>
+              ))}
+            </Question>
+          )}
+          {step === 'form' && (
+            <Question title="어떤 형태가 편하세요?" desc="잘 모르시면 '상관없어요'를 눌러 주세요.">
+              {FORM_PREFS.map((f) => (
+                <button type="button" key={f.key} className={answers.form === f.key ? 'selected' : ''}
+                  onClick={() => pick('form', f.key, 'result')}>
+                  <strong>{f.label}</strong>{f.hint && <small>{f.hint}</small>}
+                </button>
+              ))}
+            </Question>
+          )}
+        </div>
+      ) : (
+        <div className="rc-result">
+          <div className="rc-result-head">
+            <div>
+              <p className="eyebrow"><Sparkles size={14} /> 맞춤 추천</p>
+              <h2>{results.length ? '이런 제품을 추천드려요' : '조건에 딱 맞는 제품이 없어요'}</h2>
+              <p className="rc-summary">{summary}</p>
+            </div>
+            <div className="rc-result-actions">
+              <button type="button" onClick={back} className="rc-ghost"><ArrowLeft size={16} />이전</button>
+              <button type="button" onClick={reset} className="rc-ghost"><RotateCcw size={16} />처음부터</button>
+            </div>
+          </div>
+
+          {settings.promoOn && <p className="pd-promo">{settings.promoText}</p>}
+
+          {results.length > 0 ? (
+            <div className="pd-grid">
+              {results.map(({ product, option, reasons }) => (
+                <div key={product.id} className="rc-item">
+                  <ProductCard product={product} priceMode={settings.priceMode} option={option} reasons={reasons}
+                    href={store ? null : `/products/${product.id}`} />
+                  {!store && (
+                    <Link href={consultHref(product.name, option?.[0])} className="rc-consult">이 제품으로 상담 신청</Link>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="pd-empty">예산이나 형태를 바꿔 보시거나, 매장에 바로 물어보세요. 드시는 분과 예산만 알려주시면 함께 골라 드려요.</p>
+          )}
+
+          {store ? (
+            <p className="rc-store-note">마음에 드는 제품이 있으면 직원에게 화면을 보여 주세요.</p>
+          ) : (
+            <div className="rc-help">
+              <p><strong>고르기 어려우세요?</strong> 드시는 분의 연령·섭취 경험을 알려주시면 매장에서 직접 골라 드립니다.</p>
+              <div>
+                <a href="tel:031-268-0304" className="button button-dark"><Phone size={16} />전화 상담</a>
+                <a href="https://pf.kakao.com/_IrSRX/" target="_blank" rel="noopener noreferrer" className="button button-kakao"><MessageCircle size={16} />카카오톡 상담</a>
+              </div>
+            </div>
+          )}
+          {settings.priceMode !== 'hidden' && (
+            <p className="pd-price-note">가격은 정관장 공식 정가 기준입니다. 명절·행사 할인은 매장으로 문의해 주세요.</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Question({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
+  return (
+    <div className="rc-question">
+      <h2>{title}</h2>
+      <p>{desc}</p>
+      <div className="rc-options">{children}</div>
+    </div>
+  );
+}

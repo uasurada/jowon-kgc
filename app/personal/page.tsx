@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Check, Gift, MapPin, MessageCircle, Phone, ShieldCheck, Sparkles } from 'lucide-react';
@@ -43,7 +44,7 @@ export default function PersonalGiftConsultation() {
     try {
       const res = await fetch('/api/submit', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formType: 'personal', formData, meta: getAttribution() }),
+        body: JSON.stringify({ formType: 'personal', formData: withProduct(formData), meta: getAttribution() }),
       });
       const result = await res.json();
       if (result.success) setSubmitted(true);
@@ -93,6 +94,7 @@ export default function PersonalGiftConsultation() {
         <div className="consult-form-wrap">
           <div className="form-intro"><span>간편 상담 신청</span><h2>어떤 선물을 찾으세요?</h2><p>필수 항목만 입력하면 상담 신청이 완료됩니다.</p></div>
           <div className="modern-form">
+            <Suspense fallback={null}><InterestedProduct /></Suspense>
             <input className="hp-field" tabIndex={-1} autoComplete="off" aria-hidden="true" value={formData.website} onChange={(e) => update('website', e.target.value)} />
             <fieldset>
               <legend>받는 방법 <em>필수</em></legend>
@@ -166,5 +168,24 @@ export default function PersonalGiftConsultation() {
         </aside>
       </section>
     </main>
+  );
+}
+
+/** 제품 안내·맞춤 추천에서 '이 제품으로 상담 신청'을 누르고 왔을 때의 제품명 */
+function productParam() {
+  return new URLSearchParams(window.location.search).get('product')?.trim().slice(0, 80) || '';
+}
+
+function withProduct<T extends { message: string }>(formData: T): T {
+  const product = productParam();
+  return product ? { ...formData, message: `[관심 제품] ${product}${formData.message ? `
+${formData.message}` : ''}` } : formData;
+}
+
+function InterestedProduct() {
+  const product = useSearchParams().get('product')?.trim().slice(0, 80);
+  if (!product) return null;
+  return (
+    <p className="form-notice"><strong>관심 제품: {product}</strong><br />상담 신청 시 함께 전달되며, 매장에서 구성과 금액을 안내드립니다.</p>
   );
 }

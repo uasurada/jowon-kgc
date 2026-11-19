@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {
   ArrowRight, BookOpen, Building2, Check, ChevronDown, Clock3,
   CreditCard, MapPin, MessageCircle, Navigation, PackageCheck,
-  Phone, ShieldCheck, Truck,
+  Phone, ShieldCheck, Sparkles, Truck,
 } from 'lucide-react';
 import storeWide from '../img/KakaoTalk_20260928_162936624_10.jpg';
 import storeCounter from '../img/KakaoTalk_20260928_162936624_03.jpg';
@@ -57,7 +57,7 @@ export default function LandingPage() {
             <span className="brand-copy"><strong>정관장 조원점</strong><small>JOWON STORE</small></span>
           </Link>
           <nav className="desktop-nav" aria-label="주요 메뉴">
-            <a href="#store">매장 소개</a><a href="#service">주문 안내</a><a href="#location">오시는 길</a>
+            <a href="#store">매장 소개</a><Link href="/products">제품 안내</Link><Link href="/recommend">맞춤 추천</Link><a href="#service">주문 안내</a><a href="#location">오시는 길</a>
           </nav>
           <a href="tel:031-268-0304" className="header-call"><Phone size={16} /><span>031-268-0304</span></a>
         </div>
@@ -142,7 +142,11 @@ export default function LandingPage() {
           <ul>
             <li><Check /> 예산에 맞는 제품 비교</li><li><Check /> 섭취 방법과 구성 안내</li><li><Check /> 선물 포장 및 전국 배송</li>
           </ul>
-          <Link href="/catalog" className="text-link"><BookOpen size={18} /> 2026 선물 카탈로그 보기 <ArrowRight size={17} /></Link>
+          <div className="product-links">
+            <Link href="/recommend" className="button button-light"><Sparkles size={17} /> 30초 맞춤 추천 받기</Link>
+            <Link href="/products" className="text-link">전체 제품 보기 <ArrowRight size={17} /></Link>
+            <Link href="/catalog" className="text-link"><BookOpen size={18} /> 선물 카탈로그 <ArrowRight size={17} /></Link>
+          </div>
         </div>
       </section>
 
