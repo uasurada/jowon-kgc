@@ -11,6 +11,9 @@ export const revalidate = 600;
 export const metadata: Metadata = {
   title: '맞춤 추천 (매장)',
   robots: { index: false, follow: false },
+  // 태블릿에서 '홈 화면에 추가'한 아이콘으로 열면 주소창 없이 전체화면
+  manifest: '/store.webmanifest',
+  appleWebApp: { capable: true, title: '정관장 추천', statusBarStyle: 'black-translucent' },
 };
 
 export default async function StoreRecommendPage() {
