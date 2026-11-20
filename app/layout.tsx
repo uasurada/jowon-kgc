@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Noto_Sans_KR } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
@@ -15,6 +15,11 @@ const SITE_URL = 'https://www.jowon-kgc.com';
 const OG_IMAGE = '/og-jowon.jpg';
 const NAVER_PLACE_URL = 'https://map.naver.com/p/entry/place/20945563';
 const GOOGLE_MAPS_URL = 'https://maps.google.com/?cid=10608350700964587932';
+
+// 삼성 인터넷·크롬의 "웹페이지 다크 모드"가 화면을 억지로 어둡게 바꾸지 않도록 밝은 화면 전용이라고 알린다
+export const viewport: Viewport = {
+  colorScheme: 'only light',
+};
 
 export const metadata: Metadata = {
   // 대표 주소는 www (jowon-kgc.com은 Vercel에서 www로 넘어간다)
