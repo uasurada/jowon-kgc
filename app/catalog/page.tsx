@@ -2,7 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ExternalLink, Phone, MessageCircle, BookOpen } from "lucide-react";
-import { KAKAO_CHAT_URL } from "@/lib/contact";
+import { KAKAO_URL } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "정관장 선물 카탈로그",
@@ -46,7 +46,7 @@ export default function CatalogPage() {
                 </a>
 
                 <a
-                  href={KAKAO_CHAT_URL}
+                  href={KAKAO_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-yellow-400 text-gray-900 text-sm font-semibold hover:bg-yellow-500 transition-colors"

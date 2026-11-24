@@ -12,11 +12,11 @@ import storeCounter from '../img/KakaoTalk_20260928_162936624_03.jpg';
 import storeDisplay from '../img/KakaoTalk_20260928_162936624_06.jpg';
 import storeProducts from '../img/KakaoTalk_20260928_162936624_08.jpg';
 import storeEntrance from '../img/KakaoTalk_20260928_162936624.jpg';
-import { KAKAO_CHAT_URL } from '@/lib/contact';
+import { KAKAO_URL } from '@/lib/contact';
 
 export const metadata: Metadata = { alternates: { canonical: '/' } };
 
-const kakaoUrl = KAKAO_CHAT_URL;
+const kakaoUrl = KAKAO_URL;
 const naverMapUrl = 'https://map.naver.com/v5/search/%EA%B2%BD%EA%B8%B0%20%EC%88%98%EC%9B%90%EC%8B%9C%20%EC%9E%A5%EC%95%88%EA%B5%AC%20%EA%B2%BD%EC%88%98%EB%8C%80%EB%A1%9C%20935';
 
 // 검색·AI 답변에 그대로 인용될 수 있으므로 확인된 사실만 적는다

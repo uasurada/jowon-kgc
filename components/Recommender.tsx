@@ -13,7 +13,7 @@ import {
   BUDGETS, FORM_PREFS, RESULT_LIMIT, TARGETS, agesFor, answersToQuery, hasResults, priceLines, recommend, won,
   type Answers, type Choice, type Product, type SiteSettings,
 } from '@/lib/productInfo';
-import { KAKAO_CHAT_URL } from '@/lib/contact';
+import { KAKAO_URL } from '@/lib/contact';
 
 type Step = 'target' | 'kidAge' | 'budget' | 'form' | 'result';
 
@@ -223,7 +223,7 @@ export default function Recommender({ products, settings, store = false, initial
               <p><strong>고르기 어려우세요?</strong> 드시는 분의 연령·섭취 경험을 알려주시면 매장에서 직접 골라 드립니다.</p>
               <div>
                 <a href="tel:031-268-0304" className="button button-dark"><Phone size={16} />전화 상담</a>
-                <a href={KAKAO_CHAT_URL} target="_blank" rel="noopener noreferrer" className="button button-kakao"><MessageCircle size={16} />카카오톡 상담</a>
+                <a href={KAKAO_URL} target="_blank" rel="noopener noreferrer" className="button button-kakao"><MessageCircle size={16} />카카오톡 상담</a>
               </div>
             </div>
           )}

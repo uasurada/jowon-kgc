@@ -10,7 +10,7 @@ import ConsultationHeader from '@/components/ConsultationHeader';
 import ProductCard from '@/components/ProductCard';
 import { getProduct, getSettings, getVisibleProducts } from '@/lib/products';
 import { TAGS, priceLines } from '@/lib/productInfo';
-import { KAKAO_CHAT_URL } from '@/lib/contact';
+import { KAKAO_URL } from '@/lib/contact';
 
 export const revalidate = 600;
 
@@ -77,7 +77,7 @@ export default async function ProductPage({ params }: Props) {
 
             <div className="pd-actions" data-track="product">
               <Link href={consultHref} className="button button-red">이 제품으로 상담 신청 <ArrowRight size={16} /></Link>
-              <a href={KAKAO_CHAT_URL} target="_blank" rel="noopener noreferrer" className="button button-kakao"><MessageCircle size={16} />카톡 문의</a>
+              <a href={KAKAO_URL} target="_blank" rel="noopener noreferrer" className="button button-kakao"><MessageCircle size={16} />카톡 문의</a>
               <a href="tel:031-268-0304" className="button button-dark"><Phone size={16} />전화</a>
             </div>
             <p className="pd-action-note">상담 신청은 결제가 아니에요. 매장에서 연락드려 구성과 금액을 안내드립니다. 주소를 몰라도 받는 분 연락처만으로 선물할 수 있어요.</p>

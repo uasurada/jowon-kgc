@@ -5,7 +5,7 @@ import { MessageCircle, Sparkles } from 'lucide-react';
 import ConsultationHeader from '@/components/ConsultationHeader';
 import ProductBrowser from '@/components/ProductBrowser';
 import { getSettings, getVisibleProducts } from '@/lib/products';
-import { KAKAO_CHAT_URL } from '@/lib/contact';
+import { KAKAO_URL } from '@/lib/contact';
 
 export const revalidate = 600;
 
@@ -27,7 +27,7 @@ export default async function ProductsPage() {
           <p>드시는 분과 예산에 맞는 제품을 찾아보세요. 어떤 제품이 맞을지 모르셔도 괜찮아요.</p>
           <div className="pd-hero-actions">
             <Link href="/recommend" className="button button-red"><Sparkles size={16} />30초 맞춤 추천 받기</Link>
-            <a href={KAKAO_CHAT_URL} target="_blank" rel="noopener noreferrer" className="button button-kakao" data-track="list"><MessageCircle size={16} />카톡으로 물어보기</a>
+            <a href={KAKAO_URL} target="_blank" rel="noopener noreferrer" className="button button-kakao" data-track="list"><MessageCircle size={16} />카톡으로 물어보기</a>
           </div>
         </div>
       </section>

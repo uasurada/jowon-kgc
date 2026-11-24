@@ -10,7 +10,7 @@ import ConsultationHeader from '@/components/ConsultationHeader';
 import { openAddressSearch } from '@/lib/postcode';
 import { getAttribution } from '@/lib/attribution';
 import storePhoto from '../../img/KakaoTalk_20260928_162936624_04.jpg';
-import { KAKAO_CHAT_URL } from '@/lib/contact';
+import { KAKAO_URL } from '@/lib/contact';
 
 const GIFT_TYPES = ['부모님', '직장 상사', '병문안', '상견례', '나를 위한', '출산·산모', '기타'];
 const BUDGETS = ['5만원대', '10만원대', '20만원대', '30만원 이상'];
@@ -69,7 +69,7 @@ export default function PersonalGiftConsultation() {
                 : '남겨주신 내용을 확인한 뒤 매장에서 직접 연락드리겠습니다.'}
           </p>
           <div className="success-actions">
-            <a href={KAKAO_CHAT_URL} target="_blank" rel="noopener noreferrer" className="button button-kakao"><MessageCircle size={18} /> 카카오톡 상담</a>
+            <a href={KAKAO_URL} target="_blank" rel="noopener noreferrer" className="button button-kakao"><MessageCircle size={18} /> 카카오톡 상담</a>
             <Link href="/" className="button button-dark">홈으로 돌아가기</Link>
           </div>
         </div>
@@ -163,7 +163,7 @@ export default function PersonalGiftConsultation() {
           </div>
         </div>
         <aside className="consult-aside">
-          <div className="aside-card direct-card"><p className="eyebrow">DIRECT CONTACT</p><h3>바로 상담할까요?</h3><p>월–토 10:00–20:00</p><a href="tel:031-268-0304"><Phone /> 031-268-0304</a><a href={KAKAO_CHAT_URL} target="_blank" rel="noopener noreferrer"><MessageCircle /> 카카오톡 상담</a></div>
+          <div className="aside-card direct-card"><p className="eyebrow">DIRECT CONTACT</p><h3>바로 상담할까요?</h3><p>월–토 10:00–20:00</p><a href="tel:031-268-0304"><Phone /> 031-268-0304</a><a href={KAKAO_URL} target="_blank" rel="noopener noreferrer"><MessageCircle /> 카카오톡 상담</a></div>
           <div className="aside-card location-card"><MapPin /><div><strong>정관장 조원점</strong><p>경기 수원시 장안구 경수대로 935<br />동양파라곤 1층 105호</p></div></div>
           <div className="aside-list"><p><Check /> 정품 보장</p><p><Check /> 선물 포장</p><p><Check /> 전국 택배 상담</p><p><Check /> 수원페이 · 카드 · 상품권</p></div>
         </aside>

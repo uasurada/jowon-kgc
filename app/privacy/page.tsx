@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Phone, MessageCircle, ArrowLeft } from "lucide-react";
-import { KAKAO_CHAT_URL } from "@/lib/contact";
+import { KAKAO_URL } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "개인정보처리방침",
@@ -206,7 +206,7 @@ export default function PrivacyPage() {
               전화
             </a>
             <a
-              href={KAKAO_CHAT_URL}
+              href={KAKAO_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 transition-colors"
