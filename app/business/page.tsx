@@ -9,6 +9,7 @@ import ConsultationHeader from '@/components/ConsultationHeader';
 import { ORG_TYPES, isValidEmail } from '@/lib/emailCheck';
 import { getAttribution } from '@/lib/attribution';
 import storePhoto from '../../img/KakaoTalk_20260928_162936624_08.jpg';
+import { KAKAO_CHAT_URL } from '@/lib/contact';
 
 const PURPOSES = ['직원 선물', '거래처 선물', '행사 답례품', '기타'];
 const QUANTITIES = ['30~49세트', '50~99세트', '100~199세트', '200세트 이상'];
@@ -113,7 +114,7 @@ export default function BusinessOrderConsultation() {
           </div>
         </div>
         <aside className="consult-aside">
-          <div className="aside-card direct-card"><p className="eyebrow">DIRECT CONTACT</p><h3>일정이 급하신가요?</h3><p>월–토 10:00–20:00</p><a href="tel:031-268-0304"><Phone /> 031-268-0304</a><a href="https://pf.kakao.com/_IrSRX/" target="_blank" rel="noopener noreferrer"><MessageCircle /> 카카오톡 상담</a></div>
+          <div className="aside-card direct-card"><p className="eyebrow">DIRECT CONTACT</p><h3>일정이 급하신가요?</h3><p>월–토 10:00–20:00</p><a href="tel:031-268-0304"><Phone /> 031-268-0304</a><a href={KAKAO_CHAT_URL} target="_blank" rel="noopener noreferrer"><MessageCircle /> 카카오톡 상담</a></div>
           <div className="aside-card catalog-card"><BookOpen /><h3>2026 선물 카탈로그</h3><p>제품 구성과 가격대를 먼저 살펴보세요.</p><Link href="/catalog">카탈로그 보기 <ArrowRight /></Link></div>
           <div className="aside-list"><p><Check /> 견적서 발행</p><p><Check /> 세금계산서 상담</p><p><Check /> 법인카드 결제</p><p><Check /> 일괄·개별 배송 상담</p></div>
         </aside>

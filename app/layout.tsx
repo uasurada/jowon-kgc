@@ -4,6 +4,8 @@ import Script from 'next/script';
 import './globals.css';
 import InteractionGuard from '../components/InteractionGuard';
 import Tracker from '../components/Tracker';
+import ContactBar from '../components/ContactBar';
+import { KAKAO_CHANNEL_URL } from '../lib/contact';
 
 const notoSansKR = Noto_Sans_KR({
   weight: ['400', '500', '700', '900'],
@@ -152,7 +154,7 @@ const structuredData = [
     geo: { '@type': 'GeoCoordinates', latitude: 37.3021818, longitude: 127.007767 },
     hasMap: NAVER_PLACE_URL,
     // 검색엔진·AI가 지도/채널의 같은 매장으로 연결하도록
-    sameAs: [NAVER_PLACE_URL, GOOGLE_MAPS_URL, 'https://pf.kakao.com/_IrSRX'],
+    sameAs: [NAVER_PLACE_URL, GOOGLE_MAPS_URL, KAKAO_CHANNEL_URL],
     brand: { '@type': 'Brand', name: '정관장' },
     openingHoursSpecification: [
       {
@@ -227,6 +229,7 @@ export default function RootLayout({
         <InteractionGuard />
         <Tracker />
         {children}
+        <ContactBar />
 
         <script
           type="application/ld+json"

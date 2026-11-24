@@ -20,6 +20,9 @@ interface Traffic {
   devices: Item[];
   pages: Item[];
   orderSources: Item[];
+  kakaoClicks: number;
+  telClicks: number;
+  clickPages: Item[];
 }
 
 const RANGES = [
@@ -34,6 +37,9 @@ const PAGE_NAMES: Record<string, string> = {
   '/personal': '개인 선물 상담',
   '/business': '기업·단체 주문',
   '/catalog': '카탈로그',
+  '/products': '전체 제품',
+  '/recommend': '맞춤 추천',
+  '/recommend/store': '매장 태블릿 추천',
   '/gift': '선물 주소 입력 (받는 분)',
   '/privacy': '개인정보처리방침',
 };
@@ -116,11 +122,12 @@ export default function TrafficStats() {
 
       {data && (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
             {[
               { label: '방문자', value: `${data.visitors}명`, sub: '같은 사람은 1명으로' },
               { label: '방문 횟수', value: `${data.visits}회`, sub: `페이지뷰 ${data.views}` },
               { label: '주문·상담 접수', value: `${data.orders}건`, sub: `⚠️ 확인 필요 ${data.ordersWarn} · 🤖 자동 의심 ${data.ordersBot}` },
+              { label: '카톡·전화 버튼', value: `${data.kakaoClicks + data.telClicks}회`, sub: `💬 카톡 ${data.kakaoClicks} · 📞 전화 ${data.telClicks}` },
               { label: '방문자 대비 접수', value: `${conv}%`, sub: '접수 ÷ 방문자' },
             ].map((c) => (
               <div key={c.label} className="bg-gray-50 rounded-lg p-3">
@@ -161,6 +168,7 @@ export default function TrafficStats() {
             <RankList title="🏙 도시" items={data.cities} unit="명" color="bg-emerald-500" />
             <RankList title="📱 기기" items={data.devices} unit="명" color="bg-purple-500" />
             <RankList title="📄 많이 본 페이지" items={data.pages} unit="회" color="bg-amber-500" label={(k) => PAGE_NAMES[k] ?? k} />
+            <RankList title="👆 카톡·전화를 누른 곳" items={data.clickPages} unit="회" color="bg-yellow-500" label={(k) => k.replace(/ · (\/[^ ]*)$/, (m, p) => ` · ${PAGE_NAMES[p] ?? p}`)} />
           </div>
 
           <ul className="text-[11px] text-gray-500 mt-4 leading-relaxed list-disc pl-4">
@@ -169,6 +177,7 @@ export default function TrafficStats() {
               관리자로 로그인한 브라우저와, 관리자가 접속한 IP(앞뒤 7일)의 방문은 통계에서 빠집니다
               {data.adminViews > 0 && <> (이 기간 {data.adminViews}회 제외)</>}.
             </li>
+            <li>카톡·전화 버튼은 누른 횟수입니다. 실제로 연락이 왔는지는 매장에서 확인해 주세요.</li>
             <li>QR·전단에는 주소 뒤에 <code className="bg-gray-100 px-1 rounded">?src=qr-bag</code>처럼 꼬리표를 붙이면 따로 집계됩니다.</li>
           </ul>
         </>

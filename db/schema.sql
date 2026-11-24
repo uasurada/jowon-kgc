@@ -136,3 +136,17 @@ CREATE TABLE IF NOT EXISTS site_settings (
   value      JSONB NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- 전화·카톡 버튼 누름 (2026-11). 관리자 화면에서 어느 페이지·제품에서 연락이 시작됐는지 본다
+CREATE TABLE IF NOT EXISTS contact_clicks (
+  id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  kind        TEXT NOT NULL,  -- kakao / tel
+  path        TEXT NOT NULL,  -- 누른 페이지
+  place       TEXT,           -- 버튼 위치 (bar: 화면 아래 고정 버튼, product: 제품 상세, result: 추천 결과)
+  device      TEXT,
+  geo_country TEXT,
+  visitor     TEXT,
+  ip_hash     TEXT
+);
+CREATE INDEX IF NOT EXISTS contact_clicks_created_at_idx ON contact_clicks (created_at);

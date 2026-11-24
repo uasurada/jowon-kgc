@@ -298,8 +298,8 @@ body { background: #fff; color: var(--ink); }
 .success-actions { margin-top: 29px; display: flex; justify-content: center; gap: 9px; }
 
 @media (max-width: 767px) {
-  body { padding-bottom: 66px; }
-  body:has(.consult-page), body:has(.consult-success), body:has(.gift-reply-page) { padding-bottom: 0; }
+  /* 아래 전화·카톡 버튼이 떠 있는 화면만 그만큼 띄운다 */
+  body:has(.mobile-contact) { padding-bottom: 66px; }
   .notice-bar { justify-content: flex-start; padding-left: 18px; }
   .header-inner { height: 65px; padding: 0 17px; }
   .brand { gap: 8px; }.brand-mark { width: 108px; height: 34px; }.brand-mark img { width: 108px; }
@@ -397,6 +397,7 @@ body { background: #fff; color: var(--ink); }
 .pd-hero > div { max-width: 1144px; margin: auto; padding: 56px 28px 60px; }
 .pd-hero h1 { margin-top: 12px; font-size: clamp(32px, 4vw, 46px); letter-spacing: -.05em; line-height: 1.2; }
 .pd-hero p:not(.eyebrow) { margin: 14px 0 26px; color: rgba(255,255,255,.75); font-size: 15px; line-height: 1.7; word-break: keep-all; }
+.pd-hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .pd-wrap { max-width: 1144px; margin: auto; padding: 40px 28px 100px; }
 .pd-promo { margin-bottom: 24px; padding: 14px 18px; background: #fdf1f1; border: 1px solid #f0cfd0; color: var(--kgc-red); font-size: 14px; font-weight: 700; word-break: keep-all; }
 .pd-filters { display: grid; gap: 12px; margin-bottom: 34px; }
@@ -579,6 +580,7 @@ a.pd-card:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(36,2
   .pd-hero h1 { font-size: 30px; }
   .pd-hero p:not(.eyebrow) { font-size: 14px; margin-bottom: 22px; }
   .pd-hero .button { width: 100%; }
+  .pd-hero-actions { flex-direction: column; }
   .pd-card-image img { padding: 8px; }
   .pd-filters { margin-bottom: 26px; }
   .pd-section-title { font-size: 19px; }

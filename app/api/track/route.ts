@@ -23,6 +23,16 @@ export async function POST(request: NextRequest) {
 
     const path = String(body.path ?? '').slice(0, 200);
     if (!path.startsWith('/') || path.startsWith('/admin')) return new NextResponse(null, { status: 204 });
+
+    // 전화·카톡 버튼 누름
+    if (body.click === 'kakao' || body.click === 'tel') {
+      const where = typeof body.where === 'string' ? body.where.slice(0, 20) : null;
+      await sql`
+        INSERT INTO contact_clicks (kind, path, place, device, geo_country, visitor, ip_hash)
+        VALUES (${body.click}, ${path}, ${where}, ${meta.device}, ${meta.country}, ${visitor || meta.ipHash}, ${meta.ipHash})
+      `;
+      return new NextResponse(null, { status: 204 });
+    }
     const entry = body.entry === true;
 
     await sql`
@@ -36,7 +46,10 @@ export async function POST(request: NextRequest) {
     `;
 
     // 400일 지난 기록은 가끔 정리
-    if (Math.random() < 0.01) await sql`DELETE FROM page_views WHERE created_at < now() - interval '400 days'`;
+    if (Math.random() < 0.01) {
+      await sql`DELETE FROM page_views WHERE created_at < now() - interval '400 days'`;
+      await sql`DELETE FROM contact_clicks WHERE created_at < now() - interval '400 days'`;
+    }
   } catch (e) {
     console.error('track failed:', e);
   }

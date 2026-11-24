@@ -1,7 +1,7 @@
 // lib/trafficStats.ts — 관리자 화면 접속 통계 집계 (한국 시간 기준)
 import { sql } from './db';
 import { cityName, regionName } from './traffic';
-import { IS_ADMIN_VIEW } from './adminMarks';
+import { IS_ADMIN_VIEW, isAdminRow } from './adminMarks';
 
 type Row = Record<string, unknown>;
 const n = (v: unknown) => Number(v ?? 0);
@@ -31,6 +31,20 @@ export async function getTrafficStats(days: number) {
     iq(`coalesce(source, '기록 없음') AS k, count(*)::int AS n`, `AND risk_level IS DISTINCT FROM 'bot' GROUP BY 1 ORDER BY 2 DESC LIMIT 8`),
     db.query(`SELECT count(*)::int AS views FROM page_views WHERE created_at >= ${SINCE} AND ${IS_ADMIN_VIEW}`, [days]),
   ]);
+
+  // 전화·카톡 버튼 누름 (표가 아직 없으면 0으로)
+  const clicks = (await db.query(
+    `SELECT kind, path, count(*)::int AS n FROM contact_clicks
+     WHERE created_at >= ${SINCE} AND NOT ${isAdminRow('contact_clicks')} GROUP BY 1, 2 ORDER BY 3 DESC`,
+    [days],
+  ).catch(() => [])) as Row[];
+
+  // 제품 상세 주소(/products/id)는 제품 이름으로 보여 준다
+  const productIds = [...new Set([...(pages as Row[]), ...clicks.map((c) => ({ k: c.path }))]
+    .map((r) => String(r.k)).filter((k) => k.startsWith('/products/')).map((k) => k.slice(10)))];
+  const names = new Map<string, string>(productIds.length
+    ? ((await db`SELECT id, name FROM products WHERE id = ANY(${productIds})`.catch(() => [])) as Row[]).map((r) => [`/products/${r.id}`, String(r.name)])
+    : []);
 
   // 방문이 없던 날·시간도 0으로 채운다
   const byKey = new Map((series as Row[]).map((r) => [String(r.k), r]));
@@ -70,7 +84,14 @@ export async function getTrafficStats(days: number) {
     regions: [...regionMap].map(([k, v]) => ({ k, n: v })).sort((a, b) => b.n - a.n).slice(0, 8),
     cities: list(cities).map((c) => ({ ...c, k: cityName(c.k) ?? c.k })),
     devices: list(devices),
-    pages: list(pages),
+    pages: list(pages).map((p) => ({ ...p, k: names.get(p.k) ? `제품 · ${names.get(p.k)}` : p.k })),
+    kakaoClicks: clicks.filter((c) => c.kind === 'kakao').reduce((a, c) => a + n(c.n), 0),
+    telClicks: clicks.filter((c) => c.kind === 'tel').reduce((a, c) => a + n(c.n), 0),
+    clickPages: clicks.slice(0, 8).map((c) => {
+      const path = String(c.path);
+      const page = names.get(path) ? `제품 · ${names.get(path)}` : path;
+      return { k: `${c.kind === 'kakao' ? '💬 카톡' : '📞 전화'} · ${page}`, n: n(c.n) };
+    }),
     orderSources: list(orderSources),
   };
 }

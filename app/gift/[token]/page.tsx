@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { MapPin, MessageCircle, Phone, ShieldCheck } from 'lucide-react';
 import { getGiftView } from '@/lib/inquiries';
 import GiftReplyForm from './GiftReplyForm';
+import { KAKAO_CHAT_URL } from '@/lib/contact';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,7 +40,7 @@ export default async function GiftReplyPage({ params }: { params: Promise<{ toke
         <strong>정관장 조원점</strong>
         <p><MapPin size={14} /> 경기 수원시 장안구 경수대로 935 동양파라곤 1층 105호</p>
         <p><Phone size={14} /> <a href="tel:031-268-0304">031-268-0304</a> · 월–토 10:00–20:00</p>
-        <p><MessageCircle size={14} /> <a href="https://pf.kakao.com/_IrSRX/" target="_blank" rel="noopener noreferrer">카카오톡 채널 정관장 조원점</a></p>
+        <p><MessageCircle size={14} /> <a href={KAKAO_CHAT_URL} target="_blank" rel="noopener noreferrer">카카오톡 채널 정관장 조원점</a></p>
         <small>사업자등록번호 441-17-02401 · 대표 박시영 · <Link href="/privacy">개인정보처리방침</Link></small>
         <small>© 2026 정관장 조원점 · jowon-kgc.com</small>
       </footer>

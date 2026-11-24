@@ -15,13 +15,15 @@ export async function markAdmin(visitor: string | null, ipHash: string | null) {
 }
 
 /**
- * page_views 한 줄이 관리자 방문이면 참. 브라우저는 날짜와 관계없이,
+ * 방문 기록(page_views·contact_clicks) 한 줄이 관리자 방문이면 참. 브라우저는 날짜와 관계없이,
  * IP는 휴대폰처럼 여러 사람이 나눠 쓰는 경우를 생각해 관리자 접속 앞뒤 7일만 본다.
  */
-export const IS_ADMIN_VIEW = `EXISTS (
+export const isAdminRow = (table: 'page_views' | 'contact_clicks') => `EXISTS (
   SELECT 1 FROM admin_marks m
-  WHERE (m.kind = 'visitor' AND m.value = page_views.visitor)
-     OR (m.kind = 'ip' AND m.value = page_views.ip_hash
-         AND m.day BETWEEN (page_views.created_at AT TIME ZONE 'Asia/Seoul')::date - 7
-                       AND (page_views.created_at AT TIME ZONE 'Asia/Seoul')::date + 7)
+  WHERE (m.kind = 'visitor' AND m.value = ${table}.visitor)
+     OR (m.kind = 'ip' AND m.value = ${table}.ip_hash
+         AND m.day BETWEEN (${table}.created_at AT TIME ZONE 'Asia/Seoul')::date - 7
+                       AND (${table}.created_at AT TIME ZONE 'Asia/Seoul')::date + 7)
 )`;
+
+export const IS_ADMIN_VIEW = isAdminRow('page_views');

@@ -6,6 +6,7 @@ const ADMIN_KEY = 'kgc_admin';    // 관리자 브라우저는 통계에서 뺀�
 const SESSION_KEY = 'kgc_session';
 const PAGE_AT_KEY = 'kgc_pv_at';  // 현재 페이지를 연 시각
 const ADMIN_MARK_KEY = 'kgc_admin_mark'; // 관리자 표시를 보낸 날짜 (하루 한 번)
+const STORE_KEY = 'kgc_store';    // 매장 태블릿 브라우저도 통계에서 뺀다
 
 export interface Attribution {
   src: string | null;
@@ -61,6 +62,7 @@ export function recordPageView(pathname: string) {
     }
     return;
   }
+  if (pathname === '/recommend/store') ls?.setItem(STORE_KEY, '1');
   ss?.setItem(PAGE_AT_KEY, String(Date.now()));
 
   const params = new URLSearchParams(location.search);
@@ -80,10 +82,23 @@ export function recordPageView(pathname: string) {
   const visitor = visitorId(ls);
   ss?.setItem(SESSION_KEY, '1');
 
-  if (ls?.getItem(ADMIN_KEY)) return;
+  if (!countable(ls)) return;
   // 받는 분 링크의 토큰은 통계에 남기지 않는다
   const path = pathname.startsWith('/gift/') ? '/gift' : pathname;
   send(JSON.stringify({ path, entry, src, ref, visitor }));
+}
+
+/** 관리자·매장 태블릿 브라우저와 자동 조작 브라우저는 세지 않는다 */
+function countable(ls: Storage | null) {
+  return !ls?.getItem(ADMIN_KEY) && !ls?.getItem(STORE_KEY) && !navigator.webdriver;
+}
+
+/** 전화·카톡 버튼을 누른 기록 (where: 버튼 위치, 예: bar · product) */
+export function recordContactClick(kind: 'kakao' | 'tel', pathname: string, where: string | null) {
+  const ls = store('local');
+  if (pathname.startsWith('/admin') || !countable(ls)) return;
+  const path = pathname.startsWith('/gift/') ? '/gift' : pathname;
+  send(JSON.stringify({ click: kind, path, where, visitor: visitorId(ls) }));
 }
 
 /** 접수할 때 함께 보낼 출처 정보 */

@@ -16,6 +16,8 @@
 
 - [개인 선물 상담](https://www.jowon-kgc.com/personal): 부모님·감사·병문안·출산 선물 등 용도와 예산에 맞춘 홍삼 추천. 받는 분 주소를 몰라도 전화번호만으로 선물 가능
 - [기업·단체 주문](https://www.jowon-kgc.com/business): 직원·거래처 선물, 행사 답례품. 견적서, 세금계산서, 여러 주소 개별 배송
+- [제품 안내](https://www.jowon-kgc.com/products): 홍삼정·에브리타임·홍삼톤·다보록 선물세트 등 정관장 제품을 드시는 분·예산별로 비교. 제품마다 상세 페이지와 공식 정가 안내
+- [맞춤 추천](https://www.jowon-kgc.com/recommend): 드시는 분·예산·원하는 형태를 고르면 알맞은 정관장 제품을 추천
 - [선물 카탈로그](https://www.jowon-kgc.com/catalog): 시즌별 정관장 선물 구성과 가격대
 
 ## 바로가기
@@ -23,4 +25,4 @@
 - [홈페이지](https://www.jowon-kgc.com/)
 - [네이버 지도](https://map.naver.com/p/entry/place/20945563)
 - [구글 지도](https://maps.google.com/?cid=10608350700964587932)
-- [카카오톡 채널 상담](https://pf.kakao.com/_IrSRX)
+- [카카오톡 채널 상담](https://pf.kakao.com/_IrSRX) (바로 채팅: https://pf.kakao.com/_IrSRX/chat)
